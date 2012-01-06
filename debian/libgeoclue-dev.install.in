@@ -1,0 +1,4 @@
+debian/tmp@PREFIX@/include/*
+debian/tmp@PREFIX@/lib/pkgconfig/*
+debian/tmp@PREFIX@/lib/libgeoclue.*a
+debian/tmp@PREFIX@/lib/libgeoclue.so

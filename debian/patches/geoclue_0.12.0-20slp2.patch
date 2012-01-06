@@ -1,0 +1,395 @@
+Index: geoclue/configure.ac
+===================================================================
+--- geoclue.orig/configure.ac	2012-01-02 19:25:40.228226482 +0900
++++ geoclue/configure.ac	2012-01-02 19:25:51.896226282 +0900
+@@ -151,7 +151,7 @@
+                              enable_gpsd=auto)
+ 
+ if test "x$enable_gpsd" != "xno"; then
+-   PKG_CHECK_MODULES(GPSD, [libgps >= 2.91],  have_gpsd="yes", have_gpsd="no")
++   PKG_CHECK_MODULES(GPSD, [vconf libgps >= 2.91],  have_gpsd="yes", have_gpsd="no")
+    if test "x$have_gpsd" = "xyes"; then
+       PROVIDER_SUBDIRS="$PROVIDER_SUBDIRS gpsd"
+    else
+Index: geoclue/providers/gpsd/Makefile.am
+===================================================================
+--- geoclue.orig/providers/gpsd/Makefile.am	2012-01-02 19:25:30.000226658 +0900
++++ geoclue/providers/gpsd/Makefile.am	2012-01-02 19:26:12.200225935 +0900
+@@ -4,7 +4,7 @@
+ 	-I$(top_srcdir)		\
+ 	-I$(top_builddir)	\
+ 	$(GEOCLUE_CFLAGS)	\
+-    $(GPSD_CFLAGS)
++	$(GPSD_CFLAGS)
+ 
+ geoclue_gpsd_LDFLAGS = \
+ 	-Wl,--warn-unresolved-symbols
+@@ -16,7 +16,9 @@
+ 	$(top_builddir)/geoclue/libgeoclue.la
+ 
+ geoclue_gpsd_SOURCES =		\
+-	geoclue-gpsd.c
++	geoclue-gpsd.c		\
++	setting.c		\
++	setting.h
+ 
+ providersdir = $(datadir)/geoclue-providers
+ providers_DATA = geoclue-gpsd.provider
+Index: geoclue/providers/gpsd/geoclue-gpsd.c
+===================================================================
+--- geoclue.orig/providers/gpsd/geoclue-gpsd.c	2012-01-02 19:25:29.980226658 +0900
++++ geoclue/providers/gpsd/geoclue-gpsd.c	2012-01-02 19:26:03.376226086 +0900
+@@ -31,15 +31,23 @@
+ 
+ #include <config.h>
+ 
++#include <glib.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
+ #include <math.h>
+ #include <gps.h>
+-#include <string.h>
+ 
+ #include <geoclue/geoclue-error.h>
+ #include <geoclue/gc-provider.h>
+ #include <geoclue/gc-iface-position.h>
+ #include <geoclue/gc-iface-velocity.h>
+ 
++#include "setting.h"
++
++#define LAST_POS_PRECESION	10000
++#define POSITION_LENGTH 	16
++
+ typedef struct gps_data_t gps_data;
+ typedef struct gps_fix_t gps_fix;
+ 
+@@ -52,6 +60,12 @@
+ 	NMEA_RMC
+ } NmeaTag;
+ 
++typedef struct {
++	int timestamp;
++	double latitude;
++	double longitude;
++	double accuracy;
++} GeoclueGpsdsLastPosition;
+ 
+ typedef struct {
+ 	GcProvider parent;
+@@ -67,9 +81,9 @@
+ 	GeocluePositionFields last_pos_fields;
+ 	GeoclueAccuracy *last_accuracy;
+ 	GeoclueVelocityFields last_velo_fields;
++	GeoclueGpsdsLastPosition last_position;
+ 
+ 	GMainLoop *loop;
+-
+ } GeoclueGpsd;
+ 
+ typedef struct {
+@@ -96,8 +110,6 @@
+  * pointers in callbacks */
+ GeoclueGpsd *gpsd;
+ 
+-
+-
+ /* Geoclue interface */
+ static gboolean
+ get_status (GcIfaceGeoclue *gc,
+@@ -227,6 +239,135 @@
+ }
+ 
+ static void
++geoclue_gpsd_position_i2a(char *position, int lat, int lon)
++{
++	g_debug("geoclue_xps_position_i2a Lat : %d, Long : %d", lat, lon);
++	char latitude[POSITION_LENGTH/2 + 1] = { 0, };
++	char longitude[POSITION_LENGTH/2 + 1] = { 0, };
++
++	if (lat < 0) {
++		snprintf(latitude, POSITION_LENGTH/2 + 1, "S%07d", abs(lat));
++	} else {
++		snprintf(latitude, POSITION_LENGTH/2 + 1, "N%07d", lat);
++	}
++
++	if (lon < 0) {
++		snprintf(longitude, POSITION_LENGTH/2 + 1, "W%07d", abs(lon));
++	} else {
++		snprintf(longitude, POSITION_LENGTH/2 + 1, "E%07d", lon);
++	}
++
++	strncpy(position, latitude, POSITION_LENGTH/2);
++	strncat(position, longitude, POSITION_LENGTH/2);
++	g_debug("i_to_a position : %s", position);
++}
++
++static void
++geoclue_gpsd_position_a2i(char *position, int *lat, int *lon)
++{
++	g_debug("geoclue_xps_position_a2i position : %s", position);
++	char *d_lat, *d_lon;
++
++	char latitude[POSITION_LENGTH/2];
++	char longitude[POSITION_LENGTH/2];
++	memcpy(latitude, position + 1, POSITION_LENGTH/2 - 1);
++	memcpy(longitude, position + POSITION_LENGTH/2 + 1, POSITION_LENGTH/2 - 1);
++	latitude[POSITION_LENGTH/2 - 1] = '\0';
++	longitude[POSITION_LENGTH/2 - 1] = '\0';
++	d_lat = position;
++	d_lon = position + POSITION_LENGTH/2;
++
++	*lat = atoi(latitude);
++	*lon = atoi(longitude);
++
++	if (*d_lat == 'S') {
++		*lat = *lat * -1;
++	}
++	if (*d_lon == 'W') {
++		*lon = *lon * -1;
++	}
++	g_debug("a_to_i Lat : %d, Long : %d", *lat, *lon);
++}
++
++double
++deg2rad(double deg)
++{
++	return (deg * M_PI / 180);
++}
++
++static int
++geoclue_gpsd_distance_to_last_position(GeoclueGpsd * gpsd, const gps_fix * last_fix)
++{
++	double delta_lat, delta_long;
++	double dist;
++
++	delta_lat = last_fix->latitude - gpsd->last_position.latitude;
++	delta_long = last_fix->longitude - gpsd->last_position.longitude;
++
++	g_debug("GPS pos Latitude = %f Longitude = %f", last_fix->latitude, last_fix->longitude);
++
++	dist = sin(deg2rad(delta_lat) / 2) * sin(deg2rad(delta_lat) / 2)
++	    + cos(deg2rad(last_fix->latitude)) * cos(deg2rad(gpsd->last_position.latitude))
++	    * sin(deg2rad(delta_long) / 2) * sin(deg2rad(delta_long) / 2);
++	dist = 2 * atan2(sqrt(dist), sqrt(1 - dist));
++	dist = 6371 * dist;	// unit: 'km'
++
++	if (dist > 0.3) {
++		return 0;
++	} else {
++		return -1;
++	}
++}
++
++static void
++geoclue_gpsd_get_last_position(GeoclueGpsd * gpsd)
++{
++	int lat, lon, acc;
++	char position[POSITION_LENGTH + 1] = { 0, };
++
++	snprintf(position, POSITION_LENGTH + 1, "%s", setting_get_string(LAST_POSITION));
++	geoclue_gpsd_position_a2i(position, &lat, &lon);
++	acc = setting_get_int(LAST_ACCURACY);
++
++	gpsd->last_position.timestamp = setting_get_int(LAST_TIMESTAMP);
++	gpsd->last_position.latitude = lat * (1.0 / LAST_POS_PRECESION);
++	gpsd->last_position.longitude = lon * (1.0 / LAST_POS_PRECESION);
++	gpsd->last_position.accuracy = acc * (1.0 / LAST_POS_PRECESION);
++	g_debug("get Last Latitude = %f Longitude = %f Accuracy = %f",
++		gpsd->last_position.latitude, gpsd->last_position.longitude,
++		gpsd->last_position.accuracy);
++}
++
++static void
++geoclue_gpsd_set_last_position(GeoclueGpsd * gpsd)
++{
++	int lat, lon, acc;
++	char position[POSITION_LENGTH + 1] = { 0, };
++
++	lat = gpsd->last_position.latitude * LAST_POS_PRECESION;
++	lon = gpsd->last_position.longitude * LAST_POS_PRECESION;
++	acc = gpsd->last_position.accuracy * LAST_POS_PRECESION;
++	g_debug("set GPSD Last Latitude = %d Longitude = %d Accuracy = %d", lat, lon, acc);
++	geoclue_gpsd_position_i2a(position, lat, lon);
++
++	setting_set_int(LAST_TIMESTAMP, gpsd->last_position.timestamp);
++	setting_set_string(LAST_POSITION, position);
++	setting_set_int(LAST_ACCURACY, acc);
++}
++
++static void
++geoclue_gpsd_update_last_position(GeoclueGpsd * gpsd, const const gps_fix * last_fix,
++					      int accuracy)
++{
++	g_debug("geoclue_xps_update_last_position");
++	gpsd->last_position.timestamp = last_fix->time + 0.5;
++	gpsd->last_position.latitude = last_fix->latitude;
++	gpsd->last_position.longitude = last_fix->longitude;
++	gpsd->last_position.accuracy = accuracy;
++	geoclue_gpsd_set_last_position(gpsd);
++}
++
++static void
+ geoclue_gpsd_update_position (GeoclueGpsd *gpsd)
+ {
+ 	if(gpsd->last_status != GEOCLUE_STATUS_AVAILABLE)
+@@ -235,7 +376,6 @@
+ 	gps_fix *fix = &gpsd->gpsdata->fix;
+ 	gps_fix *last_fix = gpsd->last_fix;
+ 
+-
+ 	if (isnan(fix->time)==0){
+ 		last_fix->time = fix->time;
+     }
+@@ -275,6 +415,13 @@
+ 	gpsd->last_pos_fields |= (isnan (fix->altitude)) ?
+ 	                         0 : GEOCLUE_POSITION_FIELDS_ALTITUDE;
+ 
++	if (geoclue_gpsd_distance_to_last_position(gpsd, last_fix) == 0) {
++		geoclue_gpsd_update_last_position(gpsd, last_fix,
++						  (int)floor(sqrt(pow(last_fix->epx, 2) + pow(last_fix->epy, 2))));
++	} else {
++		g_debug("Last position is not updated");
++	}
++
+ 	g_debug("Update position: %lf, %lf, %lf, fields:0x%x, Accuracy level: %d, vert:%lf hori:%lf",
+ 		last_fix->latitude, last_fix->longitude, last_fix->altitude, gpsd->last_pos_fields,
+ 		GEOCLUE_ACCURACY_LEVEL_DETAILED, sqrt(pow(last_fix->epx, 2)+pow(last_fix->epy, 2)), fix->epv);
+@@ -421,6 +568,8 @@
+ 	if (!geoclue_gpsd_start_gpsd (self)) {
+ 		geoclue_gpsd_set_status (self, GEOCLUE_STATUS_ERROR);
+ 	}
++
++	geoclue_gpsd_get_last_position(self);
+ }
+ 
+ static gboolean
+Index: geoclue/providers/gpsd/setting.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ geoclue/providers/gpsd/setting.c	2012-01-02 19:26:49.384225297 +0900
+@@ -0,0 +1,76 @@
++/*
++ * Geoclue Providers
++ *
++ * Copyright (c) 2010-2011 Samsung Electronics Co., Ltd All Rights Reserved
++ *
++ * Contact: Youngae Kang <youngae.kang@samsung.com>, Yunhan Kim <yhan.kim@samsung.com>,
++ *          Genie Kim <daejins.kim@samsung.com>, Minjune Kim <sena06.kim@samsung.com>
++ *
++ * PROPRIETARY/CONFIDENTIAL
++ *
++ * This software is the confidential and proprietary information of
++ * SAMSUNG ELECTRONICS ("Confidential Information").
++ *
++ * You agree and acknowledge that this software is owned by Samsung and you
++ * shall not disclose such Confidential Information and shall use it only
++ * in accordance with the terms of the license agreement you entered into with
++ * SAMSUNG ELECTRONICS.
++ *
++ * SAMSUNG make no representations or warranties about the suitability
++ * of the software, either express or implied, including but not limited to
++ * the implied warranties of merchantability, fitness for a particular purpose,
++ * or non-infringement.
++ *
++ * SAMSUNG shall not be liable for any damages suffered by licensee arising
++ * out of or related to this software.
++ */
++
++#include <glib.h>
++#include <vconf.h>
++#include "setting.h"
++
++int setting_get_int(const char* path)
++{
++	if(!path)
++		return -1;
++
++	int val = -1;
++	if (vconf_get_int(path, &val)) {
++		g_warning("vconf_get_int: failed [%s]", path);
++		val = -1;
++	} else {
++		g_debug("vconf_get_int: [%s]:[%d]", path, val);
++	}
++	return val;
++}
++
++int setting_set_int(const char* path, int val)
++{
++	if (!path) {
++		return -1;
++	}
++
++	int ret = vconf_set_int(path, val);
++	if (ret == 0) {
++		g_debug("vconf_set_int: [%s]:[%d]", path, val);
++	} else {
++		g_warning("vconf_set_int failed, [%s]\n", path);
++	}
++	return ret;
++}
++
++char* setting_get_string(const char* path)
++{
++	return vconf_get_str(path);
++}
++
++int setting_set_string(const char* path, const char* val)
++{
++	int ret = vconf_set_str(path, val);
++	if (ret == 0) {
++		g_debug("vconf_set_str: [%s]:[%s]", path, val);
++	} else {
++		g_warning("vconf_set_str failed, [%s]\n", path);
++	}
++	return ret;
++}
+Index: geoclue/providers/gpsd/setting.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ geoclue/providers/gpsd/setting.h	2012-01-02 19:26:54.064225217 +0900
+@@ -0,0 +1,43 @@
++/*
++ * Geoclue Providers
++ *
++ * Copyright (c) 2010-2011 Samsung Electronics Co., Ltd All Rights Reserved
++ *
++ * Contact: Youngae Kang <youngae.kang@samsung.com>, Yunhan Kim <yhan.kim@samsung.com>,
++ *          Genie Kim <daejins.kim@samsung.com>, Minjune Kim <sena06.kim@samsung.com>
++ *
++ * PROPRIETARY/CONFIDENTIAL
++ *
++ * This software is the confidential and proprietary information of
++ * SAMSUNG ELECTRONICS ("Confidential Information").
++ *
++ * You agree and acknowledge that this software is owned by Samsung and you
++ * shall not disclose such Confidential Information and shall use it only
++ * in accordance with the terms of the license agreement you entered into with
++ * SAMSUNG ELECTRONICS.
++ *
++ * SAMSUNG make no representations or warranties about the suitability
++ * of the software, either express or implied, including but not limited to
++ * the implied warranties of merchantability, fitness for a particular purpose,
++ * or non-infringement.
++ *
++ * SAMSUNG shall not be liable for any damages suffered by licensee arising
++ * out of or related to this software.
++ */
++
++#ifndef __SETTING_H__
++#define __SETTING_H__
++
++// Sync VCONFKEY_GPS_STATE
++#define VCONF_LOCATION_PATH 		"db/location"
++
++#define LOCATION_POSITION_PATH 		VCONF_LOCATION_PATH"/position"
++#define LAST_TIMESTAMP			LOCATION_POSITION_PATH"/Timestamp"
++#define LAST_POSITION 			LOCATION_POSITION_PATH"/LastPosition"
++#define LAST_ACCURACY			LOCATION_POSITION_PATH"/LastAccuracy"
++
++int setting_get_int(const char* path);
++int setting_set_int(const char* path, int val);
++char* setting_get_string(const char* path);
++int setting_set_string(const char* path, const char* val);
++#endif

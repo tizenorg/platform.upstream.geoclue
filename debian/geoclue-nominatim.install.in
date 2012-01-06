@@ -1,0 +1,3 @@
+debian/tmp@PREFIX@/share/dbus-1/services/org.freedesktop.Geoclue.Providers.Nominatim.service
+debian/tmp@PREFIX@/share/geoclue-providers/geoclue-nominatim.provider
+debian/tmp@PREFIX@/libexec/geoclue-nominatim

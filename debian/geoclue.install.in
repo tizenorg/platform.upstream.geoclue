@@ -1,0 +1,2 @@
+debian/tmp@PREFIX@/libexec/geoclue-master
+debian/tmp@PREFIX@/share/dbus-1/services/org.freedesktop.Geoclue.Master.service

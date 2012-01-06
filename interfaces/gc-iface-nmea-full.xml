@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
+	
+	<interface name="org.freedesktop.Geoclue.Nmea">
+		<doc:doc>
+			<doc:para>Nmea interface contains a method 
+			and a signal for querying current coordinates.</doc:para>
+		</doc:doc>
+		
+		<method name="GetNmea">
+			<arg type="i" name="timestamp" direction="out" />
+			<arg type="s" name="nmea_data" direction="out" />
+		</method>
+
+		<signal name="NmeaChanged">
+			<arg type="i" name="timestamp" />
+			<arg type="s" name="nmea_data" />
+		</signal>
+	</interface>
+</node>
