@@ -4,7 +4,7 @@
         <interface name="org.freedesktop.Geoclue.Address">
 		<method name="GetAddress">
 			<arg type="i" name="timestamp" direction="out" />
-			
+
 			<arg name="address" type="a{ss}" direction="out" />
 
 		        <arg name="accuracy" type="(idd)" direction="out" />

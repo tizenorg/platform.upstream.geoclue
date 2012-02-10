@@ -43,7 +43,7 @@ static int
 get_status (GeoclueConnectivity *iface)
 {
 	GeoclueConic *conic = GEOCLUE_CONIC (iface);
-	
+
 	return conic->status;
 }
 
@@ -52,7 +52,7 @@ static void
 finalize (GObject *object)
 {
 	/* free everything */
-	
+
 	((GObjectClass *) geoclue_conic_parent_class)->finalize (object);
 }
 
@@ -60,7 +60,7 @@ static void
 dispose (GObject *object)
 {
 	GeoclueConic *self = GEOCLUE_CONIC (object);
-	
+
 	g_object_unref (self->conic);
 	((GObjectClass *) geoclue_conic_parent_class)->dispose (object);
 }
@@ -69,13 +69,13 @@ static void
 geoclue_conic_class_init (GeoclueConicClass *klass)
 {
 	GObjectClass *o_class = (GObjectClass *) klass;
-	
+
 	o_class->finalize = finalize;
 	o_class->dispose = dispose;
 }
 
 
-static GeoclueNetworkStatus 
+static GeoclueNetworkStatus
 conicstatus_to_geocluenetworkstatus (ConIcConnectionStatus status)
 {
 	switch (status) {
@@ -99,7 +99,7 @@ geoclue_conic_state_changed (ConIcConnection *connection,
 	GeoclueConic *self = GEOCLUE_CONIC (userdata);
 	ConIcConnectionStatus status = con_ic_connection_event_get_status (event);
 	GeoclueNetworkStatus gc_status;
-	
+
 	g_debug ("conic change");
 	gc_status = conicstatus_to_geocluenetworkstatus (status);
 	if (gc_status != self->status) {
@@ -113,9 +113,9 @@ static void
 geoclue_conic_init (GeoclueConic *self)
 {
 	DBusConnection *system_bus = NULL;
-	
+
 	self->status = GEOCLUE_CONNECTIVITY_UNKNOWN;
-	
+
 	/* Need to run dbus_connection_setup_with_g_main(),
 	 * otherwise conic signals will not fire... */
 	system_bus = dbus_bus_get (DBUS_BUS_SYSTEM, NULL);
@@ -124,22 +124,22 @@ geoclue_conic_init (GeoclueConic *self)
 		return;
 	}
 	dbus_connection_setup_with_g_main (system_bus, NULL);
-	
+
 	self->conic = con_ic_connection_new();
 	if (self->conic == NULL) {
 		g_warning ("Creating new ConicConnection failed");
 		return;
 	}
-	
-	g_signal_connect (G_OBJECT (self->conic), 
-	                  "connection-event", 
-	                  G_CALLBACK (geoclue_conic_state_changed), 
+
+	g_signal_connect (G_OBJECT (self->conic),
+	                  "connection-event",
+	                  G_CALLBACK (geoclue_conic_state_changed),
 	                  self);
-	
-	/* this should result in a connection-event signal with current 
+
+	/* this should result in a connection-event signal with current
 	 * connection status. Weird API.*/
-	g_object_set (G_OBJECT (self->conic), 
-	              "automatic-connection-events", 
+	g_object_set (G_OBJECT (self->conic),
+	              "automatic-connection-events",
 	              TRUE, NULL);
 }
 

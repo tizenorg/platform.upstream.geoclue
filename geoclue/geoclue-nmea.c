@@ -2,7 +2,7 @@
  * Geoclue
  * geoclue-nmea.c - Client API for accessing GcIfaceNmea
  *
- * Author: Tae-Hwan Kim <the81.kim@samsung.com>, Youngae Kang <youngae.kang@samsung.com>, 
+ * Author: Tae-Hwan Kim <the81.kim@samsung.com>, Youngae Kang <youngae.kang@samsung.com>,
  *         Yunhan Kim <yhan.kim@samsung.com>, Genie Kim <daejins.kim@samsung.com>
  * Copyright (c) 2000 - 2011 Samsung Electronics Co., Ltd. All rights reserved.
  *
@@ -27,13 +27,13 @@
  * SECTION:geoclue-nmea
  * @short_description: Geoclue nmea client API
  *
- * #GeoclueNmea contains nmea-related methods and signals. 
- * It is part of the Geoclue public C client API which uses D-Bus 
+ * #GeoclueNmea contains nmea-related methods and signals.
+ * It is part of the Geoclue public C client API which uses D-Bus
  * to communicate with the actual provider.
- * 
- * After a #GeoclueNmea is created with geoclue_nmea_new() or 
- * using geoclye_master_client_create_nmea(), the 
- * geoclue_nmea_get_nmea() and geoclue_nmea_get_nmea_async() 
+ *
+ * After a #GeoclueNmea is created with geoclue_nmea_new() or
+ * using geoclye_master_client_create_nmea(), the
+ * geoclue_nmea_get_nmea() and geoclue_nmea_get_nmea_async()
  * method and the nmea-changed signal can be used to obtain the current nmea.
  */
 
@@ -94,7 +94,7 @@ constructor (GType                  type,
 	provider = GEOCLUE_PROVIDER (object);
 
 	dbus_g_proxy_add_signal (provider->proxy, "NmeaChanged",
-				 G_TYPE_INT, 
+				 G_TYPE_INT,
 				 G_TYPE_STRING,
 				 G_TYPE_INVALID);
 	dbus_g_proxy_connect_signal (provider->proxy, "NmeaChanged",
@@ -114,7 +114,7 @@ geoclue_nmea_class_init (GeoclueNmeaClass *klass)
 	o_class->constructor = constructor;
 
 	g_type_class_add_private (klass, sizeof (GeoclueNmeaPrivate));
-	
+
 	signals[NMEA_CHANGED] = g_signal_new ("nmea-changed",
 					      G_TYPE_FROM_CLASS (klass),
 					      G_SIGNAL_RUN_FIRST |
@@ -138,7 +138,7 @@ geoclue_nmea_init (GeoclueNmea *nmea)
  * @path: D-Bus path name
  *
  * Creates a #GeoclueNmea with given D-Bus service name and path.
- * 
+ *
  * Return value: Pointer to a new #GeoclueNmea
  */
 GeoclueNmea *
@@ -159,13 +159,13 @@ geoclue_nmea_get_nmea (GeoclueNmea  *nmea,
 		       GError      **error)
 {
 	GeoclueProvider *provider = GEOCLUE_PROVIDER (nmea);
-	
+
 	if (!org_freedesktop_Geoclue_Nmea_get_nmea (provider->proxy,
 						    timestamp,
 						    nmea_data,
 						    error)) {
 		return FALSE;
-	}	
+	}
 	return TRUE;
 }
 
@@ -191,19 +191,19 @@ get_nmea_async_callback (DBusGProxy           *proxy,
 	g_free (data);
 }
 
-void 
+void
 geoclue_nmea_get_nmea_async (GeoclueNmea         *nmea,
 			     GeoclueNmeaCallback  callback,
 			     gpointer             userdata)
 {
 	GeoclueProvider *provider = GEOCLUE_PROVIDER (nmea);
 	GeoclueNmeaAsyncData *data;
-	
+
 	data = g_new (GeoclueNmeaAsyncData, 1);
 	data->nmea = nmea;
 	data->callback = G_CALLBACK (callback);
 	data->userdata = userdata;
-	
+
 	org_freedesktop_Geoclue_Nmea_get_nmea_async (
 			provider->proxy,
 			(org_freedesktop_Geoclue_Nmea_get_nmea_reply)get_nmea_async_callback,

@@ -10,7 +10,7 @@ BUILT_SOURCES =			\
 	$(nodist_geoclue_manual_SOURCES)
 
 geoclue_manual_SOURCES = 	\
-	geoclue-manual.c     
+	geoclue-manual.c
 
 geoclue_manual_CFLAGS = \
 	-I$(top_srcdir)     \

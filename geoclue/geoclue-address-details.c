@@ -1,7 +1,7 @@
 /*
  * Geoclue
  * geoclue-address-details.c - Helper functions for GeoclueAddress
- * 
+ *
  * Author: Jussi Kukkonen <jku@o-hand.com>
  * Copyright 2008 by Garmin Ltd. or its subsidiaries
  *
@@ -286,11 +286,11 @@ char *countries[][2] = {
 
 /**
  * geoclue_address_details_new:
- * 
+ *
  * Creates a new #GHashTable suitable for Geoclue Address details.
  * Both keys and values inserted to this #GHashTable will be freed
  * on g_hash_table_destroy().
- * 
+ *
  * Return value: New #GHashTable
  */
 GHashTable *
@@ -306,7 +306,7 @@ geoclue_address_details_new ()
  * @address: #GHashTable to insert value in
  * @key: the key to use, one of GEOCLUE_ADDRESS_KEY_*
  * @value: value to insert into address
- * 
+ *
  * Adds a address field into @address. Will take copies
  * of the strings.
  */
@@ -327,21 +327,21 @@ copy_address_key_and_value (char *key, char *value, GHashTable *target)
 /**
  * geoclue_address_details_copy:
  * @source: #GHashTable to copy
- * 
+ *
  * Deep-copies a #GHashTable.
- * 
+ *
  * Return value: New, deep copied #GHashTable
  */
 GHashTable *
 geoclue_address_details_copy (GHashTable *source)
 {
 	GHashTable *target;
-	
+
 	g_assert (source != NULL);
-	
+
 	target = geoclue_address_details_new ();
-	g_hash_table_foreach (source, 
-	                      (GHFunc)copy_address_key_and_value, 
+	g_hash_table_foreach (source,
+	                      (GHFunc)copy_address_key_and_value,
 	                      target);
 	return target;
 }
@@ -350,10 +350,10 @@ geoclue_address_details_copy (GHashTable *source)
 /**
  * geoclue_address_details_set_country_from_code:
  * @address: #GHashTable with address data
- * 
- * Uses the "ISO 3166-1 alpha-2" list to figure out the country name matching 
+ *
+ * Uses the "ISO 3166-1 alpha-2" list to figure out the country name matching
  * the country code in @details, and adds the country name to details.
- * 
+ *
  * Using this function in providers is useful even when the data source includes
  * country name: this way names are standardized.
  */
@@ -391,9 +391,9 @@ geoclue_address_details_set_country_from_code (GHashTable *address)
 /**
  * geoclue_address_details_get_accuracy_level:
  * @address: A #GHashTable with address hash values
- * 
+ *
  * Returns a #GeoclueAccuracy that best describes the accuracy of @address
- * 
+ *
  * Return value: #GeoclueAccuracy
  */
 GeoclueAccuracyLevel

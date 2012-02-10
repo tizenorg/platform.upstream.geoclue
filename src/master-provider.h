@@ -38,15 +38,15 @@ G_BEGIN_DECLS
 #define GC_IS_MASTER_PROVIDER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GC_TYPE_MASTER_PROVIDER))
 
 typedef enum {
-	GC_IFACE_NONE = 0, 
-	GC_IFACE_GEOCLUE = 1 << 0, 
+	GC_IFACE_NONE = 0,
+	GC_IFACE_GEOCLUE = 1 << 0,
 	GC_IFACE_POSITION = 1 << 1,
 	GC_IFACE_ADDRESS = 1 << 2,
 	GC_IFACE_VELOCITY = 1 << 3,
 	GC_IFACE_GEOCODE = 1 << 4,
 	GC_IFACE_REVERSE_GEOCODE = 1 << 5,
-	
-	GC_IFACE_ALL = (1 << 6) - 1 
+
+	GC_IFACE_ALL = (1 << 6) - 1
 } GcInterfaceFlags;
 
 
@@ -56,7 +56,7 @@ typedef struct _GcMasterProvider {
 
 typedef struct _GcMasterProviderClass {
 	GObjectClass parent_class;
-	
+
 	void (* status_changed) (GcMasterProvider *master_provider,
 	                         GeoclueStatus     status);
 	void (* accuracy_changed) (GcMasterProvider     *master_provider,
@@ -80,7 +80,7 @@ GType gc_master_provider_get_type (void);
 GcMasterProvider *gc_master_provider_new (const char *filename,
                                           GeoclueConnectivity *connectivity);
 
-gboolean gc_master_provider_subscribe (GcMasterProvider *provider, 
+gboolean gc_master_provider_subscribe (GcMasterProvider *provider,
                                        gpointer          client,
                                        GcInterfaceFlags  interface);
 void gc_master_provider_unsubscribe (GcMasterProvider *provider,
@@ -93,7 +93,7 @@ typedef struct _GcInterfaceAccuracy {
 	GeoclueAccuracyLevel accuracy_level;
 } GcInterfaceAccuracy;
 
-gint gc_master_provider_compare (GcMasterProvider *a, 
+gint gc_master_provider_compare (GcMasterProvider *a,
                                  GcMasterProvider *b,
                                  GcInterfaceAccuracy *iface_min_accuracy);
 

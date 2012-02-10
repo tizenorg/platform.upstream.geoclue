@@ -48,7 +48,7 @@ static int
 get_status (GeoclueConnectivity *iface)
 {
 	GeoclueNetworkManager *nm = GEOCLUE_NETWORKMANAGER (iface);
-	
+
 	return nm->status;
 }
 
@@ -110,7 +110,7 @@ static void
 finalize (GObject *object)
 {
 	/* free everything */
-	
+
 	((GObjectClass *) geoclue_networkmanager_parent_class)->finalize (object);
 }
 
@@ -118,7 +118,7 @@ static void
 dispose (GObject *object)
 {
 	GeoclueNetworkManager *self = GEOCLUE_NETWORKMANAGER (object);
-	
+
 	dbus_g_connection_unref (self->connection);
 	g_free (self->cache_ap_mac);
 	self->cache_ap_mac = NULL;
@@ -131,12 +131,12 @@ static void
 geoclue_networkmanager_class_init (GeoclueNetworkManagerClass *klass)
 {
 	GObjectClass *o_class = (GObjectClass *) klass;
-	
+
 	o_class->finalize = finalize;
 	o_class->dispose = dispose;
 }
 
-static GeoclueNetworkStatus 
+static GeoclueNetworkStatus
 nmstate_to_geocluenetworkstatus (NMState status)
 {
 	switch (status) {
@@ -156,15 +156,15 @@ nmstate_to_geocluenetworkstatus (NMState status)
 }
 
 static void
-geoclue_networkmanager_state_changed (DBusGProxy *proxy, 
-                                      NMState status, 
+geoclue_networkmanager_state_changed (DBusGProxy *proxy,
+                                      NMState status,
                                       gpointer userdata)
 {
 	GeoclueNetworkManager *self = GEOCLUE_NETWORKMANAGER (userdata);
 	GeoclueNetworkStatus gc_status;
-	
+
 	gc_status = nmstate_to_geocluenetworkstatus (status);
-	
+
 	if (gc_status != self->status) {
 		cache_ap_mac (self);
 		self->status = gc_status;
@@ -182,9 +182,9 @@ geoclue_networkmanager_init (GeoclueNetworkManager *self)
 	GError *error = NULL;
 	DBusGProxy *proxy;
 	NMState state;
-	
+
 	self->status = GEOCLUE_CONNECTIVITY_UNKNOWN;
-	
+
 	self->connection = dbus_g_bus_get (DBUS_BUS_SYSTEM, &error);
 	if (self->connection == NULL) {
 		g_warning ("%s was unable to create a connection to D-Bus: %s",
@@ -192,19 +192,19 @@ geoclue_networkmanager_init (GeoclueNetworkManager *self)
 		g_error_free (error);
 		return;
 	}
-	
-	proxy = dbus_g_proxy_new_for_name (self->connection, 
+
+	proxy = dbus_g_proxy_new_for_name (self->connection,
 	                                   NM_DBUS_SERVICE,
-	                                   NM_DBUS_PATH, 
+	                                   NM_DBUS_PATH,
 	                                   NM_DBUS_INTERFACE);
-	dbus_g_proxy_add_signal (proxy, NM_DBUS_SIGNAL_STATE_CHANGE, 
+	dbus_g_proxy_add_signal (proxy, NM_DBUS_SIGNAL_STATE_CHANGE,
 	                         G_TYPE_UINT, G_TYPE_INVALID);
-	dbus_g_proxy_connect_signal (proxy, NM_DBUS_SIGNAL_STATE_CHANGE, 
-	                             G_CALLBACK (geoclue_networkmanager_state_changed), 
+	dbus_g_proxy_connect_signal (proxy, NM_DBUS_SIGNAL_STATE_CHANGE,
+	                             G_CALLBACK (geoclue_networkmanager_state_changed),
 	                             self, NULL);
-	
-	if (dbus_g_proxy_call (proxy, "state", &error, 
-	                       G_TYPE_INVALID, 
+
+	if (dbus_g_proxy_call (proxy, "state", &error,
+	                       G_TYPE_INVALID,
 	                       G_TYPE_UINT, &state, G_TYPE_INVALID)){
 		self->status = nmstate_to_geocluenetworkstatus (state);
 	} else {

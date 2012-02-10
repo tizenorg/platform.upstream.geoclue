@@ -34,9 +34,9 @@ int main (int argc, char** argv)
 	GeoclueStatus status;
         GHashTable *options;
 	GError *error = NULL;
-	
+
 	g_type_init();
-	
+
 	if (argc != 2) {
 		g_printerr ("Usage:\n  common-example <provider_name>\n");
 		return 1;
@@ -44,8 +44,8 @@ int main (int argc, char** argv)
 	g_print ("Using provider '%s'\n", argv[1]);
 	service = g_strdup_printf ("org.freedesktop.Geoclue.Providers.%s", argv[1]);
 	path = g_strdup_printf ("/org/freedesktop/Geoclue/Providers/%s", argv[1]);
-	
-	
+
+
 	/* Create new GeoclueCommon */
 	pos = geoclue_position_new (service, path);
 	g_free (service);
@@ -54,8 +54,8 @@ int main (int argc, char** argv)
 		g_printerr ("Error while creating GeocluePosition object.\n");
 		return 1;
 	}
-	
-	
+
+
 	options = g_hash_table_new (g_str_hash, g_str_equal);
         g_hash_table_insert (options, "GPSProvider", "Gypsy");
         g_hash_table_insert (options, "PlaySong", "MGMT-Kids.mp3");
@@ -69,7 +69,7 @@ int main (int argc, char** argv)
         }
         g_hash_table_destroy (options);
 
-	if (!geoclue_provider_get_provider_info (GEOCLUE_PROVIDER (pos), 
+	if (!geoclue_provider_get_provider_info (GEOCLUE_PROVIDER (pos),
 	                                         &name, &desc,
 	                                         &error)) {
 		g_printerr ("Error getting provider info: %s\n\n", error->message);
@@ -82,7 +82,7 @@ int main (int argc, char** argv)
 		g_free (name);
 		g_free (desc);
 	}
-	
+
 	if (!geoclue_provider_get_status (GEOCLUE_PROVIDER (pos), &status, &error)) {
 		g_printerr ("Error getting status: %s\n\n", error->message);
 		g_error_free (error);
@@ -103,8 +103,8 @@ int main (int argc, char** argv)
                         break;
 		}
 	}
-	
+
 	g_object_unref (pos);
-	
+
 	return 0;
 }

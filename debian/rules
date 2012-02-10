@@ -34,7 +34,7 @@ else
 	DEB_BUILD_GNU_TYPE = 
 endif
 
-LDFLAGS += -Wl,-z,defs -Wl,--rpath=$(PREFIX)/lib -Wl,--as-needed -Wl,--hash-style=both 
+LDFLAGS += -Wl,-z,defs -Wl,--rpath=$(PREFIX)/lib -Wl,--as-needed -Wl,--hash-style=both
 
 %:
 	dh $@ --with quilt 

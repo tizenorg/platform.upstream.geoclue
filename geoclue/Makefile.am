@@ -61,7 +61,7 @@ libgeoclue_la_CFLAGS =		\
 	-I$(top_srcdir)		\
 	-I$(top_builddir)	\
 	$(GEOCLUE_CFLAGS)
-	
+
 geoclue_headers =		\
 	gc-iface-address.h	\
 	gc-iface-geoclue.h	\

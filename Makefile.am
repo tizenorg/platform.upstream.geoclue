@@ -1,4 +1,4 @@
-SUBDIRS = interfaces geoclue providers src 
+SUBDIRS = interfaces geoclue providers src
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = geoclue.pc

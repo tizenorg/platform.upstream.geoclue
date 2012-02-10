@@ -40,10 +40,10 @@ G_BEGIN_DECLS
 typedef struct _GeoclueGeonames {
 	GcProvider parent;
 	GMainLoop *loop;
-	
+
 	GcWebService *place_geocoder;
 	GcWebService *postalcode_geocoder;
-	
+
 	GcWebService *rev_street_geocoder;
 	GcWebService *rev_place_geocoder;
 } GeoclueGeonames;

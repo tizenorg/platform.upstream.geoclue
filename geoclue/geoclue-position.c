@@ -26,13 +26,13 @@
  * SECTION:geoclue-position
  * @short_description: Geoclue position client API
  *
- * #GeocluePosition contains position-related methods and signals. 
- * It is part of the Geoclue public C client API which uses D-Bus 
+ * #GeocluePosition contains position-related methods and signals.
+ * It is part of the Geoclue public C client API which uses D-Bus
  * to communicate with the actual provider.
- * 
- * After a #GeocluePosition is created with geoclue_position_new() or 
- * using geoclye_master_client_create_position(), the 
- * geoclue_position_get_position() and geoclue_position_get_position_async() 
+ *
+ * After a #GeocluePosition is created with geoclue_position_new() or
+ * using geoclye_master_client_create_position(), the
+ * geoclue_position_get_position() and geoclue_position_get_position_async()
  * method and the position-changed signal can be used to obtain the current position.
  */
 
@@ -96,7 +96,7 @@ constructor (GType                  type,
 
 	dbus_g_proxy_add_signal (provider->proxy, "PositionChanged",
 				 G_TYPE_INT, G_TYPE_INT, G_TYPE_DOUBLE,
-				 G_TYPE_DOUBLE, G_TYPE_DOUBLE, 
+				 G_TYPE_DOUBLE, G_TYPE_DOUBLE,
                                  GEOCLUE_ACCURACY_TYPE,
 				 G_TYPE_INVALID);
 	dbus_g_proxy_connect_signal (provider->proxy, "PositionChanged",
@@ -116,7 +116,7 @@ geoclue_position_class_init (GeocluePositionClass *klass)
 	o_class->constructor = constructor;
 
 	g_type_class_add_private (klass, sizeof (GeocluePositionPrivate));
-	
+
 	/**
 	 * GeocluePosition::position-changed:
 	 * @position: the #GeocluePosition object emitting the signal
@@ -126,7 +126,7 @@ geoclue_position_class_init (GeocluePositionClass *klass)
 	 * @longitude: Longitude in degrees
 	 * @altitude: Altitude in meters
 	 * @accuracy: Accuracy of measurement as #GeoclueAccuracy
-	 * 
+	 *
 	 * The position-changed signal is emitted each time the position changes. Clients should note
 	 * that not all providers support signals.
 	 */
@@ -134,7 +134,7 @@ geoclue_position_class_init (GeocluePositionClass *klass)
 						  G_TYPE_FROM_CLASS (klass),
 						  G_SIGNAL_RUN_FIRST |
 						  G_SIGNAL_NO_RECURSE,
-						  G_STRUCT_OFFSET (GeocluePositionClass, position_changed), 
+						  G_STRUCT_OFFSET (GeocluePositionClass, position_changed),
 						  NULL, NULL,
 						  geoclue_marshal_VOID__INT_INT_DOUBLE_DOUBLE_DOUBLE_BOXED,
 						  G_TYPE_NONE, 6,
@@ -154,7 +154,7 @@ geoclue_position_init (GeocluePosition *position)
  * @path: D-Bus path name
  *
  * Creates a #GeocluePosition with given D-Bus service name and path.
- * 
+ *
  * Return value: Pointer to a new #GeocluePosition
  */
 GeocluePosition *
@@ -177,15 +177,15 @@ geoclue_position_new (const char *service,
  * @altitude: Pointer to returned altitude in meters or %NULL
  * @accuracy: Pointer to returned #GeoclueAccuracy or %NULL
  * @error: Pointer to returned #Gerror or %NULL
- * 
- * Obtains the current position. @timestamp will contain the time of 
+ *
+ * Obtains the current position. @timestamp will contain the time of
  * the actual position measurement. @accuracy is a rough estimate of the
  * accuracy of the current position.
- * 
- * If the caller is not interested in some values, the pointers can be 
+ *
+ * If the caller is not interested in some values, the pointers can be
  * left %NULL.
- * 
- * Return value: A #GeocluePositionFields bitfield representing the 
+ *
+ * Return value: A #GeocluePositionFields bitfield representing the
  * validity of the position values.
  */
 GeocluePositionFields
@@ -239,7 +239,7 @@ typedef struct _GeocluePositionAsyncData {
 } GeocluePositionAsyncData;
 
 static void
-get_position_async_callback (DBusGProxy               *proxy, 
+get_position_async_callback (DBusGProxy               *proxy,
 			     GeocluePositionFields     fields,
 			     int                       timestamp,
 			     double                    latitude,
@@ -272,7 +272,7 @@ get_position_async_callback (DBusGProxy               *proxy,
  * @accuracy: Accuracy of measurement as #GeoclueAccuracy
  * @error: Error as #Gerror or %NULL
  * @userdata: User data pointer set in geoclue_position_get_position_async()
- * 
+ *
  * Callback function for geoclue_position_get_position_async().
  */
 
@@ -281,23 +281,23 @@ get_position_async_callback (DBusGProxy               *proxy,
  * @position: A #GeocluePosition object
  * @callback: A #GeocluePositionCallback function that should be called when return values are available
  * @userdata: pointer for user specified data
- * 
+ *
  * Function returns (essentially) immediately and calls @callback when current position
  * is available or when D-Bus timeouts.
  */
-void 
+void
 geoclue_position_get_position_async (GeocluePosition         *position,
 				     GeocluePositionCallback  callback,
 				     gpointer                 userdata)
 {
 	GeoclueProvider *provider = GEOCLUE_PROVIDER (position);
 	GeocluePositionAsyncData *data;
-	
+
 	data = g_new (GeocluePositionAsyncData, 1);
 	data->position = position;
 	data->callback = G_CALLBACK (callback);
 	data->userdata = userdata;
-	
+
 	org_freedesktop_Geoclue_Position_get_position_async
 			(provider->proxy,
 			 (org_freedesktop_Geoclue_Position_get_position_reply)get_position_async_callback,

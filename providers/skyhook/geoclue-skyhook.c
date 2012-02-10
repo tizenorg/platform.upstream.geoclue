@@ -1,7 +1,7 @@
 /*
  * Geoclue
  * geoclue-skyhook.c - A skyhook.com-based Address/Position provider
- * 
+ *
  * Author: Bastien Nocera <hadess@hadess.net>
  * Copyright 2009 Bastien Nocera
  */
@@ -77,23 +77,23 @@ _shutdown (GcProvider *provider)
 static char *
 get_mac_address (void)
 	{
-	/* this is an ugly hack, but it seems there is no easy 
-	 * ioctl-based way to get the mac address of the router. This 
-	 * implementation expects the system to have netstat, grep and awk 
+	/* this is an ugly hack, but it seems there is no easy
+	 * ioctl-based way to get the mac address of the router. This
+	 * implementation expects the system to have netstat, grep and awk
 	 * */
-	
+
 	FILE *in;
 	char mac[MAC_LEN];
 	int i;
-	
-	/*for some reason netstat or /proc/net/arp isn't always ready 
+
+	/*for some reason netstat or /proc/net/arp isn't always ready
 	 * when a connection is already up... Try a couple of times */
 	for (i=0; i<10; i++) {
 		if (!(in = popen ("ROUTER_IP=`netstat -rn | grep '^0.0.0.0 ' | awk '{ print $2 }'` && grep \"^$ROUTER_IP \" /proc/net/arp | awk '{print $4}'", "r"))) {
 			g_warning ("popen failed");
 			return NULL;
 		}
-		
+
 		if (!(fgets (mac, MAC_LEN, in))) {
 			if (errno != ENOENT && errno != EAGAIN) {
 				g_debug ("error %d", errno);
@@ -180,7 +180,7 @@ parse_response (const char *body, gdouble *latitude, gdouble *longitude)
 
 /* Position interface implementation */
 
-static gboolean 
+static gboolean
 geoclue_skyhook_get_position (GcIfacePosition        *iface,
                              GeocluePositionFields  *fields,
                              int                    *timestamp,
@@ -193,16 +193,16 @@ geoclue_skyhook_get_position (GcIfacePosition        *iface,
 	GeoclueSkyhook *skyhook;
 	char *query;
 	SoupMessage *msg;
-	
+
 	skyhook = (GEOCLUE_SKYHOOK (iface));
-	
+
 	*fields = GEOCLUE_POSITION_FIELDS_NONE;
 	if (timestamp)
 		*timestamp = time (NULL);
-	
+
 	query = create_post_query ();
 	if (query == NULL) {
-		g_set_error (error, GEOCLUE_ERROR, 
+		g_set_error (error, GEOCLUE_ERROR,
 			     GEOCLUE_ERROR_NOT_AVAILABLE,
 			     "Router mac address query failed");
 		/* TODO: set status == error ? */
@@ -251,8 +251,8 @@ geoclue_skyhook_get_position (GcIfacePosition        *iface,
 			*accuracy = geoclue_accuracy_new (GEOCLUE_ACCURACY_LEVEL_NONE,
 							  0, 0);
 		} else {
-			/* Educated guess. Skyhook are typically hand pointed on 
-			 * a map, or geocoded from address, so should be fairly 
+			/* Educated guess. Skyhook are typically hand pointed on
+			 * a map, or geocoded from address, so should be fairly
 			 * accurate */
 			*accuracy = geoclue_accuracy_new (GEOCLUE_ACCURACY_LEVEL_STREET,
 							  0, 0);
@@ -266,9 +266,9 @@ static void
 geoclue_skyhook_finalize (GObject *obj)
 {
 	GeoclueSkyhook *skyhook = GEOCLUE_SKYHOOK (obj);
-	
+
 	g_object_unref (skyhook->session);
-	
+
 	((GObjectClass *) geoclue_skyhook_parent_class)->finalize (obj);
 }
 
@@ -280,17 +280,17 @@ geoclue_skyhook_class_init (GeoclueSkyhookClass *klass)
 {
 	GcProviderClass *p_class = (GcProviderClass *)klass;
 	GObjectClass *o_class = (GObjectClass *)klass;
-	
+
 	p_class->shutdown = _shutdown;
 	p_class->get_status = geoclue_skyhook_get_status;
-	
+
 	o_class->finalize = geoclue_skyhook_finalize;
 }
 
 static void
 geoclue_skyhook_init (GeoclueSkyhook *skyhook)
 {
-	gc_provider_set_details (GC_PROVIDER (skyhook), 
+	gc_provider_set_details (GC_PROVIDER (skyhook),
 	                         GEOCLUE_DBUS_SERVICE_SKYHOOK,
 	                         GEOCLUE_DBUS_PATH_SKYHOOK,
 	                         "Skyhook", "Skyhook.com based provider, uses gateway mac address to locate");
@@ -303,7 +303,7 @@ geoclue_skyhook_position_init (GcIfacePositionClass  *iface)
 	iface->get_position = geoclue_skyhook_get_position;
 }
 
-int 
+int
 main()
 {
 	g_type_init();
@@ -313,9 +313,9 @@ main()
 	o->loop = g_main_loop_new (NULL, TRUE);
 
 	g_main_loop_run (o->loop);
-	
+
 	g_main_loop_unref (o->loop);
 	g_object_unref (o);
-	
+
 	return 0;
 }

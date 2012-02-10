@@ -38,7 +38,7 @@
 
 typedef struct {
 	GObject parent;
-	
+
 	GMainLoop *loop;
 	DBusGConnection *connection;
 	GeoclueConnectivity *connectivity;
@@ -58,4 +58,4 @@ GList *gc_master_get_providers (GcInterfaceFlags      iface_type,
 				GError              **error);
 
 #endif
-	
+

@@ -26,13 +26,13 @@
  * SECTION:geoclue-master-client
  * @short_description: Geoclue MasterClient API
  *
- * #GeoclueMasterClient is part of the Geoclue public C client API. It uses  
+ * #GeoclueMasterClient is part of the Geoclue public C client API. It uses
  * D-Bus to communicate with the actual Master service.
- * 
- * #GeoclueMasterClient is used to control the client specific behaviour 
+ *
+ * #GeoclueMasterClient is used to control the client specific behaviour
  * of Geoclue Master. Chapter "Master provider: simple example in C" contains a
  * more complete example, but here are the main parts:
- * 
+ *
  * <informalexample>
  * <programlisting>
  * GeoclueMaster *master;
@@ -40,10 +40,10 @@
  * GeoclueAddress *address;
  *
  * ...
- * 
+ *
  * master = geoclue_master_get_default ();
  * client = geoclue_master_create_client (master, NULL, NULL);
- * 
+ *
  * if (!geoclue_master_client_set_requirements (client,
  *                                              GEOCLUE_ACCURACY_LEVEL_NONE,
  *                                              0, FALSE,
@@ -51,13 +51,13 @@
  *                                              &error)) {
  * 	/ * handle error * /
  * }
- * 
+ *
  * address = geoclue_master_client_create_address (client, error);
  * if (!address) {
  * 	/ * handle error * /
  * }
- * 
- * / * Now we can use address just like we'd use a normal address provider, 
+ *
+ * / * Now we can use address just like we'd use a normal address provider,
  *     but GeoclueMasterClient makes sure that underneath the provider
  *     that best matches our requirements is used * /
  * </programlisting>
@@ -152,9 +152,9 @@ get_property (GObject    *object,
 static void
 address_provider_changed (DBusGProxy          *proxy,
                           char                *name,
-                          char                *description, 
-                          char                *service, 
-                          char                *path, 
+                          char                *description,
+                          char                *service,
+                          char                *path,
                           GeoclueMasterClient *client)
 {
 	g_signal_emit (client, signals[ADDRESS_PROVIDER_CHANGED], 0,
@@ -164,12 +164,12 @@ address_provider_changed (DBusGProxy          *proxy,
 static void
 position_provider_changed (DBusGProxy          *proxy,
                            char                *name,
-                           char                *description, 
-                           char                *service, 
-                           char                *path, 
+                           char                *description,
+                           char                *service,
+                           char                *path,
                            GeoclueMasterClient *client)
 {
-	g_signal_emit (client, signals[POSITION_PROVIDER_CHANGED], 0, 
+	g_signal_emit (client, signals[POSITION_PROVIDER_CHANGED], 0,
 	               name, description, service, path);
 }
 
@@ -228,7 +228,7 @@ constructor (GType                  type,
 	dbus_g_proxy_connect_signal (priv->proxy, "AddressProviderChanged",
 	                             G_CALLBACK (address_provider_changed),
 	                             object, NULL);
-	
+
 	dbus_g_proxy_add_signal (priv->proxy, "PositionProviderChanged",
 	                         G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
 	                         G_TYPE_INVALID);
@@ -251,7 +251,7 @@ geoclue_master_client_class_init (GeoclueMasterClientClass *klass)
 
 	g_type_class_add_private (klass, sizeof (GeoclueMasterClientPrivate));
 
-	g_object_class_install_property 
+	g_object_class_install_property
 		(o_class, PROP_PATH,
 		 g_param_spec_string ("object-path",
 				      "Object path",
@@ -262,7 +262,7 @@ geoclue_master_client_class_init (GeoclueMasterClientClass *klass)
 				      G_PARAM_STATIC_NICK |
 				      G_PARAM_STATIC_BLURB |
 				      G_PARAM_STATIC_NAME));
-	
+
 	/**
 	* GeoclueMasterClient::address-provider-changed:
 	* @client: the #GeoclueMasterClient object emitting the signal
@@ -270,20 +270,20 @@ geoclue_master_client_class_init (GeoclueMasterClientClass *klass)
 	* @description: a short description of the new provider or %NULL if there is no provider
 	* @service: D-Bus service name of the new provider or %NULL if there is no provider
 	* @path: D-Bus object path name of the new provider or %NULL if there is no provider
-	* 
+	*
 	* The address-provider-changed signal is emitted each time the used address provider
 	* changes.
 	**/
-	signals[ADDRESS_PROVIDER_CHANGED] = 
+	signals[ADDRESS_PROVIDER_CHANGED] =
 		g_signal_new ("address-provider-changed",
 		              G_TYPE_FROM_CLASS (klass),
 		              G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE,
-		              G_STRUCT_OFFSET (GeoclueMasterClientClass, address_provider_changed), 
+		              G_STRUCT_OFFSET (GeoclueMasterClientClass, address_provider_changed),
 		              NULL, NULL,
 		              geoclue_marshal_VOID__STRING_STRING_STRING_STRING,
 		              G_TYPE_NONE, 4,
 		              G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-	
+
 	/**
 	* GeoclueMasterClient::position-provider-changed:
 	* @client: the #GeoclueMasterClient object emitting the signal
@@ -291,15 +291,15 @@ geoclue_master_client_class_init (GeoclueMasterClientClass *klass)
 	* @description: a short description of the new provider or %NULL if there is no provider
 	* @service: D-Bus service name of the new provider or %NULL if there is no provider
 	* @path: D-Bus object path name of the new provider or %NULL if there is no provider
-	* 
+	*
 	* The position-provider-changed signal is emitted each time the used position provider
 	* changes.
 	**/
-	signals[POSITION_PROVIDER_CHANGED] = 
+	signals[POSITION_PROVIDER_CHANGED] =
 		g_signal_new ("position-provider-changed",
 		              G_TYPE_FROM_CLASS (klass),
 		              G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE,
-		              G_STRUCT_OFFSET (GeoclueMasterClientClass, position_provider_changed), 
+		              G_STRUCT_OFFSET (GeoclueMasterClientClass, position_provider_changed),
 		              NULL, NULL,
 		              geoclue_marshal_VOID__STRING_STRING_STRING_STRING,
 		              G_TYPE_NONE, 4,
@@ -353,7 +353,7 @@ geoclue_master_client_set_requirements (GeoclueMasterClient   *client,
 	GeoclueMasterClientPrivate *priv;
 
 	priv = GET_PRIVATE (client);
-	if (!org_freedesktop_Geoclue_MasterClient_set_requirements 
+	if (!org_freedesktop_Geoclue_MasterClient_set_requirements
 	    (priv->proxy, min_accuracy, min_time, require_updates, allowed_resources, error)) {
 		return FALSE;
 	}
@@ -362,7 +362,7 @@ geoclue_master_client_set_requirements (GeoclueMasterClient   *client,
 }
 
 static void
-set_requirements_callback (DBusGProxy                   *proxy, 
+set_requirements_callback (DBusGProxy                   *proxy,
 			   GError                       *error,
 			   GeoclueMasterClientAsyncData *data)
 {
@@ -377,7 +377,7 @@ set_requirements_callback (DBusGProxy                   *proxy,
  * @client: A #GeoclueMasterClient object
  * @error: Error as #Gerror (may be %NULL)
  * @userdata: User data pointer set in geoclue_master_client_set_requirements_async()
- * 
+ *
  * Callback function for geoclue_master_client_set_requirements_async().
  */
 
@@ -389,11 +389,11 @@ set_requirements_callback (DBusGProxy                   *proxy,
  * @require_updates: Whether the updates (signals) are required. Only applies to interfaces with signals
  * @allowed_resources: The resources that are allowed to be used as a #GeoclueResourceFlags
  * @callback: #GeoclueSetRequirementsCallback function to call when requirements have been set
- * @userdata: User data pointer 
- * 
+ * @userdata: User data pointer
+ *
  * Asynchronous version of geoclue_master_client_set_requirements().
  */
-void 
+void
 geoclue_master_client_set_requirements_async (GeoclueMasterClient           *client,
 					      GeoclueAccuracyLevel           min_accuracy,
 					      int                            min_time,
@@ -404,12 +404,12 @@ geoclue_master_client_set_requirements_async (GeoclueMasterClient           *cli
 {
 	GeoclueMasterClientPrivate *priv = GET_PRIVATE (client);
 	GeoclueMasterClientAsyncData *data;
-	
+
 	data = g_new (GeoclueMasterClientAsyncData, 1);
 	data->client = client;
 	data->callback = G_CALLBACK (callback);
 	data->userdata = userdata;
-	
+
 	org_freedesktop_Geoclue_MasterClient_set_requirements_async
 			(priv->proxy,
 			 min_accuracy,
@@ -425,38 +425,38 @@ geoclue_master_client_set_requirements_async (GeoclueMasterClient           *cli
  * @client: A #GeoclueMasterClient
  * @error: A pointer to returned #GError or %NULL.
  *
- * Starts the GeoclueMasterClient address provider and returns 
+ * Starts the GeoclueMasterClient address provider and returns
  * a #GeoclueAddress that uses the same D-Bus object as the #GeoclueMasterClient.
  *
  * Return value: New #GeoclueAddress or %NULL on error
  */
 GeoclueAddress *
-geoclue_master_client_create_address (GeoclueMasterClient *client, 
+geoclue_master_client_create_address (GeoclueMasterClient *client,
                                       GError **error)
 {
 	GeoclueMasterClientPrivate *priv;
-	
+
 	priv = GET_PRIVATE (client);
-	
+
 	if (!org_freedesktop_Geoclue_MasterClient_address_start (priv->proxy, error)) {
 		return NULL;
 	}
-	
+
 	return geoclue_address_new (GEOCLUE_MASTER_DBUS_SERVICE, priv->object_path);
 }
 
 static void
-address_start_async_callback (DBusGProxy                   *proxy, 
+address_start_async_callback (DBusGProxy                   *proxy,
 			      GError                       *error,
 			      GeoclueMasterClientAsyncData *data)
 {
 	GeoclueMasterClientPrivate *priv = GET_PRIVATE (data->client);
 	GeoclueAddress *address = NULL;
-	
+
 	if (!error) {
 		address = geoclue_address_new (GEOCLUE_MASTER_DBUS_SERVICE, priv->object_path);
 	}
-	
+
 	(*(CreateAddressCallback)data->callback) (data->client,
 	                                          address,
 	                                          error,
@@ -470,7 +470,7 @@ address_start_async_callback (DBusGProxy                   *proxy,
  * @address: returned #GeoclueAddress
  * @error: Error as #Gerror (may be %NULL)
  * @userdata: User data pointer set in geoclue_master_client_create_address_async()
- * 
+ *
  * Callback function for geoclue_master_client_create_address_async().
  */
 
@@ -479,23 +479,23 @@ address_start_async_callback (DBusGProxy                   *proxy,
  * @client: A #GeoclueMasterClient object
  * @callback: A #CreateAddressCallback function that should be called when return values are available
  * @userdata: pointer for user specified data
- * 
+ *
  * Function returns (essentially) immediately and calls @callback when it has started the address provider
  * and a #GeoclueAddress is available.
  */
-void 
+void
 geoclue_master_client_create_address_async (GeoclueMasterClient  *client,
 					    CreateAddressCallback callback,
 					    gpointer              userdata)
 {
 	GeoclueMasterClientPrivate *priv = GET_PRIVATE (client);
 	GeoclueMasterClientAsyncData *data;
-	
+
 	data = g_new (GeoclueMasterClientAsyncData, 1);
 	data->client = client;
 	data->callback = G_CALLBACK (callback);
 	data->userdata = userdata;
-	
+
 	org_freedesktop_Geoclue_MasterClient_address_start_async
 			(priv->proxy,
 			 (org_freedesktop_Geoclue_MasterClient_address_start_reply)address_start_async_callback,
@@ -508,7 +508,7 @@ geoclue_master_client_create_address_async (GeoclueMasterClient  *client,
  * @client: A #GeoclueMasterClient
  * @error: A pointer to returned #GError or %NULL.
  *
- * Starts the GeoclueMasterClient position provider and returns 
+ * Starts the GeoclueMasterClient position provider and returns
  * a #GeocluePosition that uses the same D-Bus object as the #GeoclueMasterClient.
  *
  * Return value: New #GeocluePosition or %NULL on error
@@ -518,9 +518,9 @@ geoclue_master_client_create_position (GeoclueMasterClient *client,
                                        GError **error)
 {
 	GeoclueMasterClientPrivate *priv;
-	
+
 	priv = GET_PRIVATE (client);
-	
+
 	if (!org_freedesktop_Geoclue_MasterClient_position_start (priv->proxy, error)) {
 		return NULL;
 	}
@@ -529,17 +529,17 @@ geoclue_master_client_create_position (GeoclueMasterClient *client,
 
 
 static void
-position_start_async_callback (DBusGProxy                   *proxy, 
+position_start_async_callback (DBusGProxy                   *proxy,
 			       GError                       *error,
 			       GeoclueMasterClientAsyncData *data)
 {
 	GeoclueMasterClientPrivate *priv = GET_PRIVATE (data->client);
 	GeocluePosition *position = NULL;
-	
+
 	if (!error) {
 		position = geoclue_position_new (GEOCLUE_MASTER_DBUS_SERVICE, priv->object_path);
 	}
-	
+
 	(*(CreatePositionCallback)data->callback) (data->client,
 	                                          position,
 	                                          error,
@@ -553,7 +553,7 @@ position_start_async_callback (DBusGProxy                   *proxy,
  * @position: returned #GeocluePosition
  * @error: Error as #Gerror (may be %NULL)
  * @userdata: User data pointer set in geoclue_master_client_create_position_async()
- * 
+ *
  * Callback function for geoclue_master_client_create_position_async().
  */
 
@@ -562,23 +562,23 @@ position_start_async_callback (DBusGProxy                   *proxy,
  * @client: A #GeoclueMasterClient object
  * @callback: A #CreatePositionCallback function that should be called when return values are available
  * @userdata: pointer for user specified data
- * 
+ *
  * Function returns (essentially) immediately and calls @callback when it has started the position provider
  * and a #GeocluePosition is available.
  */
-void 
+void
 geoclue_master_client_create_position_async (GeoclueMasterClient    *client,
 					     CreatePositionCallback  callback,
 					     gpointer                userdata)
 {
 	GeoclueMasterClientPrivate *priv = GET_PRIVATE (client);
 	GeoclueMasterClientAsyncData *data;
-	
+
 	data = g_new (GeoclueMasterClientAsyncData, 1);
 	data->client = client;
 	data->callback = G_CALLBACK (callback);
 	data->userdata = userdata;
-	
+
 	org_freedesktop_Geoclue_MasterClient_position_start_async
 			(priv->proxy,
 			 (org_freedesktop_Geoclue_MasterClient_position_start_reply)position_start_async_callback,
@@ -594,9 +594,9 @@ geoclue_master_client_create_position_async (GeoclueMasterClient    *client,
  * @service: Pointer to returned D-Bus service name or %NULL
  * @path: Pointer to returned D-Bus object path or %NULL
  * @error: Pointer to returned #GError or %NULL
- * 
+ *
  * Gets name and other information for the currently used address provider.
- * 
+ *
  * Return value: %TRUE on success
  */
 gboolean geoclue_master_client_get_address_provider (GeoclueMasterClient  *client,
@@ -607,26 +607,26 @@ gboolean geoclue_master_client_get_address_provider (GeoclueMasterClient  *clien
                                                      GError              **error)
 {
 	GeoclueMasterClientPrivate *priv;
-	
+
 	priv = GET_PRIVATE (client);
-	if (!org_freedesktop_Geoclue_MasterClient_get_address_provider 
+	if (!org_freedesktop_Geoclue_MasterClient_get_address_provider
 	    (priv->proxy, name, description, service, path, error)) {
 		return FALSE;
 	}
-	
+
 	return TRUE;
 }
 
 static void
-get_provider_callback (DBusGProxy *proxy, 
-                       char * name, 
-                       char * description, 
-                       char * service, 
-                       char * path, 
-                       GError *error, 
+get_provider_callback (DBusGProxy *proxy,
+                       char * name,
+                       char * description,
+                       char * service,
+                       char * path,
+                       GError *error,
                        GeoclueMasterClientAsyncData *data)
 {
-	
+
 	(*(GeoclueGetProviderCallback)data->callback) (data->client,
 	                                               name,
 	                                               description,
@@ -642,22 +642,22 @@ get_provider_callback (DBusGProxy *proxy,
  * @client: A #GeoclueMasterClient
  * @callback: A #GeoclueGetProviderCallback function that will be called when return values are available
  * @userdata: pointer for user specified data
- * 
+ *
  * Gets name and other information for the currently used address provider asynchronously.
  */
-void 
+void
 geoclue_master_client_get_address_provider_async (GeoclueMasterClient  *client,
                                                   GeoclueGetProviderCallback  callback,
                                                   gpointer userdata)
 {
 	GeoclueMasterClientPrivate *priv = GET_PRIVATE (client);
 	GeoclueMasterClientAsyncData *data;
-	
+
 	data = g_new (GeoclueMasterClientAsyncData, 1);
 	data->client = client;
 	data->callback = G_CALLBACK (callback);
 	data->userdata = userdata;
-	
+
 	org_freedesktop_Geoclue_MasterClient_get_address_provider_async
 			(priv->proxy,
 			 (org_freedesktop_Geoclue_MasterClient_get_address_provider_reply)get_provider_callback,
@@ -673,9 +673,9 @@ geoclue_master_client_get_address_provider_async (GeoclueMasterClient  *client,
  * @service: Pointer to returned D-Bus service name or %NULL
  * @path: Pointer to returned D-Bus object path or %NULL
  * @error: Pointer to returned #GError or %NULL
- * 
+ *
  * Gets name and other information for the currently used position provider.
- * 
+ *
  * Return value: %TRUE on success
  */
 gboolean geoclue_master_client_get_position_provider (GeoclueMasterClient  *client,
@@ -686,13 +686,13 @@ gboolean geoclue_master_client_get_position_provider (GeoclueMasterClient  *clie
                                                       GError              **error)
 {
 	GeoclueMasterClientPrivate *priv;
-	
+
 	priv = GET_PRIVATE (client);
-	if (!org_freedesktop_Geoclue_MasterClient_get_position_provider 
+	if (!org_freedesktop_Geoclue_MasterClient_get_position_provider
 	    (priv->proxy, name, description, service, path, error)) {
 		return FALSE;
 	}
-	
+
 	return TRUE;
 }
 
@@ -701,22 +701,22 @@ gboolean geoclue_master_client_get_position_provider (GeoclueMasterClient  *clie
  * @client: A #GeoclueMasterClient
  * @callback: A #GeoclueGetProviderCallback function that will be called when return values are available
  * @userdata: pointer for user specified data
- * 
+ *
  * Gets name and other information for the currently used position provider asynchronously.
  */
-void 
+void
 geoclue_master_client_get_position_provider_async (GeoclueMasterClient  *client,
                                                    GeoclueGetProviderCallback  callback,
                                                    gpointer userdata)
 {
 	GeoclueMasterClientPrivate *priv = GET_PRIVATE (client);
 	GeoclueMasterClientAsyncData *data;
-	
+
 	data = g_new (GeoclueMasterClientAsyncData, 1);
 	data->client = client;
 	data->callback = G_CALLBACK (callback);
 	data->userdata = userdata;
-	
+
 	org_freedesktop_Geoclue_MasterClient_get_position_provider_async
 			(priv->proxy,
 			 (org_freedesktop_Geoclue_MasterClient_get_position_provider_reply)get_provider_callback,

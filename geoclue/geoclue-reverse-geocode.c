@@ -26,14 +26,14 @@
  * SECTION:geoclue-reverse-geocode
  * @short_description: Geoclue reverse geocode client API
  *
- * #GeoclueReverseGeocode contains reverse geocoding methods. 
- * It is part of the Geoclue public C client API which uses D-Bus 
+ * #GeoclueReverseGeocode contains reverse geocoding methods.
+ * It is part of the Geoclue public C client API which uses D-Bus
  * to communicate with the actual provider.
- * 
- * After a #GeoclueReverseGeocode is created with 
- * geoclue_reverse_geocode_new(), the 
- * geoclue_reverse_geocode_position_to_address() and 
- * geoclue_reverse_geocode_position_to_address_async() method can be used to 
+ *
+ * After a #GeoclueReverseGeocode is created with
+ * geoclue_reverse_geocode_new(), the
+ * geoclue_reverse_geocode_position_to_address() and
+ * geoclue_reverse_geocode_position_to_address_async() method can be used to
  * obtain the address of a known position.
  */
 
@@ -84,7 +84,7 @@ geoclue_reverse_geocode_init (GeoclueReverseGeocode *geocode)
  * @path: D-Bus path name
  *
  * Creates a #GeoclueReverseGeocode with given D-Bus service name and path.
- * 
+ *
  * Return value: Pointer to a new #GeoclueReverseGeocode
  */
 GeoclueReverseGeocode *
@@ -105,17 +105,17 @@ geoclue_reverse_geocode_new (const char *service,
  * @longitude: longitude in degrees
  * @position_accuracy: Accuracy of the given latitude and longitude
  * @details: Pointer to returned #GHashTable with address details or %NULL
- * @address_accuracy: Pointer to accuracy of the returned address or %NULL 
+ * @address_accuracy: Pointer to accuracy of the returned address or %NULL
  * @error: Pointer to returned #Gerror or %NULL
- * 
+ *
  * Obtains an address for the position defined by @latitude and @longitude.
- * @details is a #GHashTable with the returned address data, see 
+ * @details is a #GHashTable with the returned address data, see
  * <ulink url="geoclue-types.html">geoclue-types.h</ulink> for the hashtable keys.
- * 
- * If the caller is not interested in some values, the pointers can be 
+ *
+ * If the caller is not interested in some values, the pointers can be
  * left %NULL. If accuracy of the position is not known, an accuracy with
  * GeoclueAccuracyLevel GEOCLUE_ACCURACY_DETAILED should be used.
- * 
+ *
  * Return value: %TRUE if there is no @error
  */
 gboolean
@@ -128,9 +128,9 @@ geoclue_reverse_geocode_position_to_address (GeoclueReverseGeocode   *geocode,
 					     GError                 **error)
 {
 	GeoclueProvider *provider = GEOCLUE_PROVIDER (geocode);
-	
-	return org_freedesktop_Geoclue_ReverseGeocode_position_to_address 
-		(provider->proxy, latitude, longitude, position_accuracy, 
+
+	return org_freedesktop_Geoclue_ReverseGeocode_position_to_address
+		(provider->proxy, latitude, longitude, position_accuracy,
 		 details, address_accuracy, error);
 }
 
@@ -142,7 +142,7 @@ typedef struct _GeoclueRevGeocodeAsyncData {
 } GeoclueRevGeocodeAsyncData;
 
 static void
-position_to_address_callback (DBusGProxy                 *proxy, 
+position_to_address_callback (DBusGProxy                 *proxy,
 			      GHashTable                 *details,
 			      GeoclueAccuracy            *accuracy,
 			      GError                     *error,
@@ -163,10 +163,10 @@ position_to_address_callback (DBusGProxy                 *proxy,
  * @accuracy: Accuracy of measurement as #GeoclueAccuracy
  * @error: Error as #Gerror (may be %NULL)
  * @userdata: User data pointer set in geoclue_reverse_geocode_position_to_address_async()
- * 
+ *
  * Callback function for geoclue_reverse_geocode_position_to_address_async().
- * 
- * see <ulink url="geoclue-types.html">geoclue-types.h</ulink> for the 
+ *
+ * see <ulink url="geoclue-types.html">geoclue-types.h</ulink> for the
  * hashtable keys used in @details.
  */
 
@@ -178,11 +178,11 @@ position_to_address_callback (DBusGProxy                 *proxy,
  * @accuracy: Accuracy of the given position as #GeoclueAccuracy
  * @callback: A #GeoclueAddressCallback function that should be called when return values are available
  * @userdata: pointer for user specified data
- * 
- * Function returns (essentially) immediately and calls @callback when the reverse-geocoded 
+ *
+ * Function returns (essentially) immediately and calls @callback when the reverse-geocoded
  * address data is available or when D-Bus timeouts.
  */
-void 
+void
 geoclue_reverse_geocode_position_to_address_async (GeoclueReverseGeocode        *revgeocode,
 						   double                        latitude,
 						   double                        longitude,
@@ -192,12 +192,12 @@ geoclue_reverse_geocode_position_to_address_async (GeoclueReverseGeocode        
 {
 	GeoclueProvider *provider = GEOCLUE_PROVIDER (revgeocode);
 	GeoclueRevGeocodeAsyncData *data;
-	
+
 	data = g_new (GeoclueRevGeocodeAsyncData, 1);
 	data->revgeocode = revgeocode;
 	data->callback = G_CALLBACK (callback);
 	data->userdata = userdata;
-	
+
 	org_freedesktop_Geoclue_ReverseGeocode_position_to_address_async
 			(provider->proxy,
 			 latitude,

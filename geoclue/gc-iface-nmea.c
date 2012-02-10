@@ -2,7 +2,7 @@
  * Geoclue
  * gc-iface-nmea.c - GInterface for org.freedesktop.Geoclue.Nmea
  *
- * Author: Tae-Hwan Kim <the81.kim@samsung.com>, Youngae Kang <youngae.kang@samsung.com>, 
+ * Author: Tae-Hwan Kim <the81.kim@samsung.com>, Youngae Kang <youngae.kang@samsung.com>,
  *         Yunhan Kim <yhan.kim@samsung.com>, Genie Kim <daejins.kim@samsung.com>
  * Copyright (c) 2000 - 2011 Samsung Electronics Co., Ltd. All rights reserved.
  *
@@ -35,7 +35,7 @@ enum {
 
 static guint signals[LAST_SIGNAL] = {0};
 
-static gboolean 
+static gboolean
 gc_iface_nmea_get_nmea (GcIfaceNmea *nmea,
 			int         *timestamp,
 			char       **nmea_data,
@@ -52,7 +52,7 @@ gc_iface_nmea_base_init (gpointer klass)
 		return;
 	}
 	initialized = TRUE;
-	
+
 	signals[NMEA_CHANGED] = g_signal_new ("nmea-changed",
 					      G_OBJECT_CLASS_TYPE (klass),
 					      G_SIGNAL_RUN_LAST, 0,
@@ -61,7 +61,7 @@ gc_iface_nmea_base_init (gpointer klass)
 					      G_TYPE_NONE, 2,
 					      G_TYPE_INT,
 					      G_TYPE_STRING);
-	
+
 	dbus_g_object_type_install_info (gc_iface_nmea_get_type (),
 					 &dbus_glib_gc_iface_nmea_object_info);
 }
@@ -70,7 +70,7 @@ GType
 gc_iface_nmea_get_type (void)
 {
 	static GType type = 0;
-	
+
 	if (!type) {
 		const GTypeInfo info = {
 			sizeof (GcIfaceNmeaClass),
@@ -85,7 +85,7 @@ gc_iface_nmea_get_type (void)
 	return type;
 }
 
-static gboolean 
+static gboolean
 gc_iface_nmea_get_nmea (GcIfaceNmea *gc,
 			int         *timestamp,
 			char       **nmea_data,

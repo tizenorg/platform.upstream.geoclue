@@ -10,13 +10,12 @@ BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(dbus-glib-1)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(gconf-2.0)
-BuildRequires:  pkgconfig(libgps)
 BuildRequires:  pkgconfig(libxslt)
 
 
 %description
-Geographic information framework GeoClue provides applications access to various geographical information 
- sources using a D-Bus API or a C library. 
+Geographic information framework GeoClue provides applications access to various geographical information
+ sources using a D-Bus API or a C library.
  .
  This package contains the master server for GeoClue.
 
@@ -43,18 +42,6 @@ Requires:   libgeoclue = %{version}-%{release}
 libgeoclue is a convenience wrapper for the GeoClue service, and
 the recommended way to use GeoClue in the C language.
 
-
-%package -n geoclue-gpsd
-Summary:    Position server for GeoClue (GPS)
-Group:      TO_BE/FILLED
-Requires:   %{name} = %{version}-%{release}
-
-%description -n geoclue-gpsd
-GeoClue provides applications access to various geographical information
-sources using a D-Bus API or a C library.
-.
-This package provides a positioning backend for GeoClue. The
-location information comes from a GPS receiver through gpsd
 
 %package -n geoclue-nominatim
 Summary:    Geocode server for GeoClue (OpenStreetMap)
@@ -104,11 +91,6 @@ rm -rf %{buildroot}/usr/bin/geoclue-test-gui
 /usr/lib/pkgconfig/*
 #/usr/lib/libgeoclue.*a
 /usr/lib/libgeoclue.so
-
-%files -n geoclue-gpsd
-/usr/libexec/geoclue-gpsd
-/usr/share/dbus-1/services/org.freedesktop.Geoclue.Providers.Gpsd.service
-/usr/share/geoclue-providers/geoclue-gpsd.provider
 
 %files -n geoclue-nominatim
 /usr/share/dbus-1/services/org.freedesktop.Geoclue.Providers.Nominatim.service

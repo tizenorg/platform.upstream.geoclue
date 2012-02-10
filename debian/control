@@ -3,7 +3,7 @@ Section: utils
 Priority: extra
 Maintainer: Youngae Kang <youngae.kang@samsung.com>, Yunhan Kim <yhan.kim@samsung.com>, Genie kim <daejins.kim@samsung.com>
 Uploaders: Genie Kim <daejins.kim@samsung.com>
-Build-Depends: debhelper (>= 5), autotools-dev, libglib2.0-dev, libdbus-glib-1-dev, libxml2-dev, libgconf-dbus-dev, libgps-dev, libslp-setting-dev
+Build-Depends: debhelper (>= 5), autotools-dev, libglib2.0-dev, libdbus-glib-1-dev, libxml2-dev, libgconf-dbus-dev, libslp-setting-dev
 Standards-Version: 3.7.2
 Homepage: http://www.freedesktop.org/wiki/Software/GeoClue
 
@@ -29,9 +29,9 @@ Description: C API for GeoClue
 Package: libgeoclue-dbg
 Section: debug
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libgeoclue(=${Source-Version}), geoclue(=${Source-Version}), geoclue-gpsd(=${Source-Version})
+Depends: ${shlibs:Depends}, ${misc:Depends}, libgeoclue(=${Source-Version}), geoclue(=${Source-Version})
 Suggests: geoclue
-Description: Debug package for libgeoclue, geoclue, geoclue-gpsd
+Description: Debug package for libgeoclue, geoclue
 
 Package: libgeoclue-dev
 Section: libdevel
@@ -40,17 +40,6 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, libgeoclue (= ${binary:Version}), l
 Description: C API for GeoClue (development files)
  libgeoclue is a convenience wrapper for the GeoClue service, and 
  the recommended way to use GeoClue in the C language.
-
-Package: geoclue-gpsd
-Section: utils
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, geoclue (= ${binary:Version}), gpsd, libgps19
-Description: Position server for GeoClue (GPS)
- GeoClue provides applications access to various geographical information 
- sources using a D-Bus API or a C library. 
- .
- This package provides a positioning backend for GeoClue. The 
- location information comes from a GPS receiver through gpsd
 
 Package: geoclue-nominatim
 Section: utils

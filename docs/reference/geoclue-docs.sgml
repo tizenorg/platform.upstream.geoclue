@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
 							 "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
 	<bookinfo>
@@ -7,7 +7,7 @@
 	</bookinfo>
 
 	<xi:include href="using-geoclue.xml"/>
-	
+
 	<reference>
 		<title>C API</title>
 		<xi:include href="xml/geoclue-master.xml"/>
@@ -23,7 +23,7 @@
 		<xi:include href="xml/geoclue-address-details.xml"/>
 		<xi:include href="xml/geoclue-error.xml"/>
 	</reference>
-	
+
 	<reference>
 		<title>D-Bus API</title>
 		<xi:include href="gc-iface-master-ref.xml"/>
@@ -35,5 +35,5 @@
 		<xi:include href="gc-iface-geocode-ref.xml"/>
 		<xi:include href="gc-iface-reverse-geocode-ref.xml"/>
 	</reference>
-	
+
 </book>

@@ -2,7 +2,7 @@
  * Geoclue
  * gc-iface-satellite.c - GInterface for org.freedesktop.Geoclue.Satellite
  *
- * Author: Sagnho Park <sangho.g.park@samsung.com>, Youngae Kang <youngae.kang@samsung.com>, 
+ * Author: Sagnho Park <sangho.g.park@samsung.com>, Youngae Kang <youngae.kang@samsung.com>,
  *         Yunhan Kim <yhan.kim@samsung.com>, Genie Kim <daejins.kim@samsung.com>
  * Copyright (c) 2000 - 2011 Samsung Electronics Co., Ltd. All rights reserved.
  *
@@ -36,7 +36,7 @@ enum {
 
 static guint signals[LAST_SIGNAL] = {0};
 
-static gboolean 
+static gboolean
 gc_iface_satellite_get_satellite (GcIfaceSatellite *satellite,
 				  int              *timestamp,
 				  int              *satellite_used,
@@ -56,7 +56,7 @@ gc_iface_satellite_base_init (gpointer klass)
 		return;
 	}
 	initialized = TRUE;
-	
+
 	signals[SATELLITE_CHANGED] = g_signal_new ("satellite-changed",
 						   G_OBJECT_CLASS_TYPE (klass),
 						   G_SIGNAL_RUN_LAST, 0,
@@ -76,7 +76,7 @@ GType
 gc_iface_satellite_get_type (void)
 {
 	static GType type = 0;
-	
+
 	if (!type) {
 		const GTypeInfo info = {
 			sizeof (GcIfaceSatelliteClass),
@@ -91,7 +91,7 @@ gc_iface_satellite_get_type (void)
 	return type;
 }
 
-static gboolean 
+static gboolean
 gc_iface_satellite_get_satellite (GcIfaceSatellite *gc,
 				  int              *timestamp,
 				  int              *satellite_used,

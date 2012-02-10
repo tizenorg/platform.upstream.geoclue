@@ -1,7 +1,7 @@
 /*
  * Geoclue
  * gc-iface-reverse_geocode.h - GInterface for org.freedesktop.Reverse_Geocode
- * 
+ *
  * Author: Iain Holmes <iain@openedhand.com>
  * Copyright 2007 by Garmin Ltd. or its subsidiaries
  *

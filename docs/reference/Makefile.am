@@ -24,7 +24,7 @@ DOC_SOURCE_DIR=../../geoclue
 SCANGOBJ_OPTIONS=
 
 # Extra options to supply to gtkdoc-scan.
-# e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED" 
+# e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
 SCAN_OPTIONS=
 
 # Extra options to supply to gtkdoc-mkdb.
@@ -102,7 +102,7 @@ include $(top_srcdir)/gtk-doc.make
 
 # Other files to distribute
 # e.g. EXTRA_DIST += version.xml.in
-EXTRA_DIST += 
+EXTRA_DIST +=
 
 CLEAN_FILES = $(dbus_docs)
 

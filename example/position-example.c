@@ -37,15 +37,15 @@ position_changed_cb (GeocluePosition      *position,
 {
 	if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE &&
 	    fields & GEOCLUE_POSITION_FIELDS_LONGITUDE) {
-		
+
 		GeoclueAccuracyLevel level;
 		double horiz_acc;
-		
+
 		geoclue_accuracy_get_details (accuracy, &level, &horiz_acc, NULL);
 		g_print ("Current position:\n");
 		g_print ("\t%f, %f\n", latitude, longitude);
 		g_print ("\tAccuracy level %d (%.0f meters)\n", level, horiz_acc);
-		
+
 	} else {
 		g_print ("Latitude and longitude not available.\n");
 	}
@@ -76,9 +76,9 @@ int main (int argc, char** argv)
 	GeoclueAccuracy *accuracy = NULL;
 	GMainLoop *mainloop;
 	GError *error = NULL;
-	
+
 	g_type_init();
-	
+
 	if (argc < 2 || argc % 2 != 0) {
 		g_printerr ("Usage:\n  position-example <provider_name> [option,value]\n");
 		return 1;
@@ -87,9 +87,9 @@ int main (int argc, char** argv)
 	g_print ("Using provider '%s'\n", argv[1]);
 	service = g_strdup_printf ("org.freedesktop.Geoclue.Providers.%s", argv[1]);
 	path = g_strdup_printf ("/org/freedesktop/Geoclue/Providers/%s", argv[1]);
-	
+
 	mainloop = g_main_loop_new (NULL, FALSE);
-	
+
 	/* Create new GeocluePosition */
 	pos = geoclue_position_new (service, path);
 	if (pos == NULL) {
@@ -99,25 +99,25 @@ int main (int argc, char** argv)
 
 	g_free (service);
 	g_free (path);
-	
+
         if (argc > 2) {
                 GHashTable *options;
 
                 options = parse_options (argc, argv);
                 if (!geoclue_provider_set_options (GEOCLUE_PROVIDER (pos), options, &error)) {
-                        g_printerr ("Error setting options: %s\n", 
+                        g_printerr ("Error setting options: %s\n",
                                     error->message);
                         g_error_free (error);
                         error = NULL;
                 }
                 g_hash_table_destroy (options);
         }
-	
-	/* Query current position. We're not interested in altitude 
+
+	/* Query current position. We're not interested in altitude
 	   this time, so leave it NULL. Same can be done with all other
 	   arguments that aren't interesting to the client */
-	fields = geoclue_position_get_position (pos, &timestamp, 
-	                                        &lat, &lon, NULL, 
+	fields = geoclue_position_get_position (pos, &timestamp,
+	                                        &lat, &lon, NULL,
 	                                        &accuracy, &error);
 	if (error) {
 		g_printerr ("Error getting position: %s\n", error->message);
@@ -125,19 +125,19 @@ int main (int argc, char** argv)
 		g_object_unref (pos);
 		return 1;
 	}
-	
+
 	/* Print out coordinates if they are valid */
 	if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE &&
 	    fields & GEOCLUE_POSITION_FIELDS_LONGITUDE) {
-		
+
 		GeoclueAccuracyLevel level;
 		double horiz_acc;
-		
+
 		geoclue_accuracy_get_details (accuracy, &level, &horiz_acc, NULL);
 		g_print ("Current position:\n");
 		g_print ("\t%f, %f\n", lat, lon);
 		g_print ("\tAccuracy level %d (%.0f meters)\n", level, horiz_acc);
-		
+
 	} else {
 		g_print ("Latitude and longitude not available.\n");
 	}
@@ -149,5 +149,5 @@ int main (int argc, char** argv)
 
 	g_main_loop_run (mainloop);
 	return 0;
-	
+
 }

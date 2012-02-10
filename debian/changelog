@@ -1,3 +1,19 @@
+geoclue (0.12.0-22slp3) unstable; urgency=low
+
+  * remove geoclue-gpsd
+  * Git : pkgs/g/geoclue
+  * Tag : geoclue_0.12.0-22slp3
+
+ -- Genie Kim <daejins.kim@samsung.com>  Fri, 10 Feb 2012 17:58:42 +0900
+
+geoclue (0.12.0-21slp2) unstable; urgency=low
+
+   * add altitude / h_accuracy / v_accurcy in last position(geoclue_0.12.0-21slp2.patch)
+   * Git : pkgs/g/geoclue
+   * Tag : geoclue_0.12.0-21slp2
+
+ -- Genie Kim <daejins.kim@samsung.com>  Tue, 10 Jan 2012 19:48:21 +0900
+
 geoclue (0.12.0-20slp2) unstable; urgency=low
 
   * use quilt for patch(tizen.patch) 

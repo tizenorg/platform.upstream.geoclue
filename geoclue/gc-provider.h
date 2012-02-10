@@ -43,15 +43,15 @@ G_BEGIN_DECLS
 
 typedef struct _GcProvider {
 	GObject parent_class;
-	
+
 	DBusGConnection *connection;
 } GcProvider;
 
 typedef struct _GcProviderClass {
 	GObjectClass parent_class;
-	
+
 	void (*shutdown) (GcProvider *provider);
-	
+
 	/* Implements the GcIfaceGeoclue interface */
 	gboolean (*get_status) (GcIfaceGeoclue *geoclue,
 				GeoclueStatus  *status,

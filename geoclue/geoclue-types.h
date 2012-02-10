@@ -29,13 +29,13 @@
 
 /**
  * SECTION:geoclue-types
- * @short_description: Type definitions and defines useful for Geoclue clients 
+ * @short_description: Type definitions and defines useful for Geoclue clients
  **/
 
 
 /**
  * GeoclueStatus
- * 
+ *
  * defines the provider status
  **/
 typedef enum {
@@ -48,7 +48,7 @@ typedef enum {
 /**
  * GeoclueAccuracyLevel:
  *
- * Enum values used to define the approximate accuracy of 
+ * Enum values used to define the approximate accuracy of
  * Position or Address information.
  **/
 typedef enum {
@@ -64,15 +64,15 @@ typedef enum {
 /**
  * GeocluePositionFields:
  *
- * #GeocluePositionFields is a bitfield that defines the validity of 
+ * #GeocluePositionFields is a bitfield that defines the validity of
  * Position values.
- * 
+ *
  * Example:
  * <informalexample>
  * <programlisting>
  * GeocluePositionFields fields;
  * fields = geoclue_position_get_position (. . .);
- * 
+ *
  * if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE &&
  *     fields & GEOCLUE_POSITION_FIELDS_LONGITUDE) {
  * 	g_print("latitude and longitude are valid");
@@ -90,7 +90,7 @@ typedef enum {
 /**
  * GeoclueVelocityFields:
  *
- * GeoclueVelocityFields is a bitfield that defines the validity of 
+ * GeoclueVelocityFields is a bitfield that defines the validity of
  * Velocity values.
  **/
 typedef enum {
@@ -102,55 +102,55 @@ typedef enum {
 
 /**
  * GEOCLUE_ADDRESS_KEY_COUNTRYCODE:
- * 
- * A key for address hashtables. The hash value should be a ISO 3166 two 
- * letter country code. 
- * 
- * The used hash keys match the elements of XEP-0080 (XMPP protocol 
- * extension for user location), see 
+ *
+ * A key for address hashtables. The hash value should be a ISO 3166 two
+ * letter country code.
+ *
+ * The used hash keys match the elements of XEP-0080 (XMPP protocol
+ * extension for user location), see
  * <ulink url="http://www.xmpp.org/extensions/xep-0080.html">
  * http://www.xmpp.org/extensions/xep-0080.html</ulink>
  */
 #define GEOCLUE_ADDRESS_KEY_COUNTRYCODE "countrycode"
 /**
  * GEOCLUE_ADDRESS_KEY_COUNTRY:
- * 
- * A key for address hashtables. The hash value should be a name of a country. 
+ *
+ * A key for address hashtables. The hash value should be a name of a country.
  */
 #define GEOCLUE_ADDRESS_KEY_COUNTRY "country"
 /**
  * GEOCLUE_ADDRESS_KEY_REGION:
- * 
- * A key for address hashtables. The hash value should be a name of an 
+ *
+ * A key for address hashtables. The hash value should be a name of an
  * administrative region of a nation, e.g. province or
- * US state. 
+ * US state.
  */
-#define GEOCLUE_ADDRESS_KEY_REGION "region" 
+#define GEOCLUE_ADDRESS_KEY_REGION "region"
 /**
  * GEOCLUE_ADDRESS_KEY_LOCALITY:
- * 
- * A key for address hashtables. The hash value should be a name of a town 
- * or city. 
+ *
+ * A key for address hashtables. The hash value should be a name of a town
+ * or city.
  */
 #define GEOCLUE_ADDRESS_KEY_LOCALITY "locality"
 /**
  * GEOCLUE_ADDRESS_KEY_AREA:
- * 
- * A key for address hashtables. The hash value should be a name of an 
- * area, such as neighborhood or campus. 
+ *
+ * A key for address hashtables. The hash value should be a name of an
+ * area, such as neighborhood or campus.
  */
 #define GEOCLUE_ADDRESS_KEY_AREA "area"
 /**
  * GEOCLUE_ADDRESS_KEY_POSTALCODE:
- * 
- * A key for address hashtables. The hash value should be a code used for 
+ *
+ * A key for address hashtables. The hash value should be a code used for
  * postal delivery.
  */
 #define GEOCLUE_ADDRESS_KEY_POSTALCODE "postalcode"
 /**
  * GEOCLUE_ADDRESS_KEY_STREET:
- * 
- * A key for address hashtables. The hash value should be a partial or full street 
+ *
+ * A key for address hashtables. The hash value should be a partial or full street
  * address.
  */
 #define GEOCLUE_ADDRESS_KEY_STREET "street"
@@ -158,15 +158,15 @@ typedef enum {
 /**
  * GeoclueResourceFlags:
  *
- * bitfield that represents a set of physical resources. 
- * 
+ * bitfield that represents a set of physical resources.
+ *
  **/
 typedef enum _GeoclueResourceFlags {
 	GEOCLUE_RESOURCE_NONE = 0,
 	GEOCLUE_RESOURCE_NETWORK = 1 << 0,
 	GEOCLUE_RESOURCE_CELL = 1 << 1,
 	GEOCLUE_RESOURCE_GPS = 1 << 2,
-	
+
 	GEOCLUE_RESOURCE_ALL = (1 << 10) - 1
 } GeoclueResourceFlags;
 
@@ -174,8 +174,8 @@ typedef enum _GeoclueResourceFlags {
 /**
  * GeoclueNetworkStatus:
  *
- * Enumeration for current network status. 
- * 
+ * Enumeration for current network status.
+ *
  **/
 typedef enum {
 	GEOCLUE_CONNECTIVITY_UNKNOWN,

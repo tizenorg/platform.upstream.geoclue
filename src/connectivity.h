@@ -1,6 +1,6 @@
 /*
  * Geoclue
- * geoclue-connectivity.h 
+ * geoclue-connectivity.h
  *
  * Author: Jussi Kukkonen <jku@o-hand.com>
  * Copyright 2007 by Garmin Ltd. or its subsidiaries
@@ -41,11 +41,11 @@ typedef struct _GeoclueConnectivityInterface GeoclueConnectivityInterface;
 
 struct _GeoclueConnectivityInterface {
 	GTypeInterface parent;
-	
+
 	/* signals */
 	void (* status_changed) (GeoclueConnectivity *self,
 	                         GeoclueNetworkStatus status);
-	
+
 	/* vtable */
 	int (*get_status) (GeoclueConnectivity *self);
 	char * (*get_ap_mac) (GeoclueConnectivity *self);

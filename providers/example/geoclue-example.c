@@ -79,7 +79,7 @@ static void
 shutdown (GcProvider *provider)
 {
 	GeoclueExample *example = GEOCLUE_EXAMPLE (provider);
-	
+
 	g_main_loop_quit (example->loop);
 }
 
@@ -135,9 +135,9 @@ emit_position_signal (gpointer data)
 
 	accuracy = geoclue_accuracy_new (GEOCLUE_ACCURACY_LEVEL_NONE,
 					 0.0, 0.0);
-	
-	gc_iface_position_emit_position_changed 
-		(GC_IFACE_POSITION (example), 
+
+	gc_iface_position_emit_position_changed
+		(GC_IFACE_POSITION (example),
 		 GEOCLUE_POSITION_FIELDS_NONE,
 		 time (NULL), 0.0, 0.0, 0.0, accuracy);
 

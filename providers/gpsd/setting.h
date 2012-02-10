@@ -28,16 +28,27 @@
 #ifndef __SETTING_H__
 #define __SETTING_H__
 
-// Sync VCONFKEY_GPS_STATE
-#define VCONF_LOCATION_PATH 		"db/location"
+#define VCONF_LOCATION_PATH 	"db/location"
 
-#define LOCATION_POSITION_PATH 		VCONF_LOCATION_PATH"/position"
-#define LAST_TIMESTAMP			LOCATION_POSITION_PATH"/Timestamp"
-#define LAST_POSITION 			LOCATION_POSITION_PATH"/LastPosition"
-#define LAST_ACCURACY			LOCATION_POSITION_PATH"/LastAccuracy"
+#define LAST_POSITION_PATH 	VCONF_LOCATION_PATH"/lastposition"
+#define METHOD_GPS 		LAST_POSITION_PATH"/gps"
+#define METHOD_WPS 		LAST_POSITION_PATH"/wps"
 
-int setting_get_int(const char* path);
-int setting_set_int(const char* path, int val);
-char* setting_get_string(const char* path);
-int setting_set_string(const char* path, const char* val);
+#define LAST_GPS_TIMESTAMP 	METHOD_GPS"/Timestamp"
+#define LAST_GPS_LATITUDE 	METHOD_GPS"/Latitude"
+#define LAST_GPS_LONGITUDE 	METHOD_GPS"/Longitude"
+#define LAST_GPS_ALTITUDE 	METHOD_GPS"/Altitude"
+#define LAST_GPS_HOR_ACCURACY	METHOD_GPS"/HorAccuracy"
+#define LAST_GPS_VER_ACCURACY 	METHOD_GPS"/VerAccuracy"
+
+#define LAST_WPS_TIMESTAMP      METHOD_WPS"/Timestamp"
+#define LAST_WPS_LATITUDE       METHOD_WPS"/Latitude"
+#define LAST_WPS_LONGITUDE      METHOD_WPS"/Longitude"
+#define LAST_WPS_ALTITUDE       METHOD_WPS"/Altitude"
+#define LAST_WPS_HOR_ACCURACY   METHOD_WPS"/HorAccuracy"
+
+int setting_get_int(const char *path, int *val);
+int setting_set_int(const char *path, int val);
+int setting_get_double(const char *path, double *val);
+int setting_set_double(const char *path, double val);
 #endif

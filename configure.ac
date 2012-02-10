@@ -145,28 +145,6 @@ AC_SUBST(CONNECTIVITY_CFLAGS)
 
 PROVIDER_SUBDIRS="nominatim"
 
-AC_ARG_ENABLE(gpsd,
-              AS_HELP_STRING([--enable-gpsd=@<:@no/yes/auto@:>@],
-                             [build with gpsd support]), ,
-                             enable_gpsd=auto)
-
-if test "x$enable_gpsd" != "xno"; then
-   PKG_CHECK_MODULES(GPSD, [vconf libgps >= 2.91],  have_gpsd="yes", have_gpsd="no")
-   if test "x$have_gpsd" = "xyes"; then
-      PROVIDER_SUBDIRS="$PROVIDER_SUBDIRS gpsd"
-   else
-      NO_BUILD_PROVIDERS="$NO_BUILD_PROVIDERS gpsd"
-   fi
-else
-   have_gpsd=no
-fi
-
-if test "x$enable_gpsd" = "xyes" -a "x$have_gpsd" != "xyes"; then
-   AC_MSG_ERROR(["Couldn't find gpsd dependencies - libgps >= 2.90."])
-fi
-AC_SUBST(GPSD_LIBS)
-AC_SUBST(GPSD_CFLAGS)
-
 AC_SUBST(PROVIDER_SUBDIRS)
 AC_SUBST(NO_BUILD_PROVIDERS)
 

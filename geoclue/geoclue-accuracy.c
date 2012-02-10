@@ -1,7 +1,7 @@
 /*
  * Geoclue
  * geoclue-accuracy.c - Code for manipulating the GeoclueAccuracy structure
- * 
+ *
  * Author: Iain Holmes <iain@openedhand.com>
  * Copyright 2007 by Garmin Ltd. or its subsidiaries
  *
@@ -25,11 +25,11 @@
 /**
  * SECTION:geoclue-accuracy
  * @short_description: Methods for manipulating #GeoclueAccuracy structure
- * 
- * A #GeoclueAccuracy holds accuracy information: a 
+ *
+ * A #GeoclueAccuracy holds accuracy information: a
  * #GeoclueAccuracyLevel and metric values for horizontal and vertical
  * accuracy. The last two will only be defined if #GeoclueAccuracyLevel is
- * %GEOCLUE_ACCURACY_LEVEL_DETAILED. These values should be set and queried 
+ * %GEOCLUE_ACCURACY_LEVEL_DETAILED. These values should be set and queried
  * using provided functions.
  **/
 
@@ -43,10 +43,10 @@
  * @horizontal_accuracy: Horizontal accuracy in meters
  * @vertical_accuracy: Vertical accuracy in meters
  *
- * Creates a new #GeoclueAccuracy with given values. Use 0 for 
+ * Creates a new #GeoclueAccuracy with given values. Use 0 for
  * horizontal_accuracy and vertical_accuracy if @level is not
  * %GEOCLUE_ACCURACY_LEVEL_DETAILED.
- * 
+ *
  * Return value: New #GeoclueAccuracy.
  */
 GeoclueAccuracy *
@@ -66,7 +66,7 @@ geoclue_accuracy_new (GeoclueAccuracyLevel level,
 				1, horizontal_accuracy,
 				2, vertical_accuracy,
 				G_MAXUINT);
-	
+
 	return (GeoclueAccuracy *) g_value_get_boxed (&accuracy_struct);
 }
 
@@ -82,7 +82,7 @@ geoclue_accuracy_free (GeoclueAccuracy *accuracy)
 	if (!accuracy) {
 		return;
 	}
-	
+
         g_boxed_free (GEOCLUE_ACCURACY_TYPE, accuracy);
 }
 
@@ -92,8 +92,8 @@ geoclue_accuracy_free (GeoclueAccuracy *accuracy)
  * @level: Pointer to returned #GeoclueAccuracyLevel or %NULL
  * @horizontal_accuracy: Pointer to returned horizontal accuracy in meters or %NULL
  * @vertical_accuracy: Pointer to returned vertical accuracy in meters or %NULL
- * 
- * @horizontal_accuracy and @vertical_accuracy will only be defined 
+ *
+ * @horizontal_accuracy and @vertical_accuracy will only be defined
  * if @level is %GEOCLUE_ACCURACY_LEVEL_DETAILED.
  */
 void
@@ -103,7 +103,7 @@ geoclue_accuracy_get_details (GeoclueAccuracy      *accuracy,
 			      double               *vertical_accuracy)
 {
 	GValueArray *vals;
-	
+
 	vals = accuracy;
 	if (level != NULL) {
 		*level = g_value_get_int (g_value_array_get_nth (vals, 0));
@@ -123,7 +123,7 @@ geoclue_accuracy_get_details (GeoclueAccuracy      *accuracy,
  * @horizontal_accuracy: Horizontal accuracy in meters
  * @vertical_accuracy: Vertical accuracy in meters
  *
- * Replaces @accuracy values with given ones. 
+ * Replaces @accuracy values with given ones.
  */
 void
 geoclue_accuracy_set_details (GeoclueAccuracy     *accuracy,
@@ -134,7 +134,7 @@ geoclue_accuracy_set_details (GeoclueAccuracy     *accuracy,
 	GValueArray *vals = accuracy;
 
 	g_value_set_int (g_value_array_get_nth (vals, 0), level);
-	g_value_set_double (g_value_array_get_nth (vals, 1), 
+	g_value_set_double (g_value_array_get_nth (vals, 1),
 			    horizontal_accuracy);
 	g_value_set_double (g_value_array_get_nth (vals, 2),
 			    vertical_accuracy);
@@ -153,7 +153,7 @@ geoclue_accuracy_copy (GeoclueAccuracy *accuracy)
 {
 	GeoclueAccuracyLevel level;
 	double hor, ver;
-	
+
 	geoclue_accuracy_get_details (accuracy, &level, &hor, &ver);
 	return geoclue_accuracy_new (level, hor, ver);
 }
@@ -172,10 +172,10 @@ geoclue_accuracy_compare (GeoclueAccuracy *accuracy1, GeoclueAccuracy *accuracy2
 {
 	GeoclueAccuracyLevel level1, level2;
 	double hor1, hor2;
-	
+
 	geoclue_accuracy_get_details (accuracy1, &level1, &hor1, NULL);
 	geoclue_accuracy_get_details (accuracy2, &level2, &hor2, NULL);
-	
+
 	if (level1 == GEOCLUE_ACCURACY_LEVEL_DETAILED &&
 	    level2 == GEOCLUE_ACCURACY_LEVEL_DETAILED) {
 		if (hor1 > hor2) {
@@ -186,5 +186,5 @@ geoclue_accuracy_compare (GeoclueAccuracy *accuracy1, GeoclueAccuracy *accuracy2
 		return 0;
 	}
 	return level1 -level2;
-	
+
 }

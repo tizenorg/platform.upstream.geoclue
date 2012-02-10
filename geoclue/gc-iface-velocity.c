@@ -35,7 +35,7 @@ enum {
 
 static guint signals[LAST_SIGNAL] = {0};
 
-static gboolean 
+static gboolean
 gc_iface_velocity_get_velocity (GcIfaceVelocity       *velocity,
 				int                   *fields,
 				int                   *timestamp,
@@ -55,7 +55,7 @@ gc_iface_velocity_base_init (gpointer klass)
 		return;
 	}
 	initialized = TRUE;
-	
+
 	signals[VELOCITY_CHANGED] = g_signal_new ("velocity-changed",
 						  G_OBJECT_CLASS_TYPE (klass),
 						  G_SIGNAL_RUN_LAST, 0,
@@ -75,7 +75,7 @@ GType
 gc_iface_velocity_get_type (void)
 {
 	static GType type = 0;
-	
+
 	if (!type) {
 		const GTypeInfo info = {
 			sizeof (GcIfaceVelocityClass),
@@ -90,7 +90,7 @@ gc_iface_velocity_get_type (void)
 	return type;
 }
 
-static gboolean 
+static gboolean
 gc_iface_velocity_get_velocity (GcIfaceVelocity *gc,
 				int             *fields,
 				int             *timestamp,
@@ -99,7 +99,7 @@ gc_iface_velocity_get_velocity (GcIfaceVelocity *gc,
 				double          *climb,
 				GError         **error)
 {
-	return GC_IFACE_VELOCITY_GET_CLASS (gc)->get_velocity 
+	return GC_IFACE_VELOCITY_GET_CLASS (gc)->get_velocity
 		(gc, (GeoclueVelocityFields *) fields, timestamp,
 		 speed, direction, climb, error);
 }

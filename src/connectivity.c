@@ -35,16 +35,16 @@ static void
 geoclue_connectivity_base_init (gpointer klass)
 {
 	static gboolean initialized = FALSE;
-	
+
 	if (initialized) {
 		return;
 	}
-	
+
 	initialized = TRUE;
 	signals[STATUS_CHANGED] = g_signal_new ("status-changed",
 	                          G_OBJECT_CLASS_TYPE (klass),
 	                          G_SIGNAL_RUN_LAST,
-	                          G_STRUCT_OFFSET (GeoclueConnectivityInterface, 
+	                          G_STRUCT_OFFSET (GeoclueConnectivityInterface,
 	                                           status_changed),
 	                          NULL, NULL,
 	                          g_cclosure_marshal_VOID__INT,
@@ -55,19 +55,19 @@ GType
 geoclue_connectivity_get_type (void)
 {
 	static GType type = 0;
-	
+
 	if (!type) {
 		const GTypeInfo info = {
 			sizeof (GeoclueConnectivityInterface),
 			geoclue_connectivity_base_init,
 			NULL,
 		};
-		
+
 		type = g_type_register_static (G_TYPE_INTERFACE,
-		                               "GeoclueConnectivity", 
+		                               "GeoclueConnectivity",
 		                               &info, 0);
 	}
-	
+
 	return type;
 }
 

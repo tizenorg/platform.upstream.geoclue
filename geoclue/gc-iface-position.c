@@ -36,7 +36,7 @@ enum {
 
 static guint signals[LAST_SIGNAL] = {0};
 
-static gboolean 
+static gboolean
 gc_iface_position_get_position (GcIfacePosition       *position,
 				int                   *fields,
 				int                   *timestamp,
@@ -57,7 +57,7 @@ gc_iface_position_base_init (gpointer klass)
 		return;
 	}
 	initialized = TRUE;
-	
+
 	signals[POSITION_CHANGED] = g_signal_new ("position-changed",
 						  G_OBJECT_CLASS_TYPE (klass),
 						  G_SIGNAL_RUN_LAST, 0,
@@ -70,7 +70,7 @@ gc_iface_position_base_init (gpointer klass)
 						  G_TYPE_DOUBLE,
 						  G_TYPE_DOUBLE,
 						  GEOCLUE_ACCURACY_TYPE);
-	
+
 	dbus_g_object_type_install_info (gc_iface_position_get_type (),
 					 &dbus_glib_gc_iface_position_object_info);
 }
@@ -79,7 +79,7 @@ GType
 gc_iface_position_get_type (void)
 {
 	static GType type = 0;
-	
+
 	if (!type) {
 		const GTypeInfo info = {
 			sizeof (GcIfacePositionClass),
@@ -94,7 +94,7 @@ gc_iface_position_get_type (void)
 	return type;
 }
 
-static gboolean 
+static gboolean
 gc_iface_position_get_position (GcIfacePosition  *gc,
 				int              *fields,
 				int              *timestamp,
@@ -104,7 +104,7 @@ gc_iface_position_get_position (GcIfacePosition  *gc,
 				GeoclueAccuracy **accuracy,
 				GError          **error)
 {
-	return GC_IFACE_POSITION_GET_CLASS (gc)->get_position 
+	return GC_IFACE_POSITION_GET_CLASS (gc)->get_position
 		(gc, (GeocluePositionFields *) fields, timestamp,
 		 latitude, longitude, altitude, accuracy, error);
 }

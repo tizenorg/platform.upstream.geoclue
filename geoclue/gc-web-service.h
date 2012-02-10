@@ -39,7 +39,7 @@ G_BEGIN_DECLS
 
 typedef struct _GcWebService {
 	GObject parent;
-	
+
 	/* private */
 	gchar *base_url;
 	guchar *response;

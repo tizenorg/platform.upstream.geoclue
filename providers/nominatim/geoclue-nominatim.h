@@ -24,7 +24,7 @@ G_BEGIN_DECLS
 typedef struct _GeoclueNominatim {
 	GcProvider parent;
 	GMainLoop *loop;
-	
+
 	GcWebService *geocoder;
 	GcWebService *rev_geocoder;
 } GeoclueNominatim;

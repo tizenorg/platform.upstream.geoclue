@@ -2,16 +2,16 @@
  * Geoclue
  * geoclue-nominatim.c - A nominatim.openstreetmap.org-based "Geocode" and
  *                          "Reverse geocode" provider
- * 
+ *
  * Copyright 2010 by Intel Corporation
- *  
+ *
  * Author: Jussi Kukkonen <jku@linux.intel.com>
  */
 
 /*
- * The used web service APIs are documented at 
+ * The used web service APIs are documented at
  * http://wiki.openstreetmap.org/wiki/Nominatim
- * 
+ *
  */
 
 #include <config.h>
@@ -55,7 +55,7 @@
 #define NOMINATIM_LATLON_COUNTY "//searchresults/place[1]/county"
 #define NOMINATIM_LATLON_COUNTRY "//searchresults/place[1]/country"
 #define NOMINATIM_LATLON_COUNTRYCODE "//searchresults/place[1]/countrycode"
- 
+
 static void geoclue_nominatim_init (GeoclueNominatim *obj);
 static void geoclue_nominatim_geocode_init (GcIfaceGeocodeClass *iface);
 static void geoclue_nominatim_reverse_geocode_init (GcIfaceReverseGeocodeClass *iface);
@@ -74,7 +74,7 @@ geoclue_nominatim_get_status (GcIfaceGeoclue *iface,
                               GeoclueStatus  *status,
                               GError        **error)
 {
-	/* Assumption that we are available so long as the 
+	/* Assumption that we are available so long as the
 	   providers requirements are met: ie network is up */
 	*status = GEOCLUE_STATUS_AVAILABLE;
 
@@ -85,7 +85,7 @@ static void
 shutdown (GcProvider *provider)
 {
 	GeoclueNominatim *obj = GEOCLUE_NOMINATIM (provider);
-	
+
 	g_main_loop_quit (obj->loop);
 }
 
@@ -177,18 +177,18 @@ geoclue_nominatim_address_to_position (GcIfaceGeocode        *iface,
 	g_string_free (str, TRUE);
 
 	*fields = GEOCLUE_POSITION_FIELDS_NONE;
-	if (latitude && gc_web_service_get_double (obj->geocoder, 
+	if (latitude && gc_web_service_get_double (obj->geocoder,
 	                                           latitude, NOMINATIM_LAT)) {
 		*fields |= GEOCLUE_POSITION_FIELDS_LATITUDE;
 	}
 
-	if (longitude &&  gc_web_service_get_double (obj->geocoder, 
+	if (longitude &&  gc_web_service_get_double (obj->geocoder,
 	                                             longitude, NOMINATIM_LON)) {
-		*fields |= GEOCLUE_POSITION_FIELDS_LONGITUDE; 
+		*fields |= GEOCLUE_POSITION_FIELDS_LONGITUDE;
 	}
 
 	if (accuracy) {
-		*accuracy = get_geocode_accuracy (obj->geocoder); 
+		*accuracy = get_geocode_accuracy (obj->geocoder);
 	}
 
 	return TRUE;
@@ -279,7 +279,7 @@ geoclue_nominatim_position_to_address (GcIfaceReverseGeocode  *iface,
 
 	*address = geoclue_address_details_new ();
 
-	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_COUNTRY && 
+	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_COUNTRY &&
 	    gc_web_service_get_string (obj->rev_geocoder,
 	                               &countrycode, NOMINATIM_COUNTRYCODE)) {
 		geoclue_address_details_insert (*address,
@@ -289,7 +289,7 @@ geoclue_nominatim_position_to_address (GcIfaceReverseGeocode  *iface,
 		geoclue_address_details_set_country_from_code (*address);
 	}
 	if (!g_hash_table_lookup (*address, GEOCLUE_ADDRESS_KEY_COUNTRY) &&
-	    in_acc >= GEOCLUE_ACCURACY_LEVEL_COUNTRY && 
+	    in_acc >= GEOCLUE_ACCURACY_LEVEL_COUNTRY &&
 	    gc_web_service_get_string (obj->rev_geocoder,
 	                               &country, NOMINATIM_COUNTRY)) {
 		geoclue_address_details_insert (*address,
@@ -297,7 +297,7 @@ geoclue_nominatim_position_to_address (GcIfaceReverseGeocode  *iface,
 		                                country);
 		g_free (country);
 	}
-	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_REGION && 
+	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_REGION &&
 	    gc_web_service_get_string (obj->rev_geocoder,
 	                               &region, NOMINATIM_COUNTY)) {
 		geoclue_address_details_insert (*address,
@@ -305,7 +305,7 @@ geoclue_nominatim_position_to_address (GcIfaceReverseGeocode  *iface,
 		                                region);
 		g_free (region);
 	}
-	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_LOCALITY && 
+	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_LOCALITY &&
 	    gc_web_service_get_string (obj->rev_geocoder,
 	                               &locality, NOMINATIM_CITY)) {
 		geoclue_address_details_insert (*address,
@@ -313,7 +313,7 @@ geoclue_nominatim_position_to_address (GcIfaceReverseGeocode  *iface,
 		                                locality);
 		g_free (locality);
 	}
-	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_POSTALCODE && 
+	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_POSTALCODE &&
 	    gc_web_service_get_string (obj->rev_geocoder,
 	                               &area, NOMINATIM_VILLAGE)) {
 		geoclue_address_details_insert (*address,
@@ -321,7 +321,7 @@ geoclue_nominatim_position_to_address (GcIfaceReverseGeocode  *iface,
 		                                area);
 		g_free (area);
 	}
-	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_POSTALCODE && 
+	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_POSTALCODE &&
 	    gc_web_service_get_string (obj->rev_geocoder,
 	                               &postcode, NOMINATIM_POSTCODE)) {
 		geoclue_address_details_insert (*address,
@@ -329,7 +329,7 @@ geoclue_nominatim_position_to_address (GcIfaceReverseGeocode  *iface,
 		                                postcode);
 		g_free (postcode);
 	}
-	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_STREET && 
+	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_STREET &&
 	    gc_web_service_get_string (obj->rev_geocoder,
 	                               &street, NOMINATIM_ROAD)) {
 		char *nr;
@@ -350,7 +350,7 @@ geoclue_nominatim_position_to_address (GcIfaceReverseGeocode  *iface,
 		g_free (street);
 	}
 
-	if (address_accuracy) { 
+	if (address_accuracy) {
 		GeoclueAccuracyLevel level = geoclue_address_details_get_accuracy_level (*address);
 		*address_accuracy = geoclue_accuracy_new (level, 0.0, 0.0);
 	}
@@ -388,7 +388,7 @@ geoclue_nominatim_class_init (GeoclueNominatimClass *klass)
 {
 	GcProviderClass *p_class = (GcProviderClass *)klass;
 	GObjectClass *o_class = (GObjectClass *)klass;
-	
+
 	p_class->shutdown = shutdown;
 	p_class->get_status = geoclue_nominatim_get_status;
 
@@ -399,14 +399,14 @@ geoclue_nominatim_class_init (GeoclueNominatimClass *klass)
 static void
 geoclue_nominatim_init (GeoclueNominatim *obj)
 {
-	gc_provider_set_details (GC_PROVIDER (obj), 
+	gc_provider_set_details (GC_PROVIDER (obj),
 	                         GEOCLUE_NOMINATIM_DBUS_SERVICE,
 	                         GEOCLUE_NOMINATIM_DBUS_PATH,
 				 "Nominatim", "Nominatim (OpenStreetMap geocoder) provider");
 
 	obj->geocoder = g_object_new (GC_TYPE_WEB_SERVICE, NULL);
 	gc_web_service_set_base_url (obj->geocoder, GEOCODE_URL);
-	
+
 	obj->rev_geocoder = g_object_new (GC_TYPE_WEB_SERVICE, NULL);
 	gc_web_service_set_base_url (obj->rev_geocoder, REV_GEOCODE_URL);
 }
@@ -424,19 +424,19 @@ geoclue_nominatim_reverse_geocode_init (GcIfaceReverseGeocodeClass *iface)
 	iface->position_to_address = geoclue_nominatim_position_to_address;
 }
 
-int 
+int
 main()
 {
 	GeoclueNominatim *obj;
-	
+
 	g_type_init();
 	obj = g_object_new (GEOCLUE_TYPE_NOMINATIM, NULL);
 	obj->loop = g_main_loop_new (NULL, TRUE);
-	
+
 	g_main_loop_run (obj->loop);
-	
+
 	g_main_loop_unref (obj->loop);
 	g_object_unref (obj);
-	
+
 	return 0;
 }

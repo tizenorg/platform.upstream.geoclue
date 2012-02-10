@@ -71,7 +71,7 @@ gc_iface_master_create (GcMaster    *master,
 	client = g_object_new (GC_TYPE_MASTER_CLIENT, NULL);
 	dbus_g_connection_register_g_object (master->connection, path,
 					     G_OBJECT (client));
-	
+
 	if (object_path) {
 		*object_path = path;
 	}
@@ -88,7 +88,7 @@ gc_master_class_init (GcMasterClass *klass)
 						  G_TYPE_FROM_CLASS (klass),
 						  G_SIGNAL_RUN_FIRST |
 						  G_SIGNAL_NO_RECURSE,
-						  G_STRUCT_OFFSET (GcMasterClass, options_changed), 
+						  G_STRUCT_OFFSET (GcMasterClass, options_changed),
 						  NULL, NULL,
 						  g_cclosure_marshal_VOID__BOXED,
 						  G_TYPE_NONE, 1,
@@ -101,15 +101,15 @@ gc_master_add_new_provider (GcMaster   *master,
                             const char *filename)
 {
 	GcMasterProvider *provider;
-	
-	provider = gc_master_provider_new (filename, 
+
+	provider = gc_master_provider_new (filename,
 	                                   master->connectivity);
-	
+
 	if (!provider) {
 		g_warning ("Loading from %s failed", filename);
 		return;
 	}
-	
+
 	providers = g_list_prepend (providers, provider);
 }
 
@@ -148,11 +148,11 @@ gc_master_load_providers (GcMaster *master)
 			continue;
 		}
 
-		fullname = g_build_filename (GEOCLUE_PROVIDERS_DIR, 
+		fullname = g_build_filename (GEOCLUE_PROVIDERS_DIR,
 					     filename, NULL);
 		gc_master_add_new_provider (master, fullname);
 		g_free (fullname);
-		
+
 		filename = g_dir_read_name (dir);
 	}
 
@@ -163,15 +163,15 @@ static void
 gc_master_init (GcMaster *master)
 {
 	GError *error = NULL;
-	
-	
+
+
 	master->connection = dbus_g_bus_get (GEOCLUE_DBUS_BUS, &error);
 	if (master->connection == NULL) {
-		g_warning ("Could not get %s: %s", GEOCLUE_DBUS_BUS, 
+		g_warning ("Could not get %s: %s", GEOCLUE_DBUS_BUS,
 			   error->message);
 		g_error_free (error);
 	}
-	
+
 	master->connectivity = NULL;
 #ifdef HAVE_NETWORK_MANAGER
 	master->connectivity = GEOCLUE_CONNECTIVITY (g_object_new (GEOCLUE_TYPE_NETWORKMANAGER, NULL));
@@ -180,7 +180,7 @@ gc_master_init (GcMaster *master)
 	master->connectivity = GEOCLUE_CONNECTIVITY (g_object_new (GEOCLUE_TYPE_CONIC, NULL));
 #endif
 #endif
-	
+
 	gc_master_load_providers (master);
 }
 
@@ -193,22 +193,22 @@ gc_master_get_providers (GcInterfaceFlags      iface_type,
                          GError              **error)
 {
 	GList *l, *p = NULL;
-	
+
 	if (providers == NULL) {
 		return NULL;
 	}
-	
+
 	for (l = providers; l; l = l->next) {
 		GcMasterProvider *provider = l->data;
-		
+
 		if (gc_master_provider_is_good (provider,
-		                                iface_type, 
-		                                min_accuracy, 
-		                                can_update, 
+		                                iface_type,
+		                                min_accuracy,
+		                                can_update,
 		                                allowed)) {
 			p = g_list_prepend (p, provider);
 		}
 	}
-	
+
 	return p;
 }

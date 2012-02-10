@@ -29,48 +29,72 @@
 #include <vconf.h>
 #include "setting.h"
 
-int setting_get_int(const char* path)
-{
-	if(!path)
-		return -1;
-
-	int val = -1;
-	if (vconf_get_int(path, &val)) {
-		g_warning("vconf_get_int: failed [%s]", path);
-		val = -1;
-	} else {
-		g_debug("vconf_get_int: [%s]:[%d]", path, val);
-	}
-	return val;
-}
-
-int setting_set_int(const char* path, int val)
+int setting_get_int(const char *path, int *val)
 {
 	if (!path) {
-		return -1;
+		return FALSE;
+	}
+
+	int ret;
+
+	if (vconf_get_int(path, val) == -1) {
+		g_warning("vconf_get_int: failed [%s]", path);
+		ret = FALSE;
+	} else {
+		g_debug("vconf_get_int: [%s]:[%d]", path, *val);
+		ret = TRUE;
+	}
+	return ret;
+}
+
+int setting_set_int(const char *path, int val)
+{
+	if (!path) {
+		return FALSE;
 	}
 
 	int ret = vconf_set_int(path, val);
 	if (ret == 0) {
 		g_debug("vconf_set_int: [%s]:[%d]", path, val);
+		ret = TRUE;
 	} else {
-		g_warning("vconf_set_int failed, [%s]\n", path);
+		g_warning("vconf_set_int failed, [%s]", path);
+		ret = FALSE;
 	}
 	return ret;
 }
 
-char* setting_get_string(const char* path)
+int setting_get_double(const char *path, double *val)
 {
-	return vconf_get_str(path);
+	if (!path) {
+		return FALSE;
+	}
+
+	int ret;
+
+	if (vconf_get_dbl(path, val) == -1) {
+		g_warning("vconf_get_dbl failed [%s]", path);
+		ret = FALSE;
+	} else {
+		g_debug("vconf_get_dbl: [%s]:[%f]", path, *val);
+		ret = TRUE;
+	}
+	return ret;
 }
 
-int setting_set_string(const char* path, const char* val)
+int setting_set_double(const char *path, double val)
 {
-	int ret = vconf_set_str(path, val);
+	if (!path) {
+		return FALSE;
+	}
+
+	int ret = vconf_set_dbl(path, val);
 	if (ret == 0) {
-		g_debug("vconf_set_str: [%s]:[%s]", path, val);
+		g_debug("vconf_set_dbl: [%s]:[%f]", path, val);
+		ret = TRUE;
 	} else {
-		g_warning("vconf_set_str failed, [%s]\n", path);
+		g_warning("vconf_set_dbl failed, [%s]", path);
+		ret = FALSE;
 	}
 	return ret;
 }

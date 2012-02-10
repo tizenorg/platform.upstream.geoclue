@@ -111,7 +111,7 @@ load_options (void)
                 	value = NULL;
 
                 g_print ("  %s = %s\n", key, value);
-                g_hash_table_insert (ht, g_path_get_basename (key), 
+                g_hash_table_insert (ht, g_path_get_basename (key),
                                      g_strdup (value));
                  gconf_entry_free (entry);
          }
@@ -165,8 +165,8 @@ main (int    argc,
         options = load_options ();
 
 	master = g_object_new (GC_TYPE_MASTER, NULL);
-	dbus_g_connection_register_g_object (conn, 
-					     "/org/freedesktop/Geoclue/Master", 
+	dbus_g_connection_register_g_object (conn,
+					     "/org/freedesktop/Geoclue/Master",
 					     G_OBJECT (master));
 
 	g_main_loop_run (mainloop);

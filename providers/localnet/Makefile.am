@@ -10,7 +10,7 @@ BUILT_SOURCES =			\
 	$(nodist_geoclue_localnet_SOURCES)
 
 geoclue_localnet_SOURCES = 	\
-	geoclue-localnet.c     
+	geoclue-localnet.c
 
 geoclue_localnet_CFLAGS = \
 	-I$(top_srcdir)     \

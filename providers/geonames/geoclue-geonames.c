@@ -2,9 +2,9 @@
  * Geoclue
  * geoclue-geonames.c - A geonames.org-based "Geocode" and
  *                          "Reverse geocode" provider
- * 
+ *
  * Copyright 2007 by Garmin Ltd. or its subsidiaries
- * 
+ *
  * Author: Jussi Kukkonen <jku@o-hand.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -25,11 +25,11 @@
  */
 
 /*
- * The used web service APIs are documented at 
+ * The used web service APIs are documented at
  * http://www.geonames.org/export/
- * 
+ *
  * Geonames currently does not support street level geocoding. There
- * is a street level reverse geocoder in beta, but it's US only. 
+ * is a street level reverse geocoder in beta, but it's US only.
  * http://www.geonames.org/export/reverse-geocoding.html
  */
 
@@ -74,7 +74,7 @@
 #define ADDRESS_COUNTRY "//geonames/geoname/countryName"
 #define ADDRESS_COUNTRYCODE "//geonames/geoname/countryCode"
 
- 
+
 static void geoclue_geonames_init (GeoclueGeonames *obj);
 static void geoclue_geonames_geocode_init (GcIfaceGeocodeClass *iface);
 static void geoclue_geonames_reverse_geocode_init (GcIfaceReverseGeocodeClass *iface);
@@ -93,7 +93,7 @@ geoclue_geonames_get_status (GcIfaceGeoclue *iface,
 			     GeoclueStatus  *status,
 			     GError        **error)
 {
-	/* Assumption that we are available so long as the 
+	/* Assumption that we are available so long as the
 	   providers requirements are met: ie network is up */
 	*status = GEOCLUE_STATUS_AVAILABLE;
 
@@ -104,7 +104,7 @@ static void
 shutdown (GcProvider *provider)
 {
 	GeoclueGeonames *obj = GEOCLUE_GEONAMES (provider);
-	
+
 	g_main_loop_quit (obj->loop);
 }
 
@@ -123,13 +123,13 @@ geoclue_geonames_address_to_position (GcIfaceGeocode        *iface,
 {
 	GeoclueGeonames *obj = GEOCLUE_GEONAMES (iface);
 	gchar *countrycode, *locality, *postalcode;
-	
+
 	countrycode = g_hash_table_lookup (address, GEOCLUE_ADDRESS_KEY_COUNTRYCODE);
 	locality = g_hash_table_lookup (address, GEOCLUE_ADDRESS_KEY_LOCALITY);
 	postalcode = g_hash_table_lookup (address, GEOCLUE_ADDRESS_KEY_POSTALCODE);
-	
+
 	*fields = GEOCLUE_POSITION_FIELDS_NONE;
-	
+
 	if (countrycode && postalcode) {
 		if (!gc_web_service_query (obj->postalcode_geocoder, error,
 		                           "postalcode", postalcode,
@@ -139,12 +139,12 @@ geoclue_geonames_address_to_position (GcIfaceGeocode        *iface,
 		                           (char *)0)) {
 			return FALSE;
 		}
-		if (gc_web_service_get_double (obj->postalcode_geocoder, 
+		if (gc_web_service_get_double (obj->postalcode_geocoder,
 		                               latitude, POSTALCODE_LAT) &&
-		    gc_web_service_get_double (obj->postalcode_geocoder, 
+		    gc_web_service_get_double (obj->postalcode_geocoder,
 		                               longitude, POSTALCODE_LON)) {
-			*fields |= GEOCLUE_POSITION_FIELDS_LATITUDE; 
-			*fields |= GEOCLUE_POSITION_FIELDS_LONGITUDE; 
+			*fields |= GEOCLUE_POSITION_FIELDS_LATITUDE;
+			*fields |= GEOCLUE_POSITION_FIELDS_LONGITUDE;
 			*accuracy = geoclue_accuracy_new (GEOCLUE_ACCURACY_LEVEL_POSTALCODE,
 			                                  0, 0);
 		}
@@ -157,12 +157,12 @@ geoclue_geonames_address_to_position (GcIfaceGeocode        *iface,
 		                           (char *)0)) {
 			return FALSE;
 		}
-		if (gc_web_service_get_double (obj->place_geocoder, 
+		if (gc_web_service_get_double (obj->place_geocoder,
 		                               latitude, GEONAME_LAT) &&
-		    gc_web_service_get_double (obj->place_geocoder, 
+		    gc_web_service_get_double (obj->place_geocoder,
 		                               longitude, GEONAME_LON)) {
-			*fields |= GEOCLUE_POSITION_FIELDS_LATITUDE; 
-			*fields |= GEOCLUE_POSITION_FIELDS_LONGITUDE; 
+			*fields |= GEOCLUE_POSITION_FIELDS_LATITUDE;
+			*fields |= GEOCLUE_POSITION_FIELDS_LONGITUDE;
 			*accuracy = geoclue_accuracy_new (GEOCLUE_ACCURACY_LEVEL_LOCALITY,
 			                                  0, 0);
 		}
@@ -249,7 +249,7 @@ geoclue_geonames_position_to_address (GcIfaceReverseGeocode  *iface,
 	gchar *country = NULL;
 	gchar *countrycode = NULL;
 	GeoclueAccuracyLevel in_acc = GEOCLUE_ACCURACY_LEVEL_DETAILED;
-	
+
 	if (!address) {
 		return TRUE;
 	}
@@ -270,14 +270,14 @@ geoclue_geonames_position_to_address (GcIfaceReverseGeocode  *iface,
 	                           (char *)0)) {
 		return FALSE;
 	}
-	
+
 	if (position_accuracy) {
 		geoclue_accuracy_get_details (position_accuracy, &in_acc, NULL, NULL);
 	}
-	
+
 	*address = g_hash_table_new (g_str_hash, g_str_equal);
-	
-	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_COUNTRY && 
+
+	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_COUNTRY &&
 	    gc_web_service_get_string (obj->rev_place_geocoder,
 	                               &countrycode, GEONAME_COUNTRYCODE)) {
 		geoclue_address_details_insert (*address,
@@ -287,7 +287,7 @@ geoclue_geonames_position_to_address (GcIfaceReverseGeocode  *iface,
 		geoclue_address_details_set_country_from_code (*address);
 	}
 	if (!g_hash_table_lookup (*address, GEOCLUE_ADDRESS_KEY_COUNTRY) &&
-	    in_acc >= GEOCLUE_ACCURACY_LEVEL_COUNTRY && 
+	    in_acc >= GEOCLUE_ACCURACY_LEVEL_COUNTRY &&
 	    gc_web_service_get_string (obj->rev_place_geocoder,
 	                               &country, GEONAME_COUNTRY)) {
 		geoclue_address_details_insert (*address,
@@ -295,7 +295,7 @@ geoclue_geonames_position_to_address (GcIfaceReverseGeocode  *iface,
 		                                country);
 		g_free (country);
 	}
-	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_REGION && 
+	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_REGION &&
 	    gc_web_service_get_string (obj->rev_place_geocoder,
 	                               &region, GEONAME_ADMIN1)) {
 		geoclue_address_details_insert (*address,
@@ -303,7 +303,7 @@ geoclue_geonames_position_to_address (GcIfaceReverseGeocode  *iface,
 		                                region);
 		g_free (region);
 	}
-	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_LOCALITY && 
+	if (in_acc >= GEOCLUE_ACCURACY_LEVEL_LOCALITY &&
 	    gc_web_service_get_string (obj->rev_place_geocoder,
 	                               &locality, GEONAME_NAME)) {
 		geoclue_address_details_insert (*address,
@@ -311,8 +311,8 @@ geoclue_geonames_position_to_address (GcIfaceReverseGeocode  *iface,
 		                                locality);
 		g_free (locality);
 	}
-	
-	if (address_accuracy) { 
+
+	if (address_accuracy) {
 		GeoclueAccuracyLevel level = geoclue_address_details_get_accuracy_level (*address);
 		*address_accuracy = geoclue_accuracy_new (level, 0.0, 0.0);
 	}
@@ -349,7 +349,7 @@ geoclue_geonames_dispose (GObject *obj)
 		g_object_unref (self->rev_street_geocoder);
 		self->rev_street_geocoder = NULL;
 	}
-	
+
 	((GObjectClass *) geoclue_geonames_parent_class)->dispose (obj);
 }
 
@@ -360,7 +360,7 @@ geoclue_geonames_class_init (GeoclueGeonamesClass *klass)
 {
 	GcProviderClass *p_class = (GcProviderClass *)klass;
 	GObjectClass *o_class = (GObjectClass *)klass;
-	
+
 	p_class->shutdown = shutdown;
 	p_class->get_status = geoclue_geonames_get_status;
 
@@ -371,25 +371,25 @@ geoclue_geonames_class_init (GeoclueGeonamesClass *klass)
 static void
 geoclue_geonames_init (GeoclueGeonames *obj)
 {
-	gc_provider_set_details (GC_PROVIDER (obj), 
+	gc_provider_set_details (GC_PROVIDER (obj),
 	                         GEOCLUE_GEONAMES_DBUS_SERVICE,
 	                         GEOCLUE_GEONAMES_DBUS_PATH,
 				 "Geonames", "Geonames provider");
-	
+
 	obj->place_geocoder = g_object_new (GC_TYPE_WEB_SERVICE, NULL);
-	gc_web_service_set_base_url (obj->place_geocoder, 
+	gc_web_service_set_base_url (obj->place_geocoder,
 	                             GEOCODE_PLACE_URL);
-	
+
 	obj->postalcode_geocoder = g_object_new (GC_TYPE_WEB_SERVICE, NULL);
-	gc_web_service_set_base_url (obj->postalcode_geocoder, 
+	gc_web_service_set_base_url (obj->postalcode_geocoder,
 	                             GEOCODE_POSTALCODE_URL);
-	
+
 	obj->rev_place_geocoder = g_object_new (GC_TYPE_WEB_SERVICE, NULL);
-	gc_web_service_set_base_url (obj->rev_place_geocoder, 
+	gc_web_service_set_base_url (obj->rev_place_geocoder,
 	                             REV_GEOCODE_PLACE_URL);
-	
+
 	obj->rev_street_geocoder = g_object_new (GC_TYPE_WEB_SERVICE, NULL);
-	gc_web_service_set_base_url (obj->rev_street_geocoder, 
+	gc_web_service_set_base_url (obj->rev_street_geocoder,
 	                             REV_GEOCODE_STREET_URL);
 }
 
@@ -408,19 +408,19 @@ geoclue_geonames_reverse_geocode_init (GcIfaceReverseGeocodeClass *iface)
 	iface->position_to_address = geoclue_geonames_position_to_address;
 }
 
-int 
+int
 main()
 {
 	GeoclueGeonames *obj;
-	
+
 	g_type_init();
 	obj = g_object_new (GEOCLUE_TYPE_GEONAMES, NULL);
 	obj->loop = g_main_loop_new (NULL, TRUE);
-	
+
 	g_main_loop_run (obj->loop);
-	
+
 	g_main_loop_unref (obj->loop);
 	g_object_unref (obj);
-	
+
 	return 0;
 }

@@ -1,7 +1,7 @@
 /*
  * Geoclue
  * geoclue-gsmloc-ofono.c - oFono abstraction for gsmloc provider
- * 
+ *
  * Author: Jussi Kukkonen <jku@linux.intel.com>
  * Copyright 2008 by Garmin Ltd. or its subsidiaries
  *           2010 Intel Corporation
@@ -22,7 +22,7 @@
  * Boston, MA 02111-1307, USA.
  *
  */
-  
+
 #include <config.h>
 
 #include <unistd.h>
@@ -423,11 +423,11 @@ modem_free (Modem *modem)
 }
 
 
-static void 
+static void
 emit_network_data_changed (GeoclueGsmlocOfono *ofono)
 {
 	GeoclueGsmlocOfonoPrivate *priv = GET_PRIVATE (ofono);
-	const char *mcc, *mnc, *lac, *cid; 
+	const char *mcc, *mnc, *lac, *cid;
 	GList *modems, *netops;
 
 	mcc = mnc = lac = cid = NULL;
@@ -639,7 +639,7 @@ geoclue_gsmloc_ofono_init (GeoclueGsmlocOfono *ofono)
 		return;
 	}
 
-	priv->ofono_manager = 
+	priv->ofono_manager =
 	    dbus_g_proxy_new_for_name (system_bus,
 	                               "org.ofono",
 	                               "/",

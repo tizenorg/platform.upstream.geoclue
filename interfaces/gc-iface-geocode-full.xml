@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <node name="/">
-	<interface name="org.freedesktop.Geoclue.Geocode"> 
+	<interface name="org.freedesktop.Geoclue.Geocode">
 
 		<method name="AddressToPosition">
 			<arg name="address" type="a{ss}" direction="in" />

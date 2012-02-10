@@ -1,7 +1,7 @@
 /*
  * Geoclue
  * geoclue-hostip.c - A hostip.info-based Address/Position provider
- * 
+ *
  * Author: Jussi Kukkonen <jku@o-hand.com>
  * Copyright 2007, 2008 by Garmin Ltd. or its subsidiaries
  *
@@ -80,7 +80,7 @@ shutdown (GcProvider *provider)
 
 /* Position interface implementation */
 
-static gboolean 
+static gboolean
 geoclue_hostip_get_position (GcIfacePosition        *iface,
                                  GeocluePositionFields  *fields,
                                  int                    *timestamp,
@@ -92,14 +92,14 @@ geoclue_hostip_get_position (GcIfacePosition        *iface,
 {
 	GeoclueHostip *obj = (GEOCLUE_HOSTIP (iface));
 	gchar *coord_str = NULL;
-	
+
 	*fields = GEOCLUE_POSITION_FIELDS_NONE;
-	
+
 	if (!gc_web_service_query (obj->web_service, error, (char *)0)) {
 		return FALSE;
 	}
-	
-	if (gc_web_service_get_string (obj->web_service, 
+
+	if (gc_web_service_get_string (obj->web_service,
 	                                &coord_str, HOSTIP_LATLON_XPATH)) {
 		if (sscanf (coord_str, "%lf,%lf", longitude , latitude) == 2) {
 			*fields |= GEOCLUE_POSITION_FIELDS_LONGITUDE;
@@ -107,12 +107,12 @@ geoclue_hostip_get_position (GcIfacePosition        *iface,
 		}
 		g_free (coord_str);
 	}
-	
+
 	time ((time_t *)timestamp);
-	
+
 	if (*fields == GEOCLUE_POSITION_FIELDS_NONE) {
 		*accuracy = geoclue_accuracy_new (GEOCLUE_ACCURACY_LEVEL_NONE,
-		                                  0, 0); 
+		                                  0, 0);
 	} else {
 		*accuracy = geoclue_accuracy_new (GEOCLUE_ACCURACY_LEVEL_LOCALITY,
 		                                  0, 0);
@@ -122,7 +122,7 @@ geoclue_hostip_get_position (GcIfacePosition        *iface,
 
 /* Address interface implementation */
 
-static gboolean 
+static gboolean
 geoclue_hostip_get_address (GcIfaceAddress   *iface,
                             int              *timestamp,
                             GHashTable      **address,
@@ -133,14 +133,14 @@ geoclue_hostip_get_address (GcIfaceAddress   *iface,
 	gchar *locality = NULL;
 	gchar *country = NULL;
 	gchar *country_code = NULL;
-	
+
 	if (!gc_web_service_query (obj->web_service, error, (char *)0)) {
 		return FALSE;
 	}
-	
+
 	if (address) {
 		*address = geoclue_address_details_new ();
-		if (gc_web_service_get_string (obj->web_service, 
+		if (gc_web_service_get_string (obj->web_service,
 					       &locality, HOSTIP_LOCALITY_XPATH)) {
 			/* hostip "sctructured data" for the win... */
 			if (g_ascii_strcasecmp (locality, "(Unknown city)") == 0 ||
@@ -154,8 +154,8 @@ geoclue_hostip_get_address (GcIfaceAddress   *iface,
 				                                locality);
 			}
 		}
-		
-		if (gc_web_service_get_string (obj->web_service, 
+
+		if (gc_web_service_get_string (obj->web_service,
 					       &country_code, HOSTIP_COUNTRYCODE_XPATH)) {
 			if (g_ascii_strcasecmp (country_code, "XX") == 0) {
 				g_free (country_code);
@@ -169,7 +169,7 @@ geoclue_hostip_get_address (GcIfaceAddress   *iface,
 		}
 
 		if (!g_hash_table_lookup (*address, GEOCLUE_ADDRESS_KEY_COUNTRY) &&
-		    gc_web_service_get_string (obj->web_service, 
+		    gc_web_service_get_string (obj->web_service,
 		                               &country, HOSTIP_COUNTRY_XPATH)) {
 			if (g_ascii_strcasecmp (country, "(Unknown Country?)") == 0) {
 				g_free (country);
@@ -209,9 +209,9 @@ static void
 geoclue_hostip_finalize (GObject *obj)
 {
 	GeoclueHostip *self = (GeoclueHostip *) obj;
-	
+
 	g_object_unref (self->web_service);
-	
+
 	((GObjectClass *) geoclue_hostip_parent_class)->finalize (obj);
 }
 
@@ -223,21 +223,21 @@ geoclue_hostip_class_init (GeoclueHostipClass *klass)
 {
 	GcProviderClass *p_class = (GcProviderClass *)klass;
 	GObjectClass *o_class = (GObjectClass *)klass;
-	
+
 	p_class->shutdown = shutdown;
 	p_class->get_status = geoclue_hostip_get_status;
-	
+
 	o_class->finalize = geoclue_hostip_finalize;
 }
 
 static void
 geoclue_hostip_init (GeoclueHostip *obj)
 {
-	gc_provider_set_details (GC_PROVIDER (obj), 
+	gc_provider_set_details (GC_PROVIDER (obj),
 	                         GEOCLUE_DBUS_SERVICE_HOSTIP,
 	                         GEOCLUE_DBUS_PATH_HOSTIP,
 	                         "Hostip", "Hostip provider");
-	
+
 	obj->web_service = g_object_new (GC_TYPE_WEB_SERVICE, NULL);
 	gc_web_service_set_base_url (obj->web_service, HOSTIP_URL);
 	gc_web_service_add_namespace (obj->web_service,
@@ -256,18 +256,18 @@ geoclue_hostip_address_init (GcIfaceAddressClass  *iface)
 	iface->get_address = geoclue_hostip_get_address;
 }
 
-int 
+int
 main()
 {
 	g_type_init();
-	
+
 	GeoclueHostip *o = g_object_new (GEOCLUE_TYPE_HOSTIP, NULL);
 	o->loop = g_main_loop_new (NULL, TRUE);
-	
+
 	g_main_loop_run (o->loop);
-	
+
 	g_main_loop_unref (o->loop);
 	g_object_unref (o);
-	
+
 	return 0;
 }

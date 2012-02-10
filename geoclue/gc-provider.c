@@ -26,15 +26,15 @@
 /**
  * SECTION:gc-provider
  * @short_description: Abstract class to derive Geoclue providers from.
- * 
- * #GcProvider is an abstract class that all Geoclue providers should 
+ *
+ * #GcProvider is an abstract class that all Geoclue providers should
  * derive from. It takes care of setting up the provider D-Bus service,
- * and also implements #GcIfaceGeoclue interface (derived classes still 
+ * and also implements #GcIfaceGeoclue interface (derived classes still
  * need to implement the functionality).
- * 
- * Derived classes should define the #GcIfaceGeoclue methods in their 
+ *
+ * Derived classes should define the #GcIfaceGeoclue methods in their
  * class_init() and call gc_provider_set_details() in init()
- * 
+ *
  */
 #include <config.h>
 
@@ -52,7 +52,7 @@
 typedef struct {
 	char *name;
 	char *description;
-	
+
 	GHashTable *connections;
 } GcProviderPrivate;
 
@@ -79,9 +79,9 @@ static void
 dispose (GObject *object)
 {
 	GcProviderPrivate *priv = GET_PRIVATE (object);
-	
+
 	g_hash_table_destroy (priv->connections);
-	
+
 	((GObjectClass *) gc_provider_parent_class)->dispose (object);
 }
 
@@ -92,9 +92,9 @@ gc_provider_class_init (GcProviderClass *klass)
 
 	o_class->finalize = finalize;
 	o_class->dispose = dispose;
-	
+
 	klass->shutdown = NULL;
-	
+
 	g_type_class_add_private (klass, sizeof (GcProviderPrivate));
 }
 
@@ -103,14 +103,14 @@ gc_provider_init (GcProvider *provider)
 {
 	GError *error = NULL;
 	GcProviderPrivate *priv = GET_PRIVATE (provider);
-	
+
 	provider->connection = dbus_g_bus_get (GEOCLUE_DBUS_BUS, &error);
 	if (provider->connection == NULL) {
 		g_warning ("%s was unable to create a connection to D-Bus: %s",
 			   G_OBJECT_TYPE_NAME (provider), error->message);
 		g_error_free (error);
 	}
-	
+
 	priv->connections = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 }
 
@@ -122,7 +122,7 @@ gc_provider_shutdown (GcProvider *provider)
 }
 
 
-static gboolean 
+static gboolean
 get_provider_info (GcIfaceGeoclue *geoclue,
 		   gchar          **name,
 		   gchar          **description,
@@ -130,14 +130,14 @@ get_provider_info (GcIfaceGeoclue *geoclue,
 {
 	GcProvider *provider = GC_PROVIDER (geoclue);
 	GcProviderPrivate *priv = GET_PRIVATE (provider);
-	
+
 	if (name) {
 		*name = g_strdup (priv->name);
 	}
 	if (description) {
 		*description = g_strdup (priv->description);
 	}
-	
+
 	return TRUE;
 }
 
@@ -169,25 +169,25 @@ set_options (GcIfaceGeoclue *geoclue,
 	klass = GC_PROVIDER_GET_CLASS (geoclue);
 	if (klass->set_options) {
 		return klass->set_options (geoclue, options, error);
-	} 
+	}
 
         /* It is not an error to not have a SetOptions implementation */
         return TRUE;
 }
 
-static gboolean 
+static gboolean
 gc_provider_remove_client (GcProvider *provider, const char *client)
-{	
+{
 	int *pcount;
 	GcProviderPrivate *priv = GET_PRIVATE (provider);
-	
-	pcount = g_hash_table_lookup (priv->connections, client);	
+
+	pcount = g_hash_table_lookup (priv->connections, client);
 	if (!pcount) {
 		g_debug("Client[%s] is already removed", client);
 		return FALSE;
-	}	
+	}
 	(*pcount)--;
-	g_debug("Client[%s] has reference count[%d]", client, *pcount);	
+	g_debug("Client[%s] has reference count[%d]", client, *pcount);
 	if (*pcount == 0) {
 		g_debug("Reference count is zero, Now remove client[%s] in hash table", client);
 		g_hash_table_remove (priv->connections, client);
@@ -199,24 +199,24 @@ gc_provider_remove_client (GcProvider *provider, const char *client)
 	return TRUE;
 }
 
-static gboolean 
+static gboolean
 gc_provider_remove_client_by_force(GcProvider *provider, const char *client)
-{	
+{
 	int *pcount;
-	GcProviderPrivate *priv = GET_PRIVATE (provider);	
-	
+	GcProviderPrivate *priv = GET_PRIVATE (provider);
+
 	pcount = g_hash_table_lookup (priv->connections, client);
 	if(!pcount){
 		g_debug("Client(%s) is already removed", client);
 		return FALSE;
 	}
-	
+
 	(*pcount)--;
-	g_debug("Client(%s) has reference count[%d]. Anway, we will remove it by force!", client, *pcount);	
+	g_debug("Client(%s) has reference count[%d]. Anway, we will remove it by force!", client, *pcount);
 	g_hash_table_remove (priv->connections, client);
 	if (g_hash_table_size (priv->connections) == 0) {
 		g_debug("Hash table size is zero, Now we shutdown provider[%s]", priv->name);
-		gc_provider_shutdown (provider);		
+		gc_provider_shutdown (provider);
 	}
 	return TRUE;
 }
@@ -229,7 +229,7 @@ add_reference (GcIfaceGeoclue *geoclue,
 	GcProviderPrivate *priv = GET_PRIVATE (geoclue);
 	char *sender;
 	int *pcount;
-	
+
 	/* Update the hash of open connections */
 	sender = dbus_g_method_get_sender (context);
 	pcount = g_hash_table_lookup (priv->connections, sender);
@@ -238,24 +238,24 @@ add_reference (GcIfaceGeoclue *geoclue,
 		g_hash_table_insert (priv->connections, sender, pcount);
 	}
 	(*pcount)++;
-	
+
 	dbus_g_method_return (context);
 }
 
-static void 
+static void
 remove_reference (GcIfaceGeoclue *geoclue,
                   DBusGMethodInvocation *context)
 {
 	GcProvider *provider = GC_PROVIDER (geoclue);
 	char *sender;
-	
+
 	sender = dbus_g_method_get_sender (context);
 	if (!gc_provider_remove_client (provider, sender)) {
 		g_warning ("Unreffed by client that has not been referenced");
 	}
 
 	g_free (sender);
-	
+
 	dbus_g_method_return (context);
 }
 
@@ -294,8 +294,8 @@ gc_provider_geoclue_init (GcIfaceGeoclueClass *iface)
  * @description: The description of the provider
  *
  * Requests ownership of the @service name, and if that succeeds registers
- * @provider at @path. @name should be the name of the provider (e.g. 
- * "Hostip"), @description should be a short description of the provider 
+ * @provider at @path. @name should be the name of the provider (e.g.
+ * "Hostip"), @description should be a short description of the provider
  * (e.g. "Web service based Position & Address provider (http://hostip.info)").
  */
 void
@@ -322,23 +322,23 @@ gc_provider_set_details (GcProvider *provider,
 
 	if (!org_freedesktop_DBus_request_name (driver, service, 0,
 						&request_ret, &error)) {
-		g_warning ("%s was unable to register service %s: %s", 
-			   G_OBJECT_TYPE_NAME (provider), service, 
+		g_warning ("%s was unable to register service %s: %s",
+			   G_OBJECT_TYPE_NAME (provider), service,
 			   error->message);
 		g_error_free (error);
 		return;
 	}
-	
+
 	dbus_g_proxy_add_signal (driver, "NameOwnerChanged",
-				 G_TYPE_STRING, G_TYPE_STRING, 
+				 G_TYPE_STRING, G_TYPE_STRING,
 				 G_TYPE_STRING, G_TYPE_INVALID);
 	dbus_g_proxy_connect_signal (driver, "NameOwnerChanged",
 				     G_CALLBACK (name_owner_changed),
 				     provider, NULL);
-	
-	dbus_g_connection_register_g_object (provider->connection, 
+
+	dbus_g_connection_register_g_object (provider->connection,
 					     path, G_OBJECT (provider));
-	
+
 	priv->name = g_strdup (name);
 	priv->description = g_strdup (description);
 }

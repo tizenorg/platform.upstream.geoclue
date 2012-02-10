@@ -1,4 +1,4 @@
-/* 
+/*
  * Geoclue
  * geoclue-provider.h - Client object for accessing Geoclue Providers
  *
@@ -40,13 +40,13 @@ G_BEGIN_DECLS
 
 typedef struct _GeoclueProvider {
 	GObject object;
-	
+
 	DBusGProxy *proxy;
 } GeoclueProvider;
 
 typedef struct _GeoclueProviderClass {
 	GObjectClass object_class;
-	
+
 	void (*status_changed) (GeoclueProvider *provider,
 	                        GeoclueStatus    status);
 } GeoclueProviderClass;

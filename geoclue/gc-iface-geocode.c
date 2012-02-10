@@ -1,7 +1,7 @@
 /*
  * Geoclue
  * gc-iface-geocode.c - GInterface for org.freedesktop.Geocode
- * 
+ *
  * Authors: Iain Holmes <iain@openedhand.com>
  *          Jussi Kukkonen <jku@linux.intel.com>
  * Copyright 2007 by Garmin Ltd. or its subsidiaries
@@ -33,7 +33,7 @@
 #include <geoclue/geoclue-accuracy.h>
 #include <geoclue/gc-iface-geocode.h>
 
-static gboolean 
+static gboolean
 gc_iface_geocode_address_to_position (GcIfaceGeocode   *gc,
 				      GHashTable       *address,
 				      int              *fields,
@@ -63,7 +63,7 @@ gc_iface_geocode_base_init (gpointer klass)
 		return;
 	}
 	initialized = TRUE;
-	
+
 	dbus_g_object_type_install_info (gc_iface_geocode_get_type (),
 					 &dbus_glib_gc_iface_geocode_object_info);
 }
@@ -72,7 +72,7 @@ GType
 gc_iface_geocode_get_type (void)
 {
 	static GType type = 0;
-	
+
 	if (!type) {
 		const GTypeInfo info = {
 			sizeof (GcIfaceGeocodeClass),
@@ -87,7 +87,7 @@ gc_iface_geocode_get_type (void)
 	return type;
 }
 
-static gboolean 
+static gboolean
 gc_iface_geocode_address_to_position (GcIfaceGeocode   *gc,
 				      GHashTable       *address,
 				      int              *fields,
@@ -97,7 +97,7 @@ gc_iface_geocode_address_to_position (GcIfaceGeocode   *gc,
 				      GeoclueAccuracy **accuracy,
 				      GError          **error)
 {
-	return GC_IFACE_GEOCODE_GET_CLASS (gc)->address_to_position 
+	return GC_IFACE_GEOCODE_GET_CLASS (gc)->address_to_position
 		(gc, address, (GeocluePositionFields *) fields,
 		 latitude, longitude, altitude, accuracy, error);
 }

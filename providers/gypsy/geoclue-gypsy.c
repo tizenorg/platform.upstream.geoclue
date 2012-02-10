@@ -38,7 +38,7 @@ typedef struct {
 	GcProvider parent;
 
         char *device_name;
-	
+
 	GypsyControl *control;
 	GypsyDevice *device;
 	GypsyPosition *position;
@@ -122,14 +122,14 @@ static GeocluePositionFields
 gypsy_position_to_geoclue (GypsyPositionFields fields)
 {
 	GeocluePositionFields gc_fields = GEOCLUE_POSITION_FIELDS_NONE;
-	
+
 	gc_fields |= (fields & GYPSY_POSITION_FIELDS_LATITUDE) ? GEOCLUE_POSITION_FIELDS_LATITUDE : 0;
 	gc_fields |= (fields & GYPSY_POSITION_FIELDS_LONGITUDE) ? GEOCLUE_POSITION_FIELDS_LONGITUDE : 0;
 	gc_fields |= (fields & GYPSY_POSITION_FIELDS_ALTITUDE) ? GEOCLUE_POSITION_FIELDS_ALTITUDE : 0;
-	
+
 	return gc_fields;
 }
-	      
+
 static GeoclueVelocityFields
 gypsy_course_to_geoclue (GypsyCourseFields fields)
 {
@@ -187,9 +187,9 @@ position_changed (GypsyPosition      *position,
 
                 g_print ("Emitting signal\n");
 		fields = gypsy_position_to_geoclue (gypsy->position_fields);
-		gc_iface_position_emit_position_changed 
+		gc_iface_position_emit_position_changed
 			(GC_IFACE_POSITION (gypsy), fields,
-			 timestamp, gypsy->latitude, gypsy->longitude, 
+			 timestamp, gypsy->latitude, gypsy->longitude,
 			 gypsy->altitude, gypsy->accuracy);
 	}
 }
@@ -237,12 +237,12 @@ course_changed (GypsyCourse      *course,
 		GeoclueVelocityFields fields;
 
 		fields = gypsy_course_to_geoclue (gypsy->course_fields);
-		gc_iface_velocity_emit_velocity_changed 
+		gc_iface_velocity_emit_velocity_changed
 			(GC_IFACE_VELOCITY (gypsy), fields,
 			 timestamp, gypsy->speed, gypsy->direction, gypsy->climb);
 	}
 }
-		
+
 static void
 accuracy_changed (GypsyAccuracy      *accuracy,
 		  GypsyAccuracyFields fields,
@@ -256,7 +256,7 @@ accuracy_changed (GypsyAccuracy      *accuracy,
 	double horiz, vert;
 
 	geoclue_accuracy_get_details (gypsy->accuracy, &level, &horiz, &vert);
-	if (fields & (GYPSY_ACCURACY_FIELDS_HORIZONTAL | 
+	if (fields & (GYPSY_ACCURACY_FIELDS_HORIZONTAL |
 		      GYPSY_ACCURACY_FIELDS_VERTICAL)){
 		if (level != GEOCLUE_ACCURACY_LEVEL_DETAILED ||
 		    horiz != hdop || vert != vdop) {
@@ -280,11 +280,11 @@ accuracy_changed (GypsyAccuracy      *accuracy,
 
 	if (changed) {
 		GeocluePositionFields fields;
-		
+
 		fields = gypsy_position_to_geoclue (gypsy->position_fields);
-		gc_iface_position_emit_position_changed 
+		gc_iface_position_emit_position_changed
 			(GC_IFACE_POSITION (gypsy), fields,
-			 gypsy->timestamp, gypsy->latitude, gypsy->longitude, 
+			 gypsy->timestamp, gypsy->latitude, gypsy->longitude,
 			 gypsy->altitude, gypsy->accuracy);
 	}
 }
@@ -294,7 +294,7 @@ connection_changed (GypsyDevice  *device,
 		    gboolean      connected,
 		    GeoclueGypsy *gypsy)
 {
-	if (connected == FALSE && 
+	if (connected == FALSE &&
 	    gypsy->status != GEOCLUE_STATUS_UNAVAILABLE) {
 		gypsy->status = GEOCLUE_STATUS_UNAVAILABLE;
 		gc_iface_geoclue_emit_status_changed (GC_IFACE_GEOCLUE (gypsy),
@@ -381,7 +381,7 @@ set_options (GcIfaceGeoclue *gc,
         const char *device_name;
         char *path;
 
-        device_name = g_hash_table_lookup (options, 
+        device_name = g_hash_table_lookup (options,
                                            "org.freedesktop.Geoclue.GPSDevice");
 
         if (g_strcmp0 (gypsy->device_name, device_name) == 0) {
@@ -413,7 +413,7 @@ set_options (GcIfaceGeoclue *gc,
 			  G_CALLBACK (connection_changed), gypsy);
 	g_signal_connect (gypsy->device, "fix-status-changed",
 			  G_CALLBACK (fix_status_changed), gypsy);
-	
+
 	gypsy->position = gypsy_position_new (path);
 	g_signal_connect (gypsy->position, "position-changed",
 			  G_CALLBACK (position_changed), gypsy);
@@ -423,7 +423,7 @@ set_options (GcIfaceGeoclue *gc,
 	gypsy->acc = gypsy_accuracy_new (path);
 	g_signal_connect (gypsy->acc, "accuracy-changed",
 			  G_CALLBACK (accuracy_changed), gypsy);
-	
+
 	g_debug ("starting device");
 	gypsy_device_start (gypsy->device, error);
 	if (*error != NULL) {
@@ -434,7 +434,7 @@ set_options (GcIfaceGeoclue *gc,
 	}
 	get_initial_status (gypsy);
 	g_free (path);
-	
+
 	return TRUE;
 }
 
@@ -442,7 +442,7 @@ static void
 shutdown (GcProvider *provider)
 {
 	GeoclueGypsy *gypsy = GEOCLUE_GYPSY (provider);
-	
+
 	g_main_loop_quit (gypsy->loop);
 }
 
@@ -524,7 +524,7 @@ get_position (GcIfacePosition       *gc,
 	GeoclueGypsy *gypsy = GEOCLUE_GYPSY (gc);
 	GeoclueAccuracyLevel level;
 	double horizontal, vertical;
-	
+
 	*timestamp = gypsy->timestamp;
 
 	*fields = GEOCLUE_POSITION_FIELDS_NONE;
@@ -544,7 +544,7 @@ get_position (GcIfacePosition       *gc,
 	geoclue_accuracy_get_details (gypsy->accuracy, &level,
 				      &horizontal, &vertical);
 	*accuracy = geoclue_accuracy_new (level, horizontal, vertical);
-		
+
 	return TRUE;
 }
 

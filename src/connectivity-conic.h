@@ -36,7 +36,7 @@ G_BEGIN_DECLS
 
 typedef struct {
 	GObject parent;
-	
+
 	/* private */
 	GeoclueNetworkStatus status;
 	ConIcConnection *conic;

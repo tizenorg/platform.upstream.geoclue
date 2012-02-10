@@ -1,4 +1,4 @@
-/* Mobile country code list from 
+/* Mobile country code list from
  * "LIST OF MOBILE COUNTRY OR GEOGRAPHICAL AREA CODES"
  * (http://www.itu.int/publ/T-SP-E.212A-2007)
  * combined with ISO 3166-1 alpha-2 list for two letter country codes

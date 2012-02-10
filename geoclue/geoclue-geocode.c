@@ -28,19 +28,19 @@
  * SECTION:geoclue-geocode
  * @short_description: Geoclue geocode client API
  *
- * #GeoclueGeocode contains geocoding methods. 
- * It is part of the Geoclue public C client API which uses D-Bus 
+ * #GeoclueGeocode contains geocoding methods.
+ * It is part of the Geoclue public C client API which uses D-Bus
  * to communicate with the actual provider.
- * 
- * After a #GeoclueGeocode is created with geoclue_geocode_new(), the 
+ *
+ * After a #GeoclueGeocode is created with geoclue_geocode_new(), the
  * geoclue_geocode_address_to_position(),
  * geoclue_geocode_freeform_address_to_position() methods and their
  * asynchronous counterparts can be used to obtain the position (coordinates)
  * of the given address.
- * 
- * Address #GHashTable keys are defined in 
- * <ulink url="geoclue-types.html">geoclue-types.h</ulink>. See also 
- * convenience functions in 
+ *
+ * Address #GHashTable keys are defined in
+ * <ulink url="geoclue-types.html">geoclue-types.h</ulink>. See also
+ * convenience functions in
  * <ulink url="geoclue-address-details.html">geoclue-address-details.h</ulink>.
  */
 
@@ -91,7 +91,7 @@ geoclue_geocode_init (GeoclueGeocode *geocode)
  * @path: D-Bus path name
  *
  * Creates a #GeoclueGeocode with given D-Bus service name and path.
- * 
+ *
  * Return value: Pointer to a new #GeoclueGeocode
  */
 GeoclueGeocode *
@@ -114,16 +114,16 @@ geoclue_geocode_new (const char *service,
  * @altitude: Pointer to returned altitude in meters or %NULL
  * @accuracy: Pointer to returned #GeoclueAccuracy or %NULL
  * @error: Pointer to returned #Gerror or %NULL
- * 
- * Geocodes given address to coordinates (@latitude, @longitude, @altitude). 
- * see <ulink url="geoclue-types.html">geoclue-types.h</ulink> for the 
- * hashtable keys usable in @details. @accuracy is a rough estimate of 
+ *
+ * Geocodes given address to coordinates (@latitude, @longitude, @altitude).
+ * see <ulink url="geoclue-types.html">geoclue-types.h</ulink> for the
+ * hashtable keys usable in @details. @accuracy is a rough estimate of
  * the accuracy of the returned position.
- * 
- * If the caller is not interested in some values, the pointers can be 
+ *
+ * If the caller is not interested in some values, the pointers can be
  * left %NULL.
- * 
- * Return value: A #GeocluePositionFields bitfield representing the 
+ *
+ * Return value: A #GeocluePositionFields bitfield representing the
  * validity of the returned coordinates.
  */
 GeocluePositionFields
@@ -139,7 +139,7 @@ geoclue_geocode_address_to_position (GeoclueGeocode   *geocode,
 	int fields;
 	double la, lo, al;
 	GeoclueAccuracy *acc;
-	
+
 	if (!org_freedesktop_Geoclue_Geocode_address_to_position (provider->proxy,
 								  details, &fields,
 								  &la, &lo, &al,
@@ -173,7 +173,7 @@ typedef struct _GeoclueGeocodeAsyncData {
 } GeoclueGeocodeAsyncData;
 
 static void
-address_to_position_callback (DBusGProxy              *proxy, 
+address_to_position_callback (DBusGProxy              *proxy,
 			      GeocluePositionFields    fields,
 			      double                   latitude,
 			      double                   longitude,
@@ -203,7 +203,7 @@ address_to_position_callback (DBusGProxy              *proxy,
  * @accuracy: Accuracy of measurement as #GeoclueAccuracy
  * @error: Error as #Gerror or %NULL
  * @userdata: User data pointer
- * 
+ *
  * Callback function for the asynchronous methods.
  */
 
@@ -213,15 +213,15 @@ address_to_position_callback (DBusGProxy              *proxy,
  * @details: A #GHashTable with address data
  * @callback: A #GeoclueAddressCallback function that should be called when return values are available
  * @userdata: pointer for user specified data
- * 
- * Function returns (essentially) immediately and calls @callback when the geocoded 
+ *
+ * Function returns (essentially) immediately and calls @callback when the geocoded
  * position data is available or when D-Bus timeouts.
- * 
- * see <ulink url="geoclue-types.html">geoclue-types.h</ulink> for the 
+ *
+ * see <ulink url="geoclue-types.html">geoclue-types.h</ulink> for the
  * hashtable keys usable in @details.
- * 
+ *
  */
-void 
+void
 geoclue_geocode_address_to_position_async (GeoclueGeocode         *geocode,
 					   GHashTable             *details,
 					   GeoclueGeocodeCallback  callback,
@@ -229,12 +229,12 @@ geoclue_geocode_address_to_position_async (GeoclueGeocode         *geocode,
 {
 	GeoclueProvider *provider = GEOCLUE_PROVIDER (geocode);
 	GeoclueGeocodeAsyncData *data;
-	
+
 	data = g_new (GeoclueGeocodeAsyncData, 1);
 	data->geocode = geocode;
 	data->callback = G_CALLBACK (callback);
 	data->userdata = userdata;
-	
+
 	org_freedesktop_Geoclue_Geocode_address_to_position_async
 			(provider->proxy,
 			 details,
@@ -309,7 +309,7 @@ geoclue_geocode_freeform_address_to_position (GeoclueGeocode   *geocode,
  * @callback: A #GeoclueAddressCallback function that should be called when return values are available
  * @userdata: pointer for user specified data
  *
- * Function returns (essentially) immediately and calls @callback when the geocoded 
+ * Function returns (essentially) immediately and calls @callback when the geocoded
  * position data is available or when D-Bus timeouts.
  */
 void

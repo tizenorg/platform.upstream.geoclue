@@ -25,10 +25,10 @@
  */
 
 /** TODO
- * 
- * 	might want to write a testing-provider with a gui for 
+ *
+ * 	might want to write a testing-provider with a gui for
  * 	choosing what to emit...
- * 
+ *
  **/
 
 
@@ -67,28 +67,28 @@ typedef struct _GcMasterClientPrivate {
 	int min_time;
 	gboolean require_updates;
 	GeoclueResourceFlags allowed_resources;
-	
+
 	gboolean position_started;
 	GcMasterProvider *position_provider;
 	GList *position_providers;
 	gboolean position_provider_choice_in_progress;
-	
+
 	gboolean address_started;
 	GcMasterProvider *address_provider;
 	GList *address_providers;
 	gboolean address_provider_choice_in_progress;
-	
+
 } GcMasterClientPrivate;
 
 #define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GC_TYPE_MASTER_CLIENT, GcMasterClientPrivate))
 
 
 
-static gboolean gc_iface_master_client_set_requirements (GcMasterClient       *client, 
-                                                         GeoclueAccuracyLevel  min_accuracy, 
-                                                         int                   min_time, 
-                                                         gboolean              require_updates, 
-                                                         GeoclueResourceFlags  allowed_resources, 
+static gboolean gc_iface_master_client_set_requirements (GcMasterClient       *client,
+                                                         GeoclueAccuracyLevel  min_accuracy,
+                                                         int                   min_time,
+                                                         gboolean              require_updates,
+                                                         GeoclueResourceFlags  allowed_resources,
                                                          GError              **error);
 static gboolean gc_iface_master_client_position_start (GcMasterClient *client, GError **error);
 static gboolean gc_iface_master_client_address_start (GcMasterClient *client, GError **error);
@@ -126,9 +126,9 @@ static gboolean status_change_requires_provider_change (GList            *provid
                                                         GeoclueStatus     status);
 static void gc_master_client_emit_position_changed (GcMasterClient *client);
 static void gc_master_client_emit_address_changed (GcMasterClient *client);
-static gboolean gc_master_client_choose_position_provider (GcMasterClient  *client, 
+static gboolean gc_master_client_choose_position_provider (GcMasterClient  *client,
                                                            GList           *providers);
-static gboolean gc_master_client_choose_address_provider (GcMasterClient  *client, 
+static gboolean gc_master_client_choose_address_provider (GcMasterClient  *client,
                                                           GList           *providers);
 
 
@@ -138,29 +138,29 @@ status_changed (GcMasterProvider *provider,
                 GcMasterClient   *client)
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
-	
+
 	g_debug ("client: provider %s status changed: %d", gc_master_provider_get_name (provider), status);
-	
+
 	/* change providers if needed (and if we're not choosing provider already) */
-	
+
 	if (!priv->position_provider_choice_in_progress &&
 	    status_change_requires_provider_change (priv->position_providers,
 	                                            priv->position_provider,
 	                                            provider, status) &&
-	    gc_master_client_choose_position_provider (client, 
+	    gc_master_client_choose_position_provider (client,
 	                                               priv->position_providers)) {
-		
+
 		/* we have a new position provider, force-emit position_changed */
 		gc_master_client_emit_position_changed (client);
 	}
-	
+
 	if (!priv->address_provider_choice_in_progress &&
 	    status_change_requires_provider_change (priv->address_providers,
 	                                            priv->address_provider,
 	                                            provider, status) &&
-	    gc_master_client_choose_address_provider (client, 
+	    gc_master_client_choose_address_provider (client,
 	                                              priv->address_providers)) {
-		
+
 		/* we have a new address provider, force-emit address_changed */
 		gc_master_client_emit_address_changed (client);
 	}
@@ -174,40 +174,40 @@ accuracy_changed (GcMasterProvider     *provider,
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
 	GcInterfaceAccuracy *accuracy_data;
-	
+
 	accuracy_data = g_new0 (GcInterfaceAccuracy, 1);
-	g_debug ("client: %s accuracy changed (%d)", 
+	g_debug ("client: %s accuracy changed (%d)",
 	         gc_master_provider_get_name (provider), level);
-	
+
 	accuracy_data->interface = interface;
 	accuracy_data->accuracy_level = priv->min_accuracy;
 	switch (interface) {
 		case GC_IFACE_POSITION:
-			priv->position_providers = 
-				g_list_sort_with_data (priv->position_providers, 
+			priv->position_providers =
+				g_list_sort_with_data (priv->position_providers,
 						       (GCompareDataFunc)gc_master_provider_compare,
 						       accuracy_data);
 			if (priv->position_provider_choice_in_progress) {
 				g_debug ("        ...but provider choice in progress");
-			} else if (gc_master_client_choose_position_provider (client, 
+			} else if (gc_master_client_choose_position_provider (client,
 									      priv->position_providers)) {
 				gc_master_client_emit_position_changed (client);
 			}
 			break;
-			
+
 		case GC_IFACE_ADDRESS:
-			priv->address_providers = 
-				g_list_sort_with_data (priv->address_providers, 
+			priv->address_providers =
+				g_list_sort_with_data (priv->address_providers,
 						       (GCompareDataFunc)gc_master_provider_compare,
 						       accuracy_data);
 			if (priv->address_provider_choice_in_progress) {
 				g_debug ("        ...but provider choice in progress");
-			} else if (gc_master_client_choose_address_provider (client, 
+			} else if (gc_master_client_choose_address_provider (client,
 								      priv->address_providers)) {
 				gc_master_client_emit_address_changed (client);
 			}
 			break;
-			
+
 		default:
 			g_assert_not_reached ();
 	}
@@ -255,18 +255,18 @@ status_change_requires_provider_change (GList            *provider_list,
 {
 	if (!provider_list) {
 		return FALSE;
-		
+
 	} else if (current_provider == NULL) {
 		return (status == GEOCLUE_STATUS_AVAILABLE);
-		
+
 	} else if (current_provider == changed_provider) {
 		return (status != GEOCLUE_STATUS_AVAILABLE);
-		
+
 	}else if (status != GEOCLUE_STATUS_AVAILABLE) {
 		return FALSE;
-		
+
 	}
-	
+
 	while (provider_list) {
 		GcMasterProvider *p = provider_list->data;
 		if (p == current_provider) {
@@ -287,7 +287,7 @@ gc_master_client_connect_common_signals (GcMasterClient *client, GList *provider
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
 	GList *l;
-	
+
 	/* connect to common signals if the provider is not already connected */
 	l = providers;
 	while (l) {
@@ -313,11 +313,11 @@ gc_master_client_unsubscribe_providers (GcMasterClient *client, GList *provider_
 {
 	while (provider_list) {
 		GcMasterProvider *provider = provider_list->data;
-		
+
 		gc_master_provider_unsubscribe (provider, client, iface);
 		provider_list = provider_list->next;
 	}
-	
+
 }
 
 /* get_best_provider will return the best provider with status == GEOCLUE_STATUS_AVAILABLE.
@@ -329,15 +329,15 @@ gc_master_client_get_best_provider (GcMasterClient    *client,
 {
 	GList *l = *provider_list;
 	/* TODO: should maybe choose a acquiring provider if better ones are are not available */
-	
+
 	g_debug ("client: choosing best provider");
-	
+
 	while (l) {
 		GcMasterProvider *provider = l->data;
-		
+
 		g_debug ("        ...trying provider %s", gc_master_provider_get_name (provider));
 		if (gc_master_provider_subscribe (provider, client, iface)) {
-			/* provider was started, so accuracy may have changed 
+			/* provider was started, so accuracy may have changed
 			   (which re-sorts provider lists), restart provider selection */
 			/* TODO re-think this: restarting provider selection leads to potentially
 			   never-ending looping */
@@ -348,7 +348,7 @@ gc_master_client_get_best_provider (GcMasterClient    *client,
 			continue;
 		}
 		/* provider did not need to be started */
-		
+
 		/* TODO: currently returning even providers that are worse than priv->min_accuracy,
 		 * if nothing else is available */
 		if (gc_master_provider_get_status (provider) == GEOCLUE_STATUS_AVAILABLE) {
@@ -358,7 +358,7 @@ gc_master_client_get_best_provider (GcMasterClient    *client,
 		}
 		l = l->next;
 	}
-	
+
 	/* no provider found */
 	gc_master_client_unsubscribe_providers (client, *provider_list, iface);
 	return NULL;
@@ -373,8 +373,8 @@ gc_master_client_emit_position_changed (GcMasterClient *client)
 	double latitude, longitude, altitude;
 	GeoclueAccuracy *accuracy = NULL;
 	GError *error = NULL;
-	
-	
+
+
 	if (priv->position_provider == NULL) {
 		accuracy = geoclue_accuracy_new (GEOCLUE_ACCURACY_LEVEL_NONE, 0.0, 0.0);
 		gc_iface_position_emit_position_changed
@@ -386,7 +386,7 @@ gc_master_client_emit_position_changed (GcMasterClient *client)
 		geoclue_accuracy_free (accuracy);
 		return;
 	}
-	
+
 	fields = gc_master_provider_get_position
 		(priv->position_provider,
 		 &timestamp,
@@ -395,7 +395,7 @@ gc_master_client_emit_position_changed (GcMasterClient *client)
 		 &error);
 	if (error) {
 		/*TODO what now?*/
-		g_warning ("client: failed to get position from %s: %s", 
+		g_warning ("client: failed to get position from %s: %s",
 		           gc_master_provider_get_name (priv->position_provider),
 		           error->message);
 		g_error_free (error);
@@ -409,7 +409,7 @@ gc_master_client_emit_position_changed (GcMasterClient *client)
 		 accuracy);
 }
 
-static void 
+static void
 gc_master_client_emit_address_changed (GcMasterClient *client)
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
@@ -417,7 +417,7 @@ gc_master_client_emit_address_changed (GcMasterClient *client)
 	GHashTable *details = NULL;
 	GeoclueAccuracy *accuracy = NULL;
 	GError *error = NULL;
-	
+
 	if (priv->address_provider == NULL) {
 		accuracy = geoclue_accuracy_new (GEOCLUE_ACCURACY_LEVEL_NONE, 0.0, 0.0);
 		details = g_hash_table_new (g_str_hash, g_str_equal);
@@ -437,7 +437,7 @@ gc_master_client_emit_address_changed (GcMasterClient *client)
 		 &accuracy,
 		 &error)) {
 		/*TODO what now?*/
-		g_warning ("client: failed to get address from %s: %s", 
+		g_warning ("client: failed to get address from %s: %s",
 		           gc_master_provider_get_name (priv->address_provider),
 		           error->message);
 		g_error_free (error);
@@ -452,40 +452,40 @@ gc_master_client_emit_address_changed (GcMasterClient *client)
 
 /* return true if a _new_ provider was chosen */
 static gboolean
-gc_master_client_choose_position_provider (GcMasterClient *client, 
+gc_master_client_choose_position_provider (GcMasterClient *client,
                                            GList *providers)
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
 	GcMasterProvider *new_p;
-	
+
 	/* choose and start provider */
 	priv->position_provider_choice_in_progress = TRUE;
-	new_p = gc_master_client_get_best_provider (client, 
-	                                            &priv->position_providers, 
+	new_p = gc_master_client_get_best_provider (client,
+	                                            &priv->position_providers,
 	                                            GC_IFACE_POSITION);
 	priv->position_provider_choice_in_progress = FALSE;
-	
+
 	if (priv->position_provider && new_p == priv->position_provider) {
 		return FALSE;
 	}
-	
+
 	if (priv->signals[POSITION_CHANGED] > 0) {
-		g_signal_handler_disconnect (priv->position_provider, 
+		g_signal_handler_disconnect (priv->position_provider,
 		                             priv->signals[POSITION_CHANGED]);
 		priv->signals[POSITION_CHANGED] = 0;
 	}
-	
+
 	priv->position_provider = new_p;
-	
+
 	if (priv->position_provider == NULL) {
 		g_debug ("client: position provider changed (to NULL)");
-		g_signal_emit (client, signals[POSITION_PROVIDER_CHANGED], 0, 
+		g_signal_emit (client, signals[POSITION_PROVIDER_CHANGED], 0,
 		               NULL, NULL, NULL, NULL);
 		return TRUE;
 	}
-	
+
 	g_debug ("client: position provider changed (to %s)", gc_master_provider_get_name (priv->position_provider));
-	g_signal_emit (client, signals[POSITION_PROVIDER_CHANGED], 0, 
+	g_signal_emit (client, signals[POSITION_PROVIDER_CHANGED], 0,
 		       gc_master_provider_get_name (priv->position_provider),
 		       gc_master_provider_get_description (priv->position_provider),
 		       gc_master_provider_get_service (priv->position_provider),
@@ -500,47 +500,47 @@ gc_master_client_choose_position_provider (GcMasterClient *client,
 
 /* return true if a _new_ provider was chosen */
 static gboolean
-gc_master_client_choose_address_provider (GcMasterClient *client, 
+gc_master_client_choose_address_provider (GcMasterClient *client,
                                           GList *providers)
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
 	GcMasterProvider *new_p;
-	
-	
+
+
 	/* choose and start provider */
 	priv->address_provider_choice_in_progress = TRUE;
-	new_p = gc_master_client_get_best_provider (client, 
-	                                            &priv->address_providers, 
+	new_p = gc_master_client_get_best_provider (client,
+	                                            &priv->address_providers,
 	                                            GC_IFACE_ADDRESS);
 	priv->address_provider_choice_in_progress = FALSE;
-	
+
 	if (priv->address_provider != NULL && new_p == priv->address_provider) {
 		/* keep using the same provider */
 		return FALSE;
 	}
-	
+
 	if (priv->address_provider && priv->signals[ADDRESS_CHANGED] > 0) {
-		g_signal_handler_disconnect (priv->address_provider, 
+		g_signal_handler_disconnect (priv->address_provider,
 					     priv->signals[ADDRESS_CHANGED]);
 		priv->signals[ADDRESS_CHANGED] = 0;
 	}
-	
+
 	priv->address_provider = new_p;
-	
+
 	if (priv->address_provider == NULL) {
 		g_debug ("client: address provider changed (to NULL)");
-		g_signal_emit (client, signals[ADDRESS_PROVIDER_CHANGED], 0, 
+		g_signal_emit (client, signals[ADDRESS_PROVIDER_CHANGED], 0,
 		               NULL, NULL, NULL, NULL);
 		return TRUE;
 	}
-	
+
 	g_debug ("client: address provider changed (to %s)", gc_master_provider_get_name (priv->address_provider));
-	g_signal_emit (client, signals[ADDRESS_PROVIDER_CHANGED], 0, 
+	g_signal_emit (client, signals[ADDRESS_PROVIDER_CHANGED], 0,
 		       gc_master_provider_get_name (priv->address_provider),
 		       gc_master_provider_get_description (priv->address_provider),
 		       gc_master_provider_get_service (priv->address_provider),
 		       gc_master_provider_get_path (priv->address_provider));
-	priv->signals[ADDRESS_CHANGED] = 
+	priv->signals[ADDRESS_CHANGED] =
 		g_signal_connect (G_OBJECT (priv->address_provider),
 				  "address-changed",
 				  G_CALLBACK (address_changed),
@@ -549,42 +549,42 @@ gc_master_client_choose_address_provider (GcMasterClient *client,
 }
 
 static void
-gc_master_provider_set_position_providers (GcMasterClient *client, 
+gc_master_provider_set_position_providers (GcMasterClient *client,
                                            GList *providers)
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
 	GcInterfaceAccuracy *accuracy_data;
-	
+
 	accuracy_data = g_new0(GcInterfaceAccuracy, 1);
 	accuracy_data->interface = GC_IFACE_POSITION;
 	accuracy_data->accuracy_level = priv->min_accuracy;
-	
+
 	gc_master_client_connect_common_signals (client, providers);
-	priv->position_providers = 
+	priv->position_providers =
 		g_list_sort_with_data (providers,
 		                       (GCompareDataFunc)gc_master_provider_compare,
 		                       accuracy_data);
-	
+
 	g_free (accuracy_data);
 }
 
 static void
-gc_master_provider_set_address_providers (GcMasterClient *client, 
+gc_master_provider_set_address_providers (GcMasterClient *client,
                                            GList *providers)
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
 	GcInterfaceAccuracy *accuracy_data;
-	
+
 	accuracy_data = g_new0(GcInterfaceAccuracy, 1);
 	accuracy_data->interface = GC_IFACE_ADDRESS;
 	accuracy_data->accuracy_level = priv->min_accuracy;
-	
+
 	gc_master_client_connect_common_signals (client, providers);
-	priv->address_providers = 
+	priv->address_providers =
 		g_list_sort_with_data (providers,
 		                       (GCompareDataFunc)gc_master_provider_compare,
 		                       accuracy_data);
-	
+
 	g_free (accuracy_data);
 }
 
@@ -593,21 +593,21 @@ gc_master_client_init_position_providers (GcMasterClient *client)
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
 	GList *providers;
-	
+
 	if (!priv->position_started) {
 		return;
 	}
-	 
+
 	/* TODO: free priv->position_providers */
-	
+
 	providers = gc_master_get_providers (GC_IFACE_POSITION,
 	                                     priv->min_accuracy,
 	                                     priv->require_updates,
 	                                     priv->allowed_resources,
 	                                     NULL);
-	g_debug ("client: %d position providers matching requirements found, now choosing current provider", 
+	g_debug ("client: %d position providers matching requirements found, now choosing current provider",
 	         g_list_length (providers));
-	
+
 	gc_master_provider_set_position_providers (client, providers);
 	gc_master_client_choose_position_provider (client, priv->position_providers);
 }
@@ -616,21 +616,21 @@ gc_master_client_init_address_providers (GcMasterClient *client)
 {
 	GList *providers;
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
-	
+
 	if (!priv->address_started) {
 		return;
 	}
-	 
+
 	/* TODO: free priv->address_providers */
-	
+
 	providers = gc_master_get_providers (GC_IFACE_ADDRESS,
 	                                     priv->min_accuracy,
 	                                     priv->require_updates,
 	                                     priv->allowed_resources,
 	                                     NULL);
-	g_debug ("client: %d address providers matching requirements found, now choosing current provider", 
+	g_debug ("client: %d address providers matching requirements found, now choosing current provider",
 	         g_list_length (providers));
-	
+
 	gc_master_provider_set_address_providers (client, providers);
 	gc_master_client_choose_address_provider (client, priv->address_providers);
 }
@@ -644,25 +644,25 @@ gc_iface_master_client_set_requirements (GcMasterClient        *client,
 					 GError               **error)
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
-	
+
 	priv->min_accuracy = min_accuracy;
 	priv->min_time = min_time;
 	priv->require_updates = require_updates;
 	priv->allowed_resources = allowed_resources;
-	
+
 	gc_master_client_init_position_providers (client);
 	gc_master_client_init_address_providers (client);
-	
+
 	return TRUE;
 }
 
 
-static gboolean 
-gc_iface_master_client_position_start (GcMasterClient *client, 
+static gboolean
+gc_iface_master_client_position_start (GcMasterClient *client,
                                        GError         **error)
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
-	
+
 	if (priv->position_providers) {
 		if (error) {
 			*error = g_error_new (GEOCLUE_ERROR,
@@ -671,20 +671,20 @@ gc_iface_master_client_position_start (GcMasterClient *client,
 		}
 		return FALSE;
 	}
-	
+
 	priv->position_started = TRUE;
-	
-	gc_master_client_init_position_providers (client); 
-	
+
+	gc_master_client_init_position_providers (client);
+
 	return TRUE;
 }
 
-static gboolean 
+static gboolean
 gc_iface_master_client_address_start (GcMasterClient *client,
                                       GError         **error)
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
-	
+
 	if (priv->address_providers) {
 		if (error) {
 			*error = g_error_new (GEOCLUE_ERROR,
@@ -693,7 +693,7 @@ gc_iface_master_client_address_start (GcMasterClient *client,
 		}
 		return FALSE;
 	}
-	
+
 	priv->address_started = TRUE;
 	gc_master_client_init_address_providers (client);
 	return TRUE;
@@ -735,9 +735,9 @@ get_master_provider_details (GcMasterProvider  *provider,
 		}
 	}
 }
-                             
 
-static gboolean 
+
+static gboolean
 gc_iface_master_client_get_address_provider (GcMasterClient  *client,
                                              char           **name,
                                              char           **description,
@@ -746,13 +746,13 @@ gc_iface_master_client_get_address_provider (GcMasterClient  *client,
                                              GError         **error)
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
-	
+
 	get_master_provider_details (priv->address_provider,
 	                             name, description, service, path);
 	return TRUE;
 }
 
-static gboolean 
+static gboolean
 gc_iface_master_client_get_position_provider (GcMasterClient  *client,
                                               char           **name,
                                               char           **description,
@@ -761,7 +761,7 @@ gc_iface_master_client_get_position_provider (GcMasterClient  *client,
                                               GError         **error)
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
-	
+
 	get_master_provider_details (priv->position_provider,
 	                             name, description, service, path);
 	return TRUE;
@@ -772,7 +772,7 @@ finalize (GObject *object)
 {
 	GcMasterClient *client = GC_MASTER_CLIENT (object);
 	GcMasterClientPrivate *priv = GET_PRIVATE (object);
-	
+
 	/* do not free contents of the lists, Master takes care of them */
 	if (priv->position_providers) {
 		gc_master_client_unsubscribe_providers (client, priv->position_providers, GC_IFACE_ALL);
@@ -784,7 +784,7 @@ finalize (GObject *object)
 		g_list_free (priv->address_providers);
 		priv->address_providers = NULL;
 	}
-	
+
 	((GObjectClass *) gc_master_client_parent_class)->finalize (object);
 }
 
@@ -792,12 +792,12 @@ static void
 gc_master_client_class_init (GcMasterClientClass *klass)
 {
 	GObjectClass *o_class = (GObjectClass *) klass;
-	
+
 	o_class->finalize = finalize;
-	
+
 	g_type_class_add_private (klass, sizeof (GcMasterClientPrivate));
-	
-	signals[ADDRESS_PROVIDER_CHANGED] = 
+
+	signals[ADDRESS_PROVIDER_CHANGED] =
 		g_signal_new ("address-provider-changed",
 		              G_OBJECT_CLASS_TYPE (klass),
 		              G_SIGNAL_RUN_LAST, 0,
@@ -805,7 +805,7 @@ gc_master_client_class_init (GcMasterClientClass *klass)
 		              geoclue_marshal_VOID__STRING_STRING_STRING_STRING,
 		              G_TYPE_NONE, 4,
 		              G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-	signals[POSITION_PROVIDER_CHANGED] = 
+	signals[POSITION_PROVIDER_CHANGED] =
 		g_signal_new ("position-provider-changed",
 		              G_OBJECT_CLASS_TYPE (klass),
 		              G_SIGNAL_RUN_LAST, 0,
@@ -813,10 +813,10 @@ gc_master_client_class_init (GcMasterClientClass *klass)
 		              geoclue_marshal_VOID__STRING_STRING_STRING_STRING,
 		              G_TYPE_NONE, 4,
 		              G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-	
+
 	dbus_g_object_type_install_info (gc_master_client_get_type (),
 					 &dbus_glib_gc_iface_master_client_object_info);
-	
+
 
 }
 
@@ -824,14 +824,14 @@ static void
 gc_master_client_init (GcMasterClient *client)
 {
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
-	
+
 	priv->position_provider_choice_in_progress = FALSE;
 	priv->address_provider_choice_in_progress = FALSE;
-	
+
 	priv->position_started = FALSE;
 	priv->position_provider = NULL;
 	priv->position_providers = NULL;
-	
+
 	priv->address_started = FALSE;
 	priv->address_provider = NULL;
 	priv->address_providers = NULL;
@@ -849,7 +849,7 @@ get_position (GcIfacePosition       *iface,
 {
 	GcMasterClient *client = GC_MASTER_CLIENT (iface);
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
-	
+
 	if (priv->position_provider == NULL) {
 		if (error) {
 			*error = g_error_new (GEOCLUE_ERROR,
@@ -858,7 +858,7 @@ get_position (GcIfacePosition       *iface,
 		}
 		return FALSE;
 	}
-	
+
 	*fields = gc_master_provider_get_position
 		(priv->position_provider,
 		 timestamp,
@@ -868,7 +868,7 @@ get_position (GcIfacePosition       *iface,
 	return (!*error);
 }
 
-static gboolean 
+static gboolean
 get_address (GcIfaceAddress   *iface,
              int              *timestamp,
              GHashTable      **address,
@@ -877,7 +877,7 @@ get_address (GcIfaceAddress   *iface,
 {
 	GcMasterClient *client = GC_MASTER_CLIENT (iface);
 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
-	
+
 	if (priv->address_provider == NULL) {
 		if (error) {
 			*error = g_error_new (GEOCLUE_ERROR,
@@ -886,7 +886,7 @@ get_address (GcIfaceAddress   *iface,
 		}
 		return FALSE;
 	}
-	
+
 	return gc_master_provider_get_address
 		(priv->address_provider,
 		 timestamp,
@@ -911,12 +911,12 @@ set_options (GcIfaceGeoclue *geoclue,
              GError        **error)
 {
 	/* not meaningful, options come from master */
-	
+
 	/* It is not an error to not have a SetOptions implementation */
 	return TRUE;
 }
 
-static gboolean 
+static gboolean
 get_provider_info (GcIfaceGeoclue  *geoclue,
 		   gchar          **name,
 		   gchar          **description,

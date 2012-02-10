@@ -4,7 +4,7 @@
  *
  * Provider options are not used in this sample. See other files for
  * examples on that.
- * 
+ *
  * Author: Jussi Kukkonen <jku@openedhand.com>
  * Copyright 2007, 2008 by Garmin Ltd. or its subsidiaries
  *
@@ -36,9 +36,9 @@ int main (int argc, char** argv)
 	double lat, lon;
 	GeoclueAccuracy *accuracy = NULL;
 	GError *error = NULL;
-	
+
 	g_type_init();
-	
+
 	if (argc < 2) {
 		g_printerr ("Usage:\n  geocode-example <provider_name> [\"freeform address\"]\n\n"
 		            "  If freeform address is not given, a hard coded address hash "
@@ -67,10 +67,10 @@ int main (int argc, char** argv)
 		geoclue_address_details_insert (address, "countrycode", "FI");
 		geoclue_address_details_insert (address, "street", "Solnantie 24");
 
-		/* Geocode. We're not interested in altitude 
+		/* Geocode. We're not interested in altitude
 		   this time, so leave it NULL. */
-		fields = geoclue_geocode_address_to_position (geocoder, address, 
-			                                      &lat, &lon, NULL, 
+		fields = geoclue_geocode_address_to_position (geocoder, address,
+			                                      &lat, &lon, NULL,
 			                                      &accuracy, &error);
 		g_hash_table_destroy (address);
 	} else {
@@ -87,26 +87,26 @@ int main (int argc, char** argv)
 		g_printerr ("Error while geocoding: %s\n", error->message);
 		g_error_free (error);
 		g_object_unref (geocoder);
-		
+
 		return 1;
 	}
 
 	    /* Print out coordinates if they are valid */
 	if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE &&
 	    fields & GEOCLUE_POSITION_FIELDS_LONGITUDE) {
-		
+
 		GeoclueAccuracyLevel level;
-		
+
 		geoclue_accuracy_get_details (accuracy, &level, NULL, NULL);
 		g_print ("Geocoded position (accuracy level %d): \n", level);
 		g_print ("\t%f, %f\n", lat, lon);
-		
+
 	} else {
 		g_print ("Latitude and longitude not available.\n");
 	}
-	
+
 	geoclue_accuracy_free (accuracy);
 	g_object_unref (geocoder);
 	return 0;
-	
+
 }

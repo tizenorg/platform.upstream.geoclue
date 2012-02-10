@@ -1,27 +1,27 @@
 /**
- * 
+ *
  * Expects to find a keyfile in user config dir
- * (~/.config/geoclue-localnet-gateways). 
- * 
+ * (~/.config/geoclue-localnet-gateways).
+ *
  * The keyfile should contain entries like this:
- * 
+ *
  * [00:1D:7E:55:8D:80]
  * country=Finland
  * street=Solnantie 24
  * locality=Helsinki
  *
- * Only address interface is supported so far. 
- * 
- * Any application that can obtain a reliable address can submit it 
+ * Only address interface is supported so far.
+ *
+ * Any application that can obtain a reliable address can submit it
  * to localnet provider through the D-Bus API -- it will then be provided
  * whenever connected to the same router:
  *    org.freedesktop.Geoclue.Localnet.SetAddress
  *    org.freedesktop.Geoclue.Localnet.SetAddressFields
  *
- * SetAddress allows setting the current address as a GeoclueAddress, 
- * while SetAddressFields is a convenience version with separate 
+ * SetAddress allows setting the current address as a GeoclueAddress,
+ * while SetAddressFields is a convenience version with separate
  * address fields. Shell example using SetAddressFields:
- * 
+ *
   dbus-send --print-reply --type=method_call \
             --dest=org.freedesktop.Geoclue.Providers.Localnet \
             /org/freedesktop/Geoclue/Providers/Localnet \
@@ -33,9 +33,9 @@
             string: \
             string: \
             string:"Solnantie 24"
-  
- * This would make the provider save the specified address with current 
- * router mac address. It will provide the address to clients whenever 
+
+ * This would make the provider save the specified address with current
+ * router mac address. It will provide the address to clients whenever
  * the computer is connected to the same router again.
  *
  * This library is free software; you can redistribute it and/or
@@ -53,7 +53,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- */ 
+ */
 
 #include <config.h>
 
@@ -80,9 +80,9 @@ typedef struct {
 
 typedef struct {
 	GcProvider parent;
-	
+
 	GMainLoop *loop;
-	
+
 	char *keyfile_name;
 	GSList *gateways;
 } GeoclueLocalnet;
@@ -118,7 +118,7 @@ static void
 shutdown (GcProvider *provider)
 {
 	GeoclueLocalnet *localnet;
-	
+
 	localnet = GEOCLUE_LOCALNET (provider);
 	g_main_loop_quit (localnet->loop);
 }
@@ -127,17 +127,17 @@ static void
 free_gateway_list (GSList *gateways)
 {
 	GSList *l;
-	
+
 	l = gateways;
 	while (l) {
 		Gateway *gw;
-		
+
 		gw = l->data;
 		g_free (gw->mac);
 		g_hash_table_destroy (gw->address);
 		geoclue_accuracy_free (gw->accuracy);
 		g_free (gw);
-		
+
 		l = l->next;
 	}
 	g_slist_free (gateways);
@@ -147,12 +147,12 @@ static void
 finalize (GObject *object)
 {
 	GeoclueLocalnet *localnet;
-	
+
 	localnet = GEOCLUE_LOCALNET (object);
-	
+
 	g_free (localnet->keyfile_name);
 	free_gateway_list (localnet->gateways);
-	
+
 	G_OBJECT_CLASS (geoclue_localnet_parent_class)->finalize (object);
 }
 
@@ -161,24 +161,24 @@ geoclue_localnet_class_init (GeoclueLocalnetClass *klass)
 {
 	GcProviderClass *p_class = (GcProviderClass *) klass;
 	GObjectClass *o_class = (GObjectClass *) klass;
-	
+
 	o_class->finalize = finalize;
-	
+
 	p_class->get_status = get_status;
 	p_class->shutdown = shutdown;
-	
+
 	dbus_g_object_type_install_info (geoclue_localnet_get_type (),
 	                                 &dbus_glib_geoclue_localnet_object_info);
 
 }
 
 /* Parse /proc/net/route to get default gateway address and then parse
- * /proc/net/arp to find matching mac address. 
+ * /proc/net/arp to find matching mac address.
  *
  * There are some problems with this. First, it's IPv4 only.
  * Second, there must be a way to do this with ioctl, but that seemed really
- * complicated... even /usr/sbin/arp parses /proc/net/arp 
- * 
+ * complicated... even /usr/sbin/arp parses /proc/net/arp
+ *
  * returns:
  *   1 : on success
  *   0 : no success, no errors
@@ -207,8 +207,8 @@ get_mac_address (char **mac)
 	while (*entry && strlen (*entry) > 0) {
 		char dest[9];
 		char gateway[9];
-		if (sscanf (*entry, 
-			        "%*s %8[0-9A-Fa-f] %8[0-9A-Fa-f] %*s", 
+		if (sscanf (*entry,
+			        "%*s %8[0-9A-Fa-f] %8[0-9A-Fa-f] %*s",
 			        dest, gateway) != 2) {
 			g_warning ("Failed to parse /proc/net/route entry '%s'", *entry);
 		} else if (strcmp (dest, "00000000") == 0) {
@@ -217,7 +217,7 @@ get_mac_address (char **mac)
 		}
 		entry++;
 	}
-	g_strfreev (lines);	
+	g_strfreev (lines);
 
 	if (!route_gateway) {
 		g_warning ("Failed to find default route in /proc/net/route");
@@ -229,7 +229,7 @@ get_mac_address (char **mac)
 		g_error_free (error);
 		return -1;
 	}
-	
+
 	lines = g_strsplit (content, "\n", 0);
 	g_free (content);
 	entry = lines+1;
@@ -237,9 +237,9 @@ get_mac_address (char **mac)
 		char hwa[100];
 		char *arp_gateway;
 		int ip[4];
-		
-		if (sscanf(*entry, 
-		           "%d.%d.%d.%d 0x%*x 0x%*x %100s %*s %*s\n", 
+
+		if (sscanf(*entry,
+		           "%d.%d.%d.%d 0x%*x 0x%*x %100s %*s %*s\n",
 		           &ip[0], &ip[1], &ip[2], &ip[3], hwa) != 5) {
 			g_warning ("Failed to parse /proc/net/arp entry '%s'", *entry);
 		} else {
@@ -250,7 +250,7 @@ get_mac_address (char **mac)
 				break;
 			}
 			g_free (arp_gateway);
-			
+
 		}
 		entry++;
 	}
@@ -261,13 +261,13 @@ get_mac_address (char **mac)
 }
 
 static void
-geoclue_localnet_load_gateways_from_keyfile (GeoclueLocalnet  *localnet, 
+geoclue_localnet_load_gateways_from_keyfile (GeoclueLocalnet  *localnet,
                                              GKeyFile         *keyfile)
 {
 	char **groups;
 	char **g;
 	GError *error = NULL;
-	
+
 	groups = g_key_file_get_groups (keyfile, NULL);
 	g = groups;
 	while (*g) {
@@ -275,36 +275,36 @@ geoclue_localnet_load_gateways_from_keyfile (GeoclueLocalnet  *localnet,
 		char **keys;
 		char **k;
 		Gateway *gateway = g_new0 (Gateway, 1);
-		
+
 		gateway->mac = g_ascii_strdown (*g, -1);
 		gateway->address = geoclue_address_details_new ();
-		
+
 		/* read all keys in the group as address fields */
 		keys = g_key_file_get_keys (keyfile, *g,
 		                            NULL, &error);
 		if (error) {
-			g_warning ("Could not load keys for group [%s] from %s: %s", 
+			g_warning ("Could not load keys for group [%s] from %s: %s",
 			           *g, localnet->keyfile_name, error->message);
 			g_error_free (error);
 			error = NULL;
 		}
-		
+
 		k = keys;
 		while (*k) {
 			char *value;
-			
+
 			value = g_key_file_get_string (keyfile, *g, *k, NULL);
-			g_hash_table_insert (gateway->address, 
+			g_hash_table_insert (gateway->address,
 			                     *k, value);
 			k++;
 		}
 		g_free (keys);
-		
+
 		level = geoclue_address_details_get_accuracy_level (gateway->address);
 		gateway->accuracy = geoclue_accuracy_new (level, 0, 0);
-		
+
 		localnet->gateways = g_slist_prepend (localnet->gateways, gateway);
-		
+
 		g++;
 	}
 	g_strfreev (groups);
@@ -314,19 +314,19 @@ static Gateway *
 geoclue_localnet_find_gateway (GeoclueLocalnet *localnet, char *mac)
 {
 	GSList *l;
-	
+
 	l = localnet->gateways;
 	/* eww, should be using a hashtable or something here */
 	while (l) {
 		Gateway *gw = l->data;
-		
+
 		if (strcmp (gw->mac, mac) == 0) {
 			return gw;
 		}
-		
+
 		l = l->next;
 	}
-	
+
 	return NULL;
 }
 
@@ -336,31 +336,31 @@ geoclue_localnet_init (GeoclueLocalnet *localnet)
 	const char *dir;
 	GKeyFile *keyfile;
 	GError *error = NULL;
-	
+
 	gc_provider_set_details (GC_PROVIDER (localnet),
 	                         "org.freedesktop.Geoclue.Providers.Localnet",
 	                         "/org/freedesktop/Geoclue/Providers/Localnet",
 	                         "Localnet", "provides Address based on current gateway mac address and a local address file (which can be updated through D-Bus)");
-	
-	
+
+
 	localnet->gateways = NULL;
-	
+
 	/* load known addresses from keyfile */
 	dir = g_get_user_config_dir ();
 	g_mkdir_with_parents (dir, 0755);
 	localnet->keyfile_name = g_build_filename (dir, KEYFILE_NAME, NULL);
-	
+
 	keyfile = g_key_file_new ();
-	if (!g_key_file_load_from_file (keyfile, localnet->keyfile_name, 
+	if (!g_key_file_load_from_file (keyfile, localnet->keyfile_name,
 	                                G_KEY_FILE_NONE, &error)) {
-		g_warning ("Could not load keyfile %s: %s", 
+		g_warning ("Could not load keyfile %s: %s",
 		           localnet->keyfile_name, error->message);
 		g_error_free (error);
 	}
 	geoclue_localnet_load_gateways_from_keyfile (localnet, keyfile);
 	g_key_file_free (keyfile);
-	
-	
+
+
 }
 
 typedef struct {
@@ -369,7 +369,7 @@ typedef struct {
 } localnet_keyfile_group;
 
 static void
-add_address_detail_to_keyfile (char *key, char *value, 
+add_address_detail_to_keyfile (char *key, char *value,
                                localnet_keyfile_group *group)
 {
 	g_key_file_set_string (group->keyfile, group->group_name,
@@ -386,15 +386,15 @@ geoclue_localnet_set_address (GeoclueLocalnet *localnet,
 	GError *int_err = NULL;
 	localnet_keyfile_group *keyfile_group;
 	Gateway *gw;
-	
+
 	if (!details) {
 		/* TODO set error */
 		return FALSE;
 	}
-	
-	if (get_mac_address (&mac) < 0) 
+
+	if (get_mac_address (&mac) < 0)
 		return FALSE;
-	
+
 	if (!mac) {
 		g_warning ("Couldn't get current gateway mac address");
 		/* TODO set error */
@@ -402,23 +402,23 @@ geoclue_localnet_set_address (GeoclueLocalnet *localnet,
 	}
 	/* reload keyfile just in case it's changed */
 	keyfile = g_key_file_new ();
-	if (!g_key_file_load_from_file (keyfile, localnet->keyfile_name, 
+	if (!g_key_file_load_from_file (keyfile, localnet->keyfile_name,
 	                                G_KEY_FILE_NONE, &int_err)) {
-		g_warning ("Could not load keyfile %s: %s", 
+		g_warning ("Could not load keyfile %s: %s",
 		         localnet->keyfile_name, int_err->message);
 		g_error_free (int_err);
 		int_err = NULL;
 	}
-	
+
 	/* remove old group (if exists) and add new to GKeyFile */
 	g_key_file_remove_group (keyfile, mac, NULL);
-	
+
 	keyfile_group = g_new0 (localnet_keyfile_group, 1);
 	keyfile_group->keyfile = keyfile;
 	keyfile_group->group_name = mac;
 	g_hash_table_foreach (details, (GHFunc) add_address_detail_to_keyfile, keyfile_group);
 	g_free (keyfile_group);
-	
+
 	/* save keyfile*/
 	str = g_key_file_to_data (keyfile, NULL, &int_err);
 	if (int_err) {
@@ -429,7 +429,7 @@ geoclue_localnet_set_address (GeoclueLocalnet *localnet,
 		/* TODO set error */
 		return FALSE;
 	}
-	
+
 	g_file_set_contents (localnet->keyfile_name, str, -1, &int_err);
 	g_free (str);
 	if (int_err) {
@@ -440,16 +440,16 @@ geoclue_localnet_set_address (GeoclueLocalnet *localnet,
 		/* TODO set error */
 		return FALSE;
 	}
-	
+
 	/* re-parse keyfile */
 	free_gateway_list (localnet->gateways);
 	localnet->gateways = NULL;
 	geoclue_localnet_load_gateways_from_keyfile (localnet, keyfile);
 	g_key_file_free (keyfile);
-	
+
 	gw = geoclue_localnet_find_gateway (localnet, mac);
 	g_free (mac);
-	
+
 	if (gw) {
 		gc_iface_address_emit_address_changed (GC_IFACE_ADDRESS (localnet),
 		                                       time (NULL), gw->address, gw->accuracy);
@@ -472,11 +472,11 @@ geoclue_localnet_set_address_fields (GeoclueLocalnet *localnet,
 {
 	GHashTable *address;
 	gboolean ret;
-	
+
 	address = geoclue_address_details_new ();
 	if (country_code && (strlen (country_code) > 0)) {
 		g_hash_table_insert (address,
-		                     g_strdup (GEOCLUE_ADDRESS_KEY_COUNTRYCODE), 
+		                     g_strdup (GEOCLUE_ADDRESS_KEY_COUNTRYCODE),
 		                     g_strdup (country_code));
 		if (!country) {
 			geoclue_address_details_set_country_from_code (address);
@@ -484,35 +484,35 @@ geoclue_localnet_set_address_fields (GeoclueLocalnet *localnet,
 	}
 	if (country && (strlen (country) > 0)) {
 		g_hash_table_insert (address,
-		                     g_strdup (GEOCLUE_ADDRESS_KEY_COUNTRY), 
+		                     g_strdup (GEOCLUE_ADDRESS_KEY_COUNTRY),
 		                     g_strdup (country));
 	}
 	if (region && (strlen (region) > 0)) {
 		g_hash_table_insert (address,
-		                     g_strdup (GEOCLUE_ADDRESS_KEY_REGION), 
+		                     g_strdup (GEOCLUE_ADDRESS_KEY_REGION),
 		                     g_strdup (region));
 	}
 	if (locality && (strlen (locality) > 0)) {
 		g_hash_table_insert (address,
-		                     g_strdup (GEOCLUE_ADDRESS_KEY_LOCALITY), 
+		                     g_strdup (GEOCLUE_ADDRESS_KEY_LOCALITY),
 		                     g_strdup (locality));
 	}
 	if (area && (strlen (area) > 0)) {
 		g_hash_table_insert (address,
-		                     g_strdup (GEOCLUE_ADDRESS_KEY_AREA), 
+		                     g_strdup (GEOCLUE_ADDRESS_KEY_AREA),
 		                     g_strdup (area));
 	}
 	if (postalcode && (strlen (postalcode) > 0)) {
 		g_hash_table_insert (address,
-		                     g_strdup (GEOCLUE_ADDRESS_KEY_POSTALCODE), 
+		                     g_strdup (GEOCLUE_ADDRESS_KEY_POSTALCODE),
 		                     g_strdup (postalcode));
 	}
 	if (street && (strlen (street) > 0)) {
 		g_hash_table_insert (address,
-		                     g_strdup (GEOCLUE_ADDRESS_KEY_STREET), 
+		                     g_strdup (GEOCLUE_ADDRESS_KEY_STREET),
 		                     g_strdup (street));
 	}
-	
+
 	ret = geoclue_localnet_set_address (localnet,
 	                                    address,
 	                                    error);
@@ -531,10 +531,10 @@ get_address (GcIfaceAddress   *gc,
 	int i, ret_val;
 	char *mac = NULL;
 	Gateway *gw;
-	
+
 	localnet = GEOCLUE_LOCALNET (gc);
 
-	/* we may be trying to read /proc/net/arp right after network connection. 
+	/* we may be trying to read /proc/net/arp right after network connection.
 	 * It's sometimes not up yet, try a couple of times */
 	for (i = 0; i < 5; i++) {
 		ret_val = get_mac_address (&mac);
@@ -544,19 +544,19 @@ get_address (GcIfaceAddress   *gc,
 			break;
 		usleep (200);
 	}
-	
+
 	if (!mac) {
 		g_warning ("Couldn't get current gateway mac address");
 		if (error) {
-			g_set_error (error, GEOCLUE_ERROR, 
+			g_set_error (error, GEOCLUE_ERROR,
 			             GEOCLUE_ERROR_NOT_AVAILABLE, "Could not get current gateway mac address");
 		}
 		return FALSE;
 	}
-	
+
 	gw = geoclue_localnet_find_gateway (localnet, mac);
 	g_free (mac);
-	
+
 	if (timestamp) {
 		*timestamp = time(NULL);
 	}
@@ -588,16 +588,16 @@ main (int    argc,
       char **argv)
 {
 	GeoclueLocalnet *localnet;
-	
+
 	g_type_init ();
-	
+
 	localnet = g_object_new (GEOCLUE_TYPE_LOCALNET, NULL);
 	localnet->loop = g_main_loop_new (NULL, TRUE);
-	
+
 	g_main_loop_run (localnet->loop);
-	
+
 	g_main_loop_unref (localnet->loop);
 	g_object_unref (localnet);
-	
+
 	return 0;
 }

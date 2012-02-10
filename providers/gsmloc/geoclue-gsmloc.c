@@ -1,7 +1,7 @@
 /*
  * Geoclue
  * geoclue-gsmloc.c - A GSM cell based Position provider
- * 
+ *
  * Author: Jussi Kukkonen <jku@linux.intel.com>
  * Copyright 2008 by Garmin Ltd. or its subsidiaries
  *           2010 Intel Corporation
@@ -23,18 +23,18 @@
  *
  */
 
- /** 
-  * Gsmloc provider is a position and address provider that uses GSM cell 
+ /**
+  * Gsmloc provider is a position and address provider that uses GSM cell
   * location and the webservice http://www.opencellid.org/ (a similar service
   * used to live at gsmloc.org, hence the name). The web service does not
-  * provide any address data: that is done with a 
+  * provide any address data: that is done with a
   * "mobile country code -> ISO country code" lookup table: as a result address
   * will only ever have country code and country fields.
-  * 
+  *
   * Gsmloc requires the telephony stack oFono to work -- more IMSI data
-  * sources could be added fairly easily. 
+  * sources could be added fairly easily.
   **/
-  
+
 #include <config.h>
 
 #include <time.h>
@@ -122,7 +122,7 @@ geoclue_gsmloc_get_status (GcIfaceGeoclue *iface,
 	} else if (!gsmloc->mcc || !gsmloc->mnc ||
 	           !gsmloc->lac || !gsmloc->cid) {
 		*status = GEOCLUE_STATUS_UNAVAILABLE;
-	} else { 
+	} else {
 		*status = GEOCLUE_STATUS_AVAILABLE;
 	}
 	return TRUE;
@@ -152,11 +152,11 @@ geoclue_gsmloc_query_opencellid (GeoclueGsmloc *gsmloc)
 		                          "cellid", gsmloc->cid,
 		                          (char *)0)) {
 
-			if (gc_web_service_get_double (gsmloc->web_service, 
+			if (gc_web_service_get_double (gsmloc->web_service,
 			                               &lat, OPENCELLID_LAT)) {
 				fields |= GEOCLUE_POSITION_FIELDS_LATITUDE;
 			}
-			if (gc_web_service_get_double (gsmloc->web_service, 
+			if (gc_web_service_get_double (gsmloc->web_service,
 			                               &lon, OPENCELLID_LON)) {
 				fields |= GEOCLUE_POSITION_FIELDS_LONGITUDE;
 			}
@@ -164,10 +164,10 @@ geoclue_gsmloc_query_opencellid (GeoclueGsmloc *gsmloc)
 			if (fields != GEOCLUE_POSITION_FIELDS_NONE) {
 				char *retval_cid;
 				/* if cellid is not present, location is for the local area code.
-				 * the accuracy might be an overstatement -- I have no idea how 
+				 * the accuracy might be an overstatement -- I have no idea how
 				 * big LACs typically are */
 				level = GEOCLUE_ACCURACY_LEVEL_LOCALITY;
-				if (gc_web_service_get_string (gsmloc->web_service, 
+				if (gc_web_service_get_string (gsmloc->web_service,
 				                               &retval_cid, OPENCELLID_CID)) {
 					if (retval_cid && strlen (retval_cid) != 0) {
 						level = GEOCLUE_ACCURACY_LEVEL_POSTALCODE;
@@ -243,13 +243,13 @@ geoclue_gsmloc_update_address (GeoclueGsmloc *gsmloc)
 		                                       time (NULL),
 		                                       gsmloc->address,
 		                                       acc);
-		
+
 	}
 	geoclue_accuracy_free (acc);
 }
 static void
 geoclue_gsmloc_set_cell (GeoclueGsmloc *gsmloc,
-                         const char *mcc, const char *mnc, 
+                         const char *mcc, const char *mnc,
                          const char *lac, const char *cid)
 {
 	g_free (gsmloc->mcc);
@@ -268,7 +268,7 @@ geoclue_gsmloc_set_cell (GeoclueGsmloc *gsmloc,
 
 static void
 network_data_changed_cb (gpointer connection_manager,
-                         const char *mcc, const char *mnc, 
+                         const char *mcc, const char *mnc,
                          const char *lac, const char *cid,
                          GeoclueGsmloc *gsmloc)
 {
@@ -284,7 +284,7 @@ network_data_changed_cb (gpointer connection_manager,
 
 /* Position interface implementation */
 
-static gboolean 
+static gboolean
 geoclue_gsmloc_get_position (GcIfacePosition        *iface,
                              GeocluePositionFields  *fields,
                              int                    *timestamp,
@@ -392,7 +392,7 @@ geoclue_gsmloc_init (GeoclueGsmloc *gsmloc)
 {
 	gsmloc->address = geoclue_address_details_new ();
 
-	gc_provider_set_details (GC_PROVIDER (gsmloc), 
+	gc_provider_set_details (GC_PROVIDER (gsmloc),
 	                         GEOCLUE_DBUS_SERVICE_GSMLOC,
 	                         GEOCLUE_DBUS_PATH_GSMLOC,
 	                         "Gsmloc", "GSM cell based position provider");
@@ -422,7 +422,7 @@ geoclue_gsmloc_address_init (GcIfaceAddressClass  *iface)
 	iface->get_address = geoclue_gsmloc_get_address;
 }
 
-int 
+int
 main()
 {
 	g_type_init();

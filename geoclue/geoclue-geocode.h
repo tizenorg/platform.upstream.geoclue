@@ -1,6 +1,6 @@
 /*
  * Geoclue
- * geoclue-geocode.h - 
+ * geoclue-geocode.h -
  *
  * Authors: Iain Holmes <iain@openedhand.com>
  *          Jussi Kukkonen <jku@linux.intel.com>
@@ -53,7 +53,7 @@ GType geoclue_geocode_get_type (void);
 GeoclueGeocode *geoclue_geocode_new (const char *service,
 				     const char *path);
 
-GeocluePositionFields 
+GeocluePositionFields
 geoclue_geocode_address_to_position (GeoclueGeocode   *geocode,
 				     GHashTable       *details,
 				     double           *latitude,

@@ -6,28 +6,28 @@
 	<section id="overview">
 		<title>Overview</title>
 		<para>
-			Geoclue providers are D-Bus services that provide geoinformation services 
-			by implementing defined interfaces (such as Position, Address or Geocode). 
-			Writing a provider is possible in any language with D-Bus, but 
-			Geoclue bindings are provided only for C. This how-to will outline the steps 
-			needed to write a provider for Geoclue  and provides  
-			source code in C. The full source code for an exmple provider  and several 
+			Geoclue providers are D-Bus services that provide geoinformation services
+			by implementing defined interfaces (such as Position, Address or Geocode).
+			Writing a provider is possible in any language with D-Bus, but
+			Geoclue bindings are provided only for C. This how-to will outline the steps
+			needed to write a provider for Geoclue  and provides
+			source code in C. The full source code for an exmple provider  and several
 			other providers can be found in providers/ directory in the Geoclue source tree.
 		</para>
 		<para>
 			The only must-have requirements for providers are:
 			<itemizedlist>
-				<listitem>Must implement the *Geoclue*-interface. This interface has 
-				some generic methods and signals for getting information about the 
+				<listitem>Must implement the *Geoclue*-interface. This interface has
+				some generic methods and signals for getting information about the
 				provider and its status </listitem>
-				<listitem>Must provide a service file. This is used by D-Bus to start the 
+				<listitem>Must provide a service file. This is used by D-Bus to start the
 				service when needed.</listitem>
 			</itemizedlist>
 		</para>
 		<para>
-			A useful provider will also implement one, or several, other interfaces. It should 
+			A useful provider will also implement one, or several, other interfaces. It should
 			also have a .provider-file so GeoclueMaster can use it.
-			This howto will use "Position"-interface as an example. Possible interfaces 
+			This howto will use "Position"-interface as an example. Possible interfaces
 			are listed here:
 		</para>
 		<variablelist>
@@ -49,7 +49,7 @@
 
 			<varlistentry>
 				<term>Address</term>
-				<listitem><para>Methods and signals for acquiring current address 
+				<listitem><para>Methods and signals for acquiring current address
 				(e.g. country, city, street address).</para></listitem>
 			</varlistentry>
 
@@ -64,19 +64,19 @@
 			</varlistentry>
 		</variablelist>
 	</section>
-	
+
 	<section id="example_in_c">
 		<title>Minimal example in C</title>
 		<para>
-			In this chapter we'll look at implementing a minimal provider (which just implements 
-			Geoclue-interface). Next chapter will show how other interface implementations can 
+			In this chapter we'll look at implementing a minimal provider (which just implements
+			Geoclue-interface). Next chapter will show how other interface implementations can
 			be added using GObject interfaces.
 		</para>
 		<sect2 id="service_file">
 			<title>Service file</title>
 			<para>
 				Once your provider is installed, the service file allows D-Bus to start it
-				on demand. This is what your 
+				on demand. This is what your
 				org.freedesktop.Geoclue.Providers.MyExample.service.in should look like
 				(see Makefile.am for the processing):
 			</para>
@@ -85,13 +85,13 @@
 Name=org.freedesktop.Geoclue.Providers.MyExample
 Exec=@libexecdir@/geoclue-my-example
 				</programlisting>
-		
+
 		</sect2>
-		
+
 		<sect2 id="provider_file">
 			<title>Provider file</title>
 			<para>
-				Provider files describe the provider for Geoclue Master. This is still 
+				Provider files describe the provider for Geoclue Master. This is still
 				somewhat experimental, but a .provider-file for MyExample should look like this:
 			</para>
 			<programlisting>
@@ -112,8 +112,8 @@ Requires=
 		<sect2>
 			<subtitle>Makefile.am and configure.ac</subtitle>
 			<para>
-				A typical provider can be implemented in a single c-file with a very short 
-				Makefile.am. This snippet assumes the code is built inside the geoclue source 
+				A typical provider can be implemented in a single c-file with a very short
+				Makefile.am. This snippet assumes the code is built inside the geoclue source
 				tree:
 			</para>
 			<programlisting>
@@ -142,18 +142,18 @@ $(service_DATA): $(service_in_files) Makefile
 	@sed -e "s|\@libexecdir\@|$(libexecdir)|" $&lt; &gt; $@
 			</programlisting>
 			<para>
-				To get the provider built along with everything else in Geoclue, configure.ac 
-				must be edited: The Makefile filename needs to be added into $AC_CONFIG_FILES 
+				To get the provider built along with everything else in Geoclue, configure.ac
+				must be edited: The Makefile filename needs to be added into $AC_CONFIG_FILES
 				and the provider directory needs to be added to $PROVIDER_SUBDIRS.
 			</para>
 		</sect2>
 		<sect2>
-			
+
 			<subtitle>The code</subtitle>
 			<para>
-			When coding in C, providers should be implemented as GObjects derived from 
-			GcProvider, as GcProvider will take care of the D-Bus service setup (name 
-			request and object registration). It will also partially implement the 
+			When coding in C, providers should be implemented as GObjects derived from
+			GcProvider, as GcProvider will take care of the D-Bus service setup (name
+			request and object registration). It will also partially implement the
 			Geoclue-interface.
 			</para>
 
@@ -184,11 +184,11 @@ G_DEFINE_TYPE (GeoclueExample, geoclue_example, GC_TYPE_PROVIDER)
 			</programlisting>
 
 			<para>
-			Next, implement Geoclue-interface functions (take a look at gc-iface-geoclue.h) 
+			Next, implement Geoclue-interface functions (take a look at gc-iface-geoclue.h)
 			and use them to override GcProvider:
 			</para>
 			<programlisting>
-static gboolean 
+static gboolean
 get_status (GcIfaceGeoclue *gc,
 		gboolean       *available,
 		GError        **error)
@@ -218,9 +218,9 @@ geoclue_example_class_init (GeoclueExampleClass *klass)
 }
 			</programlisting>
 			<para>
-			get_status() and shutdown() return TRUE as an indication that the method 
-			was succesfully invoked. The actual return values are set in pointer 
-			arguments such as "available" in get_status(). See the interface 
+			get_status() and shutdown() return TRUE as an indication that the method
+			was succesfully invoked. The actual return values are set in pointer
+			arguments such as "available" in get_status(). See the interface
 			documentation to find out how the functions should behave.
 			</para>
 
@@ -238,8 +238,8 @@ geoclue_example_init (GeoclueExample *example)
 }
 			</programlisting>
 			<para>
-			GcProvider will use the service name and path to setup the D-Bus service. 
-			Name and description (the last two arguments) will be used to implement 
+			GcProvider will use the service name and path to setup the D-Bus service.
+			Name and description (the last two arguments) will be used to implement
 			get_provider_info().
 			</para>
 
@@ -252,17 +252,17 @@ main (int    argc,
       char **argv)
 {
 	GeoclueExample *example;
-	
+
 	g_type_init ();
-	
+
 	example = g_object_new (GEOCLUE_TYPE_EXAMPLE, NULL);
 	example->loop = g_main_loop_new (NULL, TRUE);
-	
+
 	g_main_loop_run (example->loop);
-	
+
 	g_main_loop_unref (example->loop);
 	g_object_unref (example);
-	
+
 	return 0;
 }
 			</programlisting>
@@ -282,7 +282,7 @@ dbus-send --print-reply \
 			<title>Adding functionality by implementing other interfaces</title>
 
 			<para>
-			Adding functionality to the (so far fairly impotent) provider is not 
+			Adding functionality to the (so far fairly impotent) provider is not
 			difficult. These are the steps needed to implement interface X:
 			</para>
 			<itemizedlist>
@@ -310,7 +310,7 @@ G_DEFINE_TYPE_WITH_CODE (GeoclueExample, geoclue_example, GC_TYPE_PROVIDER,
 			</programlisting>
 
 			<para>
-			Next, take a look at the interface header (gc-iface-position.h). Implement 
+			Next, take a look at the interface header (gc-iface-position.h). Implement
 			the interface method and write some signal emission code:
 			</para>
 			<programlisting>
@@ -330,7 +330,7 @@ get_position (GcIfacePosition       *gc,
 	*accuracy = geoclue_accuracy_new (GEOCLUE_ACCURACY_LEVEL_NONE, 0.0, 0.0);
 	*latitude = 60.0;
 	*longitude = 25.0;
-	
+
 	return TRUE;
 }
 
@@ -340,21 +340,21 @@ static gboolean
 emit_position_signal (GeoclueExample *example)
 {
 	static GeoclueAccuracy *accuracy = geoclue_accuracy_new (GEOCLUE_ACCURACY_LEVEL_NONE, 0, 0);
-	
+
 	/ * make up some coordinates * /
 	static double lat = 60.0;
 	static double lon = 25.0;
-	
+
 	lat += 0.1;
 	lon -= 0.1;
 
 	g_debug ("Emitting position\n");
-	
-	gc_iface_position_emit_position_changed 
-		(GC_IFACE_POSITION (example), 
+
+	gc_iface_position_emit_position_changed
+		(GC_IFACE_POSITION (example),
 		 GEOCLUE_POSITION_FIELDS_LATITUDE | GEOCLUE_POSITION_FIELDS_LONGITUDE,
-		 time (NULL), 
-		 lat, lon, 0, 
+		 time (NULL),
+		 lat, lon, 0,
 		 accuracy);
 
 	geoclue_accuracy_free (accuracy);
@@ -363,21 +363,21 @@ emit_position_signal (GeoclueExample *example)
 }
 			</programlisting>
 			<para>
-			Yes, this implementation is too useful... For more realistic 
-			examples see the included providers in providers/-directory. Note the 
-			use of convenience function gc_iface_position_emit_position_changed() for 
-			signal emission. 
+			Yes, this implementation is too useful... For more realistic
+			examples see the included providers in providers/-directory. Note the
+			use of convenience function gc_iface_position_emit_position_changed() for
+			signal emission.
 			</para>
 
 			<para>
-			The example does not have a real position data source, so we'll 
-			emulate signal emission: add a g_timeout_add call in main(), before running the 
+			The example does not have a real position data source, so we'll
+			emulate signal emission: add a g_timeout_add call in main(), before running the
 			main loop.
 			</para>
 			<programlisting>
 g_timeout_add (5000, (GSourceFunc)emit_position_signal, example);
 			</programlisting>
-			
+
 			<para>
 			Finally, the interface method needs to be initialized to the implementation we just defined:
 			</para>
@@ -389,7 +389,7 @@ geoclue_example_position_init (GcIfacePositionClass *iface)
 }
 			</programlisting>
 			<para>
-			You can try your provider out by starting it and running 
+			You can try your provider out by starting it and running
 			"example/position-example MyExample"
 			</para>
 	</section>

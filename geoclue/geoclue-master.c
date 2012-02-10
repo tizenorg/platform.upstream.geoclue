@@ -26,13 +26,13 @@
  * SECTION:geoclue-master
  * @short_description: Geoclue Master API
  * @see_also: #GeoclueMasterClient
- * 
- * #GeoclueMaster is part of the Geoclue public C client API. It uses  
+ *
+ * #GeoclueMaster is part of the Geoclue public C client API. It uses
  * D-Bus to communicate with the actual Master service.
- * 
+ *
  * #GeoclueMaster is a singleton service, so it should not be created
  * explicitly: instead one should use geoclue_master_get_default() to
- * get a reference to it. It can be used to 
+ * get a reference to it. It can be used to
  * create a #GeoclueMasterClient object.
  *
  */
@@ -121,7 +121,7 @@ geoclue_master_get_default (void)
 
 	if (G_UNLIKELY (master == NULL)) {
 		master = g_object_new (GEOCLUE_TYPE_MASTER, NULL);
-		g_object_add_weak_pointer (G_OBJECT (master), 
+		g_object_add_weak_pointer (G_OBJECT (master),
 					   (gpointer) &master);
 		return master;
 	}
@@ -140,7 +140,7 @@ geoclue_master_get_default (void)
  *
  * Return Value: A new #GeoclueMasterClient or %NULL on error.
  */
- 
+
 GeoclueMasterClient *
 geoclue_master_create_client (GeoclueMaster *master,
 			      char         **object_path,
@@ -154,65 +154,65 @@ geoclue_master_create_client (GeoclueMaster *master,
 
 	priv = GET_PRIVATE (master);
 
-	if (!org_freedesktop_Geoclue_Master_create (priv->proxy, 
+	if (!org_freedesktop_Geoclue_Master_create (priv->proxy,
 						    &path, error)){
 		return NULL;
 	}
-	
+
 	client = g_object_new (GEOCLUE_TYPE_MASTER_CLIENT,
 			       "object-path", path,
 			       NULL);
-	
+
 	if (object_path) {
 		*object_path = path;
 	} else {
 		g_free (path);
 	}
-	
+
 	return client;
 }
 
 static void
-create_client_callback (DBusGProxy             *proxy, 
-			char                   *path, 
-			GError                 *error, 
+create_client_callback (DBusGProxy             *proxy,
+			char                   *path,
+			GError                 *error,
 			GeoclueMasterAsyncData *data)
 {
 	GeoclueMasterClient *client;
-	
+
 	client = NULL;
-	
+
 	if (!error) {
 		client = g_object_new (GEOCLUE_TYPE_MASTER_CLIENT,
 		                       "object-path", path,
 		                       NULL);
 	}
-	
+
 	(*(GeoclueCreateClientCallback)data->callback) (data->master,
 	                                                client,
 	                                                path,
 	                                                error,
 	                                                data->userdata);
-	
+
 	g_free (data);
 }
 
-void 
+void
 geoclue_master_create_client_async (GeoclueMaster              *master,
 				    GeoclueCreateClientCallback callback,
 				    gpointer                    userdata)
 {
 	GeoclueMasterPrivate *priv;
 	GeoclueMasterAsyncData *data;
-	
+
 	g_return_if_fail (GEOCLUE_IS_MASTER (master));
-	
+
 	priv = GET_PRIVATE (master);
 	data = g_new (GeoclueMasterAsyncData, 1);
 	data->master = master;
 	data->callback = G_CALLBACK (callback);
 	data->userdata = userdata;
-	
+
 	org_freedesktop_Geoclue_Master_create_async
 			(priv->proxy,
 			 (org_freedesktop_Geoclue_Master_create_reply)create_client_callback,

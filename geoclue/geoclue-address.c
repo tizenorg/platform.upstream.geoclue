@@ -26,18 +26,18 @@
  * SECTION:geoclue-address
  * @short_description: Geoclue address client API
  *
- * #GeoclueAddress contains Address-related methods and signals. 
- * It is part of the Geoclue public C client API which uses D-Bus 
+ * #GeoclueAddress contains Address-related methods and signals.
+ * It is part of the Geoclue public C client API which uses D-Bus
  * to communicate with the actual provider.
- * 
- * After a #GeoclueAddress is created with geoclue_address_new() or 
- * geoclue_master_client_create_address(), the 
- * geoclue_address_get_address() and geoclue_address_get_address_async() methods 
- * and the address-changed signal can be used to obtain the current address. 
- * 
- * Address #GHashTable keys are defined in 
- * <ulink url="geoclue-types.html">geoclue-types.h</ulink>. See also 
- * convenience functions in 
+ *
+ * After a #GeoclueAddress is created with geoclue_address_new() or
+ * geoclue_master_client_create_address(), the
+ * geoclue_address_get_address() and geoclue_address_get_address_async() methods
+ * and the address-changed signal can be used to obtain the current address.
+ *
+ * Address #GHashTable keys are defined in
+ * <ulink url="geoclue-types.html">geoclue-types.h</ulink>. See also
+ * convenience functions in
  * <ulink url="geoclue-address-details.html">geoclue-address-details.h</ulink>.
  */
 
@@ -80,7 +80,7 @@ address_changed (DBusGProxy      *proxy,
 		 GeoclueAccuracy *accuracy,
 		 GeoclueAddress *address)
 {
-	g_signal_emit (address, signals[ADDRESS_CHANGED], 0, 
+	g_signal_emit (address, signals[ADDRESS_CHANGED], 0,
 		       timestamp, details, accuracy);
 }
 
@@ -95,9 +95,9 @@ constructor (GType                  type,
 	object = G_OBJECT_CLASS (geoclue_address_parent_class)->constructor
 		(type, n_props, props);
 	provider = GEOCLUE_PROVIDER (object);
-	
+
 	dbus_g_proxy_add_signal (provider->proxy, "AddressChanged",
-				 G_TYPE_INT, 
+				 G_TYPE_INT,
 				 DBUS_TYPE_G_STRING_STRING_HASHTABLE,
 				 GEOCLUE_ACCURACY_TYPE,
 				 G_TYPE_INVALID);
@@ -118,29 +118,29 @@ geoclue_address_class_init (GeoclueAddressClass *klass)
 	o_class->constructor = constructor;
 
 	g_type_class_add_private (klass, sizeof (GeoclueAddressPrivate));
-	
+
 	/**
 	 * GeoclueAddress::address-changed:
 	 * @address: the #GeoclueAddress object emitting the signal
 	 * @timestamp: Time of address measurement (Unix timestamp)
 	 * @details: Address details as #GHashTable.
 	 * @accuracy: Accuracy of measurement as #GeoclueAccuracy
-	 * 
-	 * The address-changed signal is emitted each time the address changes. 
-	 * See <ulink url="geoclue-types.html">geoclue-types.h</ulink> for the possible 
+	 *
+	 * The address-changed signal is emitted each time the address changes.
+	 * See <ulink url="geoclue-types.html">geoclue-types.h</ulink> for the possible
 	 * GEOCLUE_ADDRESS_KEY_* keys used in @details.
-	 * 
+	 *
 	 * Note that not all providers support signals.
 	 */
 	signals[ADDRESS_CHANGED] = g_signal_new ("address-changed",
 						 G_TYPE_FROM_CLASS (klass),
 						 G_SIGNAL_RUN_FIRST |
 						 G_SIGNAL_NO_RECURSE,
-						 G_STRUCT_OFFSET (GeoclueAddressClass, address_changed), 
+						 G_STRUCT_OFFSET (GeoclueAddressClass, address_changed),
 						 NULL, NULL,
 						 geoclue_marshal_VOID__INT_BOXED_BOXED,
 						 G_TYPE_NONE, 3,
-						 G_TYPE_INT, 
+						 G_TYPE_INT,
 						 G_TYPE_POINTER,
 						 G_TYPE_POINTER);
 }
@@ -156,7 +156,7 @@ geoclue_address_init (GeoclueAddress *address)
  * @path: D-Bus path name
  *
  * Creates a #GeoclueAddress with given D-Bus service name and path.
- * 
+ *
  * Return value: Pointer to a new #GeoclueAddress
  */
 GeoclueAddress *
@@ -177,17 +177,17 @@ geoclue_address_new (const char *service,
  * @details: Pointer to returned #GHashTable with address details or %NULL
  * @accuracy: Pointer to returned #GeoclueAccuracy or NULL
  * @error: Pointer to returned #Gerror or %NULL
- * 
- * Obtains the current address. @timestamp will contain the time of 
+ *
+ * Obtains the current address. @timestamp will contain the time of
  * the actual address measurement. @accuracy is the estimated of the
- * accuracy of the current address information (see #GeoclueAccuracy 
- * for more details). @details is a hashtable with the address data, 
- * see <ulink url="geoclue-types.html">geoclue-types.h</ulink> for the 
+ * accuracy of the current address information (see #GeoclueAccuracy
+ * for more details). @details is a hashtable with the address data,
+ * see <ulink url="geoclue-types.html">geoclue-types.h</ulink> for the
  * hashtable keys.
- * 
- * If the caller is not interested in some values, the pointers can be 
+ *
+ * If the caller is not interested in some values, the pointers can be
  * left %NULL.
- * 
+ *
  * Return value: %TRUE if there is no @error
  */
 gboolean
@@ -216,7 +216,7 @@ typedef struct _GeoclueAddressAsyncData {
 } GeoclueAddressAsyncData;
 
 static void
-get_address_async_callback (DBusGProxy              *proxy, 
+get_address_async_callback (DBusGProxy              *proxy,
 			    int                      timestamp,
 			    GHashTable              *details,
 			    GeoclueAccuracy         *accuracy,
@@ -240,7 +240,7 @@ get_address_async_callback (DBusGProxy              *proxy,
  * @accuracy: Accuracy of measurement as #GeoclueAccuracy
  * @error: Error as #Gerror (may be %NULL)
  * @userdata: User data pointer set in geoclue_position_get_position_async()
- * 
+ *
  * Callback function for geoclue_address_get_address_async().
  */
 
@@ -249,23 +249,23 @@ get_address_async_callback (DBusGProxy              *proxy,
  * @address: A #GeoclueAddress object
  * @callback: A #GeoclueAddressCallback function that should be called when return values are available
  * @userdata: pointer for user specified data
- * 
+ *
  * Function returns (essentially) immediately and calls @callback when current address
  * is available or when D-Bus timeouts.
  */
-void 
+void
 geoclue_address_get_address_async (GeoclueAddress         *address,
 				   GeoclueAddressCallback  callback,
 				   gpointer                userdata)
 {
 	GeoclueProvider *provider = GEOCLUE_PROVIDER (address);
 	GeoclueAddressAsyncData *data;
-	
+
 	data = g_new (GeoclueAddressAsyncData, 1);
 	data->address = address;
 	data->callback = G_CALLBACK (callback);
 	data->userdata = userdata;
-	
+
 	org_freedesktop_Geoclue_Address_get_address_async
 			(provider->proxy,
 			 (org_freedesktop_Geoclue_Address_get_address_reply) get_address_async_callback,

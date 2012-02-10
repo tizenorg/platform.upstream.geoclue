@@ -2,7 +2,7 @@
  * Geoclue
  * geoclue-satellite.c - Client API for accessing GcIfaceSatellite
  *
- * Author: Sagnho Park <sangho.g.park@samsung.com>, Youngae Kang <youngae.kang@samsung.com>, 
+ * Author: Sagnho Park <sangho.g.park@samsung.com>, Youngae Kang <youngae.kang@samsung.com>,
  *         Yunhan Kim <yhan.kim@samsung.com>, Genie Kim <daejins.kim@samsung.com>
  * Copyright (c) 2000 - 2011 Samsung Electronics Co., Ltd. All rights reserved.
  *
@@ -103,7 +103,7 @@ geoclue_satellite_class_init (GeoclueSatelliteClass *klass)
 	o_class->constructor = constructor;
 
 	g_type_class_add_private (klass, sizeof (GeoclueSatellitePrivate));
-	
+
 	signals[SATELLITE_CHANGED] = g_signal_new ("satellite-changed",
 						   G_TYPE_FROM_CLASS (klass),
 						   G_SIGNAL_RUN_FIRST |
@@ -180,19 +180,19 @@ get_satellite_async_callback (DBusGProxy                *proxy,
 	g_free (data);
 }
 
-void 
+void
 geoclue_satellite_get_satellite_async (GeoclueSatellite        *satellite,
 				       GeoclueSatelliteCallback callback,
 				       gpointer                 userdata)
 {
 	GeoclueProvider *provider = GEOCLUE_PROVIDER (satellite);
 	GeoclueSatelliteAsyncData *data;
-	
+
 	data = g_new (GeoclueSatelliteAsyncData, 1);
 	data->satellite = satellite;
 	data->callback = G_CALLBACK (callback);
 	data->userdata = userdata;
-	
+
 	org_freedesktop_Geoclue_Satellite_get_satellite_async (provider->proxy,
 			(org_freedesktop_Geoclue_Satellite_get_satellite_reply)get_satellite_async_callback,
 			data);

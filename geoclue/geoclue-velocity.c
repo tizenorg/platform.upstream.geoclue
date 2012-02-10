@@ -26,12 +26,12 @@
  * SECTION:geoclue-velocity
  * @short_description: Geoclue velocity client API
  *
- * #GeoclueVelocity contains velocity-related methods and signals. 
- * It is part of the Geoclue public C client API which uses D-Bus 
+ * #GeoclueVelocity contains velocity-related methods and signals.
+ * It is part of the Geoclue public C client API which uses D-Bus
  * to communicate with the actual provider.
- * 
- * After a #GeoclueVelocity is created with 
- * geoclue_velocity_new(), the 
+ *
+ * After a #GeoclueVelocity is created with
+ * geoclue_velocity_new(), the
  * geoclue_velocity_get_velocity() method and the VelocityChanged-signal
  * can be used to obtain the current velocity.
  */
@@ -89,7 +89,7 @@ constructor (GType                  type,
 	GObject *object;
 	GeoclueProvider *provider;
 
-	object = G_OBJECT_CLASS (geoclue_velocity_parent_class)->constructor 
+	object = G_OBJECT_CLASS (geoclue_velocity_parent_class)->constructor
 		(type, n_props, props);
 	provider = GEOCLUE_PROVIDER (object);
 
@@ -113,7 +113,7 @@ geoclue_velocity_class_init (GeoclueVelocityClass *klass)
 	o_class->constructor = constructor;
 
 	g_type_class_add_private (klass, sizeof (GeoclueVelocityPrivate));
-	
+
 	/**
 	 * GeoclueVelocity::velocity-changed:
 	 * @velocity: the #GeoclueVelocity object emitting the signal
@@ -122,9 +122,9 @@ geoclue_velocity_class_init (GeoclueVelocityClass *klass)
 	 * @speed: horizontal speed
 	 * @direction: horizontal direction (bearing)
 	 * @climb: vertical speed
-	 * 
-	 * The geoclue-changed signal is emitted each time the velocity changes. 
-	 * 
+	 *
+	 * The geoclue-changed signal is emitted each time the velocity changes.
+	 *
 	 * Note that not all providers support signals.
 	 */
 	signals[VELOCITY_CHANGED] = g_signal_new ("velocity-changed",
@@ -132,7 +132,7 @@ geoclue_velocity_class_init (GeoclueVelocityClass *klass)
 						  G_SIGNAL_RUN_FIRST |
 						  G_SIGNAL_NO_RECURSE,
 						  G_STRUCT_OFFSET (GeoclueVelocityClass, velocity_changed),
-						  NULL, NULL, 
+						  NULL, NULL,
 						  geoclue_marshal_VOID__INT_INT_DOUBLE_DOUBLE_DOUBLE,
 						  G_TYPE_NONE, 5,
 						  G_TYPE_INT, G_TYPE_INT,
@@ -146,7 +146,7 @@ geoclue_velocity_class_init (GeoclueVelocityClass *klass)
  * @path: D-Bus path name
  *
  * Creates a #GeoclueVelocity with given D-Bus service name and path.
- * 
+ *
  * Return value: Pointer to a new #GeoclueVelocity
  */
 static void
@@ -174,13 +174,13 @@ geoclue_velocity_new (const char *service,
  * @climb: Pointer to returned vertical speed or %NULL
  * @error: Pointer to returned #GError or %NULL
  *
- * Obtains the current velocity. @timestamp will contain the time of 
+ * Obtains the current velocity. @timestamp will contain the time of
  * the actual velocity measurement.
- * 
- * If the caller is not interested in some values, the pointers can be 
+ *
+ * If the caller is not interested in some values, the pointers can be
  * left %NULL.
- * 
- * Return value: A #GeoclueVelocityFields bitfield representing the 
+ *
+ * Return value: A #GeoclueVelocityFields bitfield representing the
  * validity of the velocity values.
  */
 GeoclueVelocityFields
@@ -228,7 +228,7 @@ typedef struct _GeoclueVelocityAsyncData {
 } GeoclueVelocityAsyncData;
 
 static void
-get_velocity_async_callback (DBusGProxy               *proxy, 
+get_velocity_async_callback (DBusGProxy               *proxy,
 			     GeoclueVelocityFields     fields,
 			     int                       timestamp,
 			     double                    speed,
@@ -258,7 +258,7 @@ get_velocity_async_callback (DBusGProxy               *proxy,
  * @climb: Vertical speed
  * @error: Error as #GError (may be %NULL)
  * @userdata: User data pointer set in geoclue_velocity_get_velocity_async()
- * 
+ *
  * Callback function for geoclue_velocity_get_velocity_async().
  */
 
@@ -267,23 +267,23 @@ get_velocity_async_callback (DBusGProxy               *proxy,
  * @velocity: A #GeoclueVelocity object
  * @callback: A #GeoclueVelocityCallback function that should be called when return values are available
  * @userdata: pointer for user specified data
- * 
+ *
  * Function returns (essentially) immediately and calls @callback when current velocity
  * is available or when D-Bus timeouts.
  */
-void 
+void
 geoclue_velocity_get_velocity_async (GeoclueVelocity         *velocity,
 				     GeoclueVelocityCallback  callback,
 				     gpointer                 userdata)
 {
 	GeoclueProvider *provider = GEOCLUE_PROVIDER (velocity);
 	GeoclueVelocityAsyncData *data;
-	
+
 	data = g_new (GeoclueVelocityAsyncData, 1);
 	data->velocity = velocity;
 	data->callback = G_CALLBACK (callback);
 	data->userdata = userdata;
-	
+
 	org_freedesktop_Geoclue_Velocity_get_velocity_async
 			(provider->proxy,
 			 (org_freedesktop_Geoclue_Velocity_get_velocity_reply)get_velocity_async_callback,

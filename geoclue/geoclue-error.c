@@ -24,7 +24,7 @@
 
 #include <geoclue/geoclue-error.h>
 
-GQuark 
+GQuark
 geoclue_error_quark (void)
 {
 	static GQuark quark = 0;

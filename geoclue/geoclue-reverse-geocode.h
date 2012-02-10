@@ -1,6 +1,6 @@
 /*
  * Geoclue
- * geoclue-reverse-geocode.h - 
+ * geoclue-reverse-geocode.h -
  *
  * Author: Iain Holmes <iain@openedhand.com>
  * Copyright 2007 by Garmin Ltd. or its subsidiaries
@@ -50,7 +50,7 @@ GType geoclue_reverse_geocode_get_type (void);
 GeoclueReverseGeocode *geoclue_reverse_geocode_new (const char *service,
 						    const char *path);
 
-gboolean 
+gboolean
 geoclue_reverse_geocode_position_to_address (GeoclueReverseGeocode   *revgeocode,
 					     double                   latitude,
 					     double                   longitude,
