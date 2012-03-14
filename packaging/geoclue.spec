@@ -1,7 +1,7 @@
 Name:       geoclue
 Summary:    Geoinformation service
 Version:    0.12.0
-Release:    1
+Release:    1.8
 Group:      TO_BE/FILLED_IN
 License:    TO BE FILLED IN
 Source0:    geoclue-%{version}.tar.gz
@@ -10,12 +10,13 @@ BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(dbus-glib-1)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(gconf-2.0)
+BuildRequires:  pkgconfig(libsoup-2.4)
 BuildRequires:  pkgconfig(libxslt)
 
 
 %description
-Geographic information framework GeoClue provides applications access to various geographical information
- sources using a D-Bus API or a C library.
+Geographic information framework GeoClue provides applications access to various geographical information 
+ sources using a D-Bus API or a C library. 
  .
  This package contains the master server for GeoClue.
 
@@ -58,7 +59,6 @@ This package provides a tool to search osm data by name and address and to gener
 %prep
 %setup -q -n %{name}-%{version}
 
-
 %build
 export CFLAGS+=" -Wall -g -fPIC"
 export LDFLAGS+=" -Wl,-z,defs -Wl,--rpath=/usr/lib -Wl,--as-needed -Wl,--hash-style=both"
@@ -96,3 +96,4 @@ rm -rf %{buildroot}/usr/bin/geoclue-test-gui
 /usr/share/dbus-1/services/org.freedesktop.Geoclue.Providers.Nominatim.service
 /usr/share/geoclue-providers/geoclue-nominatim.provider
 /usr/libexec/geoclue-nominatim
+
