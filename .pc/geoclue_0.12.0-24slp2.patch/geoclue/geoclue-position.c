@@ -231,68 +231,6 @@ geoclue_position_get_position (GeocluePosition  *position,
 	return fields;
 }
 
-/**
- * geoclue_position_get_last_position:
- * @position: A #GeocluePosition object
- * @timestamp: Pointer to returned time of position measurement (Unix timestamp) or %NULL
- * @latitude: Pointer to returned latitude in degrees or %NULL
- * @longitude: Pointer to returned longitude in degrees or %NULL
- * @altitude: Pointer to returned altitude in meters or %NULL
- * @accuracy: Pointer to returned #GeoclueAccuracy or %NULL
- * @error: Pointer to returned #Gerror or %NULL
- *
- * Obtains the last position. @timestamp will contain the time of
- * the actual position measurement. @accuracy is a rough estimate of the
- * accuracy of the last position.
- *
- * If the caller is not interested in some values, the pointers can be
- * left %NULL.
- *
- * Return value: A #GeocluePositionFields bitfield representing the
- * validity of the position values.
- */
-GeocluePositionFields
-geoclue_position_get_last_position (GeocluePosition  *position,
-				    int              *timestamp,
-				    double           *latitude,
-				    double           *longitude,
-				    double           *altitude,
-				    GeoclueAccuracy **accuracy,
-				    GError          **error)
-{
-	GeoclueProvider *provider = GEOCLUE_PROVIDER (position);
-	double la, lo, al;
-	int ts, fields;
-	GeoclueAccuracy *acc;
-	if (!org_freedesktop_Geoclue_Position_get_last_position (provider->proxy,
-								 &fields, &ts,
-								 &la, &lo, &al,
-								 &acc, error)) {
-		return GEOCLUE_POSITION_FIELDS_NONE;
-	}
-
-	if (timestamp != NULL) {
-		*timestamp = ts;
-	}
-
-	if (latitude != NULL && (fields & GEOCLUE_POSITION_FIELDS_LATITUDE)) {
-		*latitude = la;
-	}
-
-	if (longitude != NULL && (fields & GEOCLUE_POSITION_FIELDS_LONGITUDE)) {
-		*longitude = lo;
-	}
-
-	if (altitude != NULL && (fields & GEOCLUE_POSITION_FIELDS_ALTITUDE)) {
-		*altitude = al;
-	}
-
-	if (accuracy != NULL) {
-		*accuracy = acc;
-	}
-
-	return fields;
-}
 
 typedef struct _GeocluePositionAsyncData {
 	GeocluePosition *position;

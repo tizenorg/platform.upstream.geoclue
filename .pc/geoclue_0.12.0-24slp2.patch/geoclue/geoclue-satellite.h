@@ -66,14 +66,6 @@ gboolean geoclue_satellite_get_satellite (GeoclueSatellite *satellite,
 					  GPtrArray       **sat_info,
 					  GError          **error);
 
-gboolean geoclue_satellite_get_last_satellite (GeoclueSatellite *satellite,
-					       int              *timestamp,
-					       int              *satellite_used,
-					       int              *satellite_visible,
-					       GArray          **used_prn,
-					       GPtrArray       **sat_info,
-					       GError          **error);
-
 typedef void (*GeoclueSatelliteCallback) (GeoclueSatellite *satellite,
 					  int               timestamp,
 					  int               satellite_used,

@@ -16,18 +16,7 @@
 			<arg type="d" name="longitude" direction="out" />
 			<arg type="d" name="altitude" direction="out" />
 
-			<arg name="accuracy" type="(idd)" direction="out" />
-		</method>
-
-		<method name="GetLastPosition">
-			<arg type="i" name="fields" direction="out" />
-			<arg type="i" name="timestamp" direction="out" />
-
-			<arg type="d" name="latitude" direction="out" />
-			<arg type="d" name="longitude" direction="out" />
-			<arg type="d" name="altitude" direction="out" />
-
-			<arg name="accuracy" type="(idd)" direction="out" />
+                        <arg name="accuracy" type="(idd)" direction="out" />
 		</method>
 
 		<signal name="PositionChanged">

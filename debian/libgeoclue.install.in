@@ -1,1 +1,1 @@
-debian/tmp@PREFIX@/lib/libgeoclue.so.*
+debian/tmp@PREFIX@/lib/libgeoclue.so*

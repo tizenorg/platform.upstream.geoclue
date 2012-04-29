@@ -1,0 +1,38 @@
+Index: geoclue/geoclue/gc-web-service.c
+===================================================================
+--- geoclue.orig/geoclue/gc-web-service.c	2012-04-02 20:21:55.996098861 +0900
++++ geoclue/geoclue/gc-web-service.c	2012-04-02 20:23:21.824097388 +0900
+@@ -80,6 +80,7 @@
+ 
+ #include <stdarg.h>
+ #include <glib-object.h>
++#include <string.h>
+ 
+ #include <libxml/nanohttp.h>
+ #include <libxml/xpathInternals.h>
+@@ -182,12 +183,25 @@
+ 	gint len;
+ 	xmlChar buf[1024];
+ 	xmlBuffer *output;
++	char *system_http_proxy = NULL;
++	char http_proxy[128] = {0,};
+ 
+ 	g_assert (url);
+ 
+ 	gc_web_service_reset (self);
+ 
+ 	xmlNanoHTTPInit();
++
++	system_http_proxy = getenv("http_proxy");
++	if (system_http_proxy != NULL) {
++		if (strncmp(system_http_proxy, "http://", 7)) {
++			sprintf(http_proxy, "http://%s", system_http_proxy);
++		} else {
++			sprintf(http_proxy, "%s", system_http_proxy);
++		}
++		xmlNanoHTTPScanProxy(http_proxy);
++	}
++
+ 	ctxt = xmlNanoHTTPMethod (url, "GET", NULL, NULL, NULL, 0);
+ 	if (!ctxt) {
+ 		*error = g_error_new (GEOCLUE_ERROR,

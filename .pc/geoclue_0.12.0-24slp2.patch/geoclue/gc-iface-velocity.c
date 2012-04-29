@@ -44,15 +44,6 @@ gc_iface_velocity_get_velocity (GcIfaceVelocity       *velocity,
 				double                *altitude,
 				GError               **error);
 
-static gboolean
-gc_iface_velocity_get_last_velocity (GcIfaceVelocity       *velocity,
-				     int                   *fields,
-				     int                   *timestamp,
-				     double                *latitude,
-				     double                *longitude,
-				     double                *altitude,
-				     GError               **error);
-
 #include "gc-iface-velocity-glue.h"
 
 static void
@@ -109,20 +100,6 @@ gc_iface_velocity_get_velocity (GcIfaceVelocity *gc,
 				GError         **error)
 {
 	return GC_IFACE_VELOCITY_GET_CLASS (gc)->get_velocity
-		(gc, (GeoclueVelocityFields *) fields, timestamp,
-		 speed, direction, climb, error);
-}
-
-static gboolean
-gc_iface_velocity_get_last_velocity (GcIfaceVelocity *gc,
-				     int             *fields,
-				     int             *timestamp,
-				     double          *speed,
-				     double          *direction,
-				     double          *climb,
-				     GError         **error)
-{
-	return GC_IFACE_VELOCITY_GET_CLASS (gc)->get_last_velocity
 		(gc, (GeoclueVelocityFields *) fields, timestamp,
 		 speed, direction, climb, error);
 }

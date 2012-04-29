@@ -58,15 +58,6 @@ struct _GcIfaceVelocityClass {
 				   double                *direction,
 				   double                *climb,
 				   GError               **error);
-
-	/* vtable */
-	gboolean (* get_last_velocity) (GcIfaceVelocity		*gc,
-					GeoclueVelocityFields	*fields,
-					int			*timestamp,
-					double			*speed,
-					double			*direction,
-					double			*climb,
-					GError			**error);
 };
 
 GType gc_iface_velocity_get_type (void);

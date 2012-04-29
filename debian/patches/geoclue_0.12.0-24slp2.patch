@@ -1,0 +1,478 @@
+Index: geoclue/geoclue/gc-iface-position.c
+===================================================================
+--- geoclue.orig/geoclue/gc-iface-position.c	2012-02-27 17:32:03.350514356 +0900
++++ geoclue/geoclue/gc-iface-position.c	2012-02-27 17:23:08.222514000 +0900
+@@ -46,6 +46,16 @@
+ 				GeoclueAccuracy      **accuracy,
+ 				GError               **error);
+ 
++static gboolean
++gc_iface_position_get_last_position (GcIfacePosition	*position,
++				     int		*fields,
++				     int		*timestamp,
++				     double		*latitude,
++				     double		*longitude,
++				     double		*altitude,
++				     GeoclueAccuracy	**accuracy,
++				     GError		**error);
++
+ #include "gc-iface-position-glue.h"
+ 
+ static void
+@@ -108,6 +118,21 @@
+ 		(gc, (GeocluePositionFields *) fields, timestamp,
+ 		 latitude, longitude, altitude, accuracy, error);
+ }
++
++static gboolean
++gc_iface_position_get_last_position (GcIfacePosition	*gc,
++				     int		*fields,
++				     int		*timestamp,
++				     double		*latitude,
++				     double		*longitude,
++				     double		*altitude,
++				     GeoclueAccuracy	**accuracy,
++				     GError		**error)
++{
++	return GC_IFACE_POSITION_GET_CLASS (gc)->get_last_position
++		(gc, (GeocluePositionFields *) fields, timestamp,
++		 latitude, longitude, altitude, accuracy, error);
++}
+ 
+ void
+ gc_iface_position_emit_position_changed (GcIfacePosition      *gc,
+Index: geoclue/geoclue/gc-iface-position.h
+===================================================================
+--- geoclue.orig/geoclue/gc-iface-position.h	2012-02-27 17:32:03.366514356 +0900
++++ geoclue/geoclue/gc-iface-position.h	2012-02-27 17:23:13.706514000 +0900
+@@ -61,6 +61,16 @@
+ 				   double                *altitude,
+ 				   GeoclueAccuracy      **accuracy,
+ 				   GError               **error);
++
++	/* vtable */
++	gboolean (* get_last_position) (GcIfacePosition 	*gc,
++					GeocluePositionFields 	*fields,
++					int			*timestamp,
++					double			*latitude,
++					double			*longitude,
++					double			*altitude,
++					GeoclueAccuracy 	**accuracy,
++					GError			**error);
+ };
+ 
+ GType gc_iface_position_get_type (void);
+Index: geoclue/geoclue/gc-iface-satellite.c
+===================================================================
+--- geoclue.orig/geoclue/gc-iface-satellite.c	2012-02-27 17:32:20.650514354 +0900
++++ geoclue/geoclue/gc-iface-satellite.c	2012-02-23 16:55:31.261421000 +0900
+@@ -45,6 +45,15 @@
+ 				  GPtrArray       **sat_info,
+ 				  GError          **error);
+ 
++static gboolean
++gc_iface_satellite_get_last_satellite (GcIfaceSatellite *satellite,
++				       int		*timestamp,
++				       int		*satellite_used,
++				       int		*satellite_visible,
++				       GArray		**used_prn,
++				       GPtrArray	**sat_info,
++				       GError		**error);
++
+ #include "gc-iface-satellite-glue.h"
+ 
+ static void
+@@ -109,6 +118,24 @@
+ 								 error);
+ }
+ 
++static gboolean
++gc_iface_satellite_get_last_satellite (GcIfaceSatellite *gc,
++				       int              *timestamp,
++				       int              *satellite_used,
++				       int              *satellite_visible,
++				       GArray          **used_prn,
++				       GPtrArray       **sat_info,
++				       GError          **error)
++{
++	return GC_IFACE_SATELLITE_GET_CLASS (gc)->get_last_satellite (gc,
++								      timestamp,
++								      satellite_used,
++								      satellite_visible,
++								      used_prn,
++								      sat_info,
++								      error);
++}
++
+ void
+ gc_iface_satellite_emit_satellite_changed (GcIfaceSatellite *gc,
+ 					   int               timestamp,
+Index: geoclue/geoclue/gc-iface-satellite.h
+===================================================================
+--- geoclue.orig/geoclue/gc-iface-satellite.h	2012-02-27 17:32:20.666514354 +0900
++++ geoclue/geoclue/gc-iface-satellite.h	2012-02-23 17:25:09.565418000 +0900
+@@ -60,6 +60,15 @@
+ 				    GArray          **used_prn,
+ 				    GPtrArray       **sat_info,
+ 				    GError          **error);
++
++	/* vtable */
++	gboolean (* get_last_satellite) (GcIfaceSatellite *gc,
++					 int              *timestamp,
++					 int              *satellite_used,
++					 int              *satellite_visible,
++					 GArray          **used_prn,
++					 GPtrArray       **sat_info,
++					 GError          **error);
+ };
+ 
+ GType gc_iface_satellite_get_type (void);
+Index: geoclue/geoclue/gc-iface-velocity.c
+===================================================================
+--- geoclue.orig/geoclue/gc-iface-velocity.c	2012-02-27 17:32:20.682514354 +0900
++++ geoclue/geoclue/gc-iface-velocity.c	2012-02-23 20:28:02.493396000 +0900
+@@ -44,6 +44,15 @@
+ 				double                *altitude,
+ 				GError               **error);
+ 
++static gboolean
++gc_iface_velocity_get_last_velocity (GcIfaceVelocity       *velocity,
++				     int                   *fields,
++				     int                   *timestamp,
++				     double                *latitude,
++				     double                *longitude,
++				     double                *altitude,
++				     GError               **error);
++
+ #include "gc-iface-velocity-glue.h"
+ 
+ static void
+@@ -103,6 +112,20 @@
+ 		(gc, (GeoclueVelocityFields *) fields, timestamp,
+ 		 speed, direction, climb, error);
+ }
++
++static gboolean
++gc_iface_velocity_get_last_velocity (GcIfaceVelocity *gc,
++				     int             *fields,
++				     int             *timestamp,
++				     double          *speed,
++				     double          *direction,
++				     double          *climb,
++				     GError         **error)
++{
++	return GC_IFACE_VELOCITY_GET_CLASS (gc)->get_last_velocity
++		(gc, (GeoclueVelocityFields *) fields, timestamp,
++		 speed, direction, climb, error);
++}
+ 
+ void
+ gc_iface_velocity_emit_velocity_changed (GcIfaceVelocity      *gc,
+Index: geoclue/geoclue/gc-iface-velocity.h
+===================================================================
+--- geoclue.orig/geoclue/gc-iface-velocity.h	2012-02-27 17:32:20.698514354 +0900
++++ geoclue/geoclue/gc-iface-velocity.h	2012-02-21 16:18:52.018095000 +0900
+@@ -58,6 +58,15 @@
+ 				   double                *direction,
+ 				   double                *climb,
+ 				   GError               **error);
++
++	/* vtable */
++	gboolean (* get_last_velocity) (GcIfaceVelocity		*gc,
++					GeoclueVelocityFields	*fields,
++					int			*timestamp,
++					double			*speed,
++					double			*direction,
++					double			*climb,
++					GError			**error);
+ };
+ 
+ GType gc_iface_velocity_get_type (void);
+Index: geoclue/geoclue/geoclue-position.c
+===================================================================
+--- geoclue.orig/geoclue/geoclue-position.c	2012-02-27 17:32:47.310514352 +0900
++++ geoclue/geoclue/geoclue-position.c	2012-02-27 17:24:11.250514000 +0900
+@@ -231,6 +231,68 @@
+ 	return fields;
+ }
+ 
++/**
++ * geoclue_position_get_last_position:
++ * @position: A #GeocluePosition object
++ * @timestamp: Pointer to returned time of position measurement (Unix timestamp) or %NULL
++ * @latitude: Pointer to returned latitude in degrees or %NULL
++ * @longitude: Pointer to returned longitude in degrees or %NULL
++ * @altitude: Pointer to returned altitude in meters or %NULL
++ * @accuracy: Pointer to returned #GeoclueAccuracy or %NULL
++ * @error: Pointer to returned #Gerror or %NULL
++ *
++ * Obtains the last position. @timestamp will contain the time of
++ * the actual position measurement. @accuracy is a rough estimate of the
++ * accuracy of the last position.
++ *
++ * If the caller is not interested in some values, the pointers can be
++ * left %NULL.
++ *
++ * Return value: A #GeocluePositionFields bitfield representing the
++ * validity of the position values.
++ */
++GeocluePositionFields
++geoclue_position_get_last_position (GeocluePosition  *position,
++				    int              *timestamp,
++				    double           *latitude,
++				    double           *longitude,
++				    double           *altitude,
++				    GeoclueAccuracy **accuracy,
++				    GError          **error)
++{
++	GeoclueProvider *provider = GEOCLUE_PROVIDER (position);
++	double la, lo, al;
++	int ts, fields;
++	GeoclueAccuracy *acc;
++	if (!org_freedesktop_Geoclue_Position_get_last_position (provider->proxy,
++								 &fields, &ts,
++								 &la, &lo, &al,
++								 &acc, error)) {
++		return GEOCLUE_POSITION_FIELDS_NONE;
++	}
++
++	if (timestamp != NULL) {
++		*timestamp = ts;
++	}
++
++	if (latitude != NULL && (fields & GEOCLUE_POSITION_FIELDS_LATITUDE)) {
++		*latitude = la;
++	}
++
++	if (longitude != NULL && (fields & GEOCLUE_POSITION_FIELDS_LONGITUDE)) {
++		*longitude = lo;
++	}
++
++	if (altitude != NULL && (fields & GEOCLUE_POSITION_FIELDS_ALTITUDE)) {
++		*altitude = al;
++	}
++
++	if (accuracy != NULL) {
++		*accuracy = acc;
++	}
++
++	return fields;
++}
+ 
+ typedef struct _GeocluePositionAsyncData {
+ 	GeocluePosition *position;
+Index: geoclue/geoclue/geoclue-position.h
+===================================================================
+--- geoclue.orig/geoclue/geoclue-position.h	2012-02-27 17:32:47.326514352 +0900
++++ geoclue/geoclue/geoclue-position.h	2012-02-27 17:24:17.538514000 +0900
+@@ -66,6 +66,14 @@
+ 						     GeoclueAccuracy **accuracy,
+ 						     GError          **error);
+ 
++GeocluePositionFields geoclue_position_get_last_position (GeocluePosition  *position,
++							  int              *timestamp,
++							  double           *latitude,
++							  double           *longitude,
++							  double           *altitude,
++							  GeoclueAccuracy **accuracy,
++							  GError          **error);
++
+ typedef void (*GeocluePositionCallback) (GeocluePosition      *position,
+ 					 GeocluePositionFields fields,
+ 					 int                   timestamp,
+Index: geoclue/geoclue/geoclue-satellite.c
+===================================================================
+--- geoclue.orig/geoclue/geoclue-satellite.c	2012-02-27 17:32:47.342514352 +0900
++++ geoclue/geoclue/geoclue-satellite.c	2012-02-27 17:24:56.690514000 +0900
+@@ -151,6 +151,25 @@
+ 	return TRUE;
+ }
+ 
++gboolean
++geoclue_satellite_get_last_satellite (GeoclueSatellite *satellite,
++				      int              *timestamp,
++				      int              *satellite_used,
++				      int              *satellite_visible,
++				      GArray          **used_prn,
++				      GPtrArray       **sat_info,
++				      GError          **error)
++{
++	GeoclueProvider *provider = GEOCLUE_PROVIDER (satellite);
++	if (!org_freedesktop_Geoclue_Satellite_get_last_satellite (provider->proxy,
++								   timestamp, satellite_used, satellite_visible,
++								   used_prn, sat_info, error)) {
++		return FALSE;
++	}
++
++	return TRUE;
++}
++
+ 
+ typedef struct _GeoclueSatelliteAsyncData {
+ 	GeoclueSatellite *satellite;
+Index: geoclue/geoclue/geoclue-satellite.h
+===================================================================
+--- geoclue.orig/geoclue/geoclue-satellite.h	2012-02-27 17:32:47.358514352 +0900
++++ geoclue/geoclue/geoclue-satellite.h	2012-02-27 17:25:01.346514000 +0900
+@@ -66,6 +66,14 @@
+ 					  GPtrArray       **sat_info,
+ 					  GError          **error);
+ 
++gboolean geoclue_satellite_get_last_satellite (GeoclueSatellite *satellite,
++					       int              *timestamp,
++					       int              *satellite_used,
++					       int              *satellite_visible,
++					       GArray          **used_prn,
++					       GPtrArray       **sat_info,
++					       GError          **error);
++
+ typedef void (*GeoclueSatelliteCallback) (GeoclueSatellite *satellite,
+ 					  int               timestamp,
+ 					  int               satellite_used,
+Index: geoclue/geoclue/geoclue-velocity.c
+===================================================================
+--- geoclue.orig/geoclue/geoclue-velocity.c	2012-02-27 17:32:47.374514352 +0900
++++ geoclue/geoclue/geoclue-velocity.c	2012-02-27 17:25:08.010514000 +0900
+@@ -221,6 +221,62 @@
+ 	return fields;
+ }
+ 
++/**
++ * geoclue_velocity_get_last_velocity:
++ * @velocity: A #GeoclueVelocity object
++ * @timestamp: Pointer to returned time of velocity measurement (unix timestamp) or %NULL
++ * @speed: Pointer to returned horizontal speed or %NULL
++ * @direction: Pointer to returned horizontal direction (bearing) or %NULL
++ * @climb: Pointer to returned vertical speed or %NULL
++ * @error: Pointer to returned #GError or %NULL
++ *
++ * Obtains the last velocity. @timestamp will contain the time of
++ * the actual velocity measurement.
++ *
++ * If the caller is not interested in some values, the pointers can be
++ * left %NULL.
++ *
++ * Return value: A #GeoclueVelocityFields bitfield representing the
++ * validity of the velocity values.
++ */
++GeoclueVelocityFields
++geoclue_velocity_get_last_velocity (GeoclueVelocity *velocity,
++				    int             *timestamp,
++				    double          *speed,
++				    double          *direction,
++				    double          *climb,
++				    GError         **error)
++{
++	GeoclueProvider *provider = GEOCLUE_PROVIDER (velocity);
++	double sp, di, cl;
++	int ts, fields;
++
++	if (!org_freedesktop_Geoclue_Velocity_get_last_velocity (provider->proxy,
++								 &fields, &ts,
++								 &sp, &di, &cl,
++								 error)) {
++		return GEOCLUE_VELOCITY_FIELDS_NONE;
++	}
++
++	if (timestamp != NULL) {
++		*timestamp = ts;
++	}
++
++	if (speed != NULL && (fields & GEOCLUE_VELOCITY_FIELDS_SPEED)) {
++		*speed = sp;
++	}
++
++	if (direction != NULL && (fields & GEOCLUE_VELOCITY_FIELDS_DIRECTION)) {
++		*direction = di;
++	}
++
++	if (climb != NULL && (fields & GEOCLUE_VELOCITY_FIELDS_CLIMB)) {
++		*climb = cl;
++	}
++
++	return fields;
++}
++
+ typedef struct _GeoclueVelocityAsyncData {
+ 	GeoclueVelocity *velocity;
+ 	GCallback callback;
+Index: geoclue/geoclue/geoclue-velocity.h
+===================================================================
+--- geoclue.orig/geoclue/geoclue-velocity.h	2012-02-27 17:32:47.394514352 +0900
++++ geoclue/geoclue/geoclue-velocity.h	2012-02-27 17:25:13.978514000 +0900
+@@ -64,6 +64,13 @@
+ 						     double           *climb,
+ 						     GError          **error);
+ 
++GeoclueVelocityFields geoclue_velocity_get_last_velocity (GeoclueVelocity  *velocity,
++							  int              *timestamp,
++							  double           *speed,
++							  double           *direction,
++							  double           *climb,
++							  GError          **error);
++
+ typedef void (*GeoclueVelocityCallback) (GeoclueVelocity      *velocity,
+ 					 GeoclueVelocityFields fields,
+ 					 int                   timestamp,
+Index: geoclue/interfaces/gc-iface-position-full.xml
+===================================================================
+--- geoclue.orig/interfaces/gc-iface-position-full.xml	2012-02-27 17:36:06.986514327 +0900
++++ geoclue/interfaces/gc-iface-position-full.xml	2012-02-27 17:25:44.214514000 +0900
+@@ -16,7 +16,18 @@
+ 			<arg type="d" name="longitude" direction="out" />
+ 			<arg type="d" name="altitude" direction="out" />
+ 
+-                        <arg name="accuracy" type="(idd)" direction="out" />
++			<arg name="accuracy" type="(idd)" direction="out" />
++		</method>
++
++		<method name="GetLastPosition">
++			<arg type="i" name="fields" direction="out" />
++			<arg type="i" name="timestamp" direction="out" />
++
++			<arg type="d" name="latitude" direction="out" />
++			<arg type="d" name="longitude" direction="out" />
++			<arg type="d" name="altitude" direction="out" />
++
++			<arg name="accuracy" type="(idd)" direction="out" />
+ 		</method>
+ 
+ 		<signal name="PositionChanged">
+Index: geoclue/interfaces/gc-iface-satellite-full.xml
+===================================================================
+--- geoclue.orig/interfaces/gc-iface-satellite-full.xml	2012-02-27 17:36:07.002514327 +0900
++++ geoclue/interfaces/gc-iface-satellite-full.xml	2012-02-27 17:25:50.278514000 +0900
+@@ -10,6 +10,14 @@
+ 			<arg type="a(iiii)" name="sat_info" direction="out" />
+ 		</method>
+ 
++		<method name="GetLastSatellite">
++			<arg type="i" name="timestamp" direction="out" />
++			<arg type="i" name="satellite_used" direction="out" />
++			<arg type="i" name="satellite_visible" direction="out" />
++			<arg type="ai" name="used_prn" direction="out" />
++			<arg type="a(iiii)" name="sat_info" direction="out" />
++		</method>
++
+ 		<signal name="SatelliteChanged">
+ 			<arg type="i" name="timestamp" />
+ 			<arg type="i" name="satellite_used" />
+Index: geoclue/interfaces/gc-iface-velocity-full.xml
+===================================================================
+--- geoclue.orig/interfaces/gc-iface-velocity-full.xml	2012-02-27 17:36:07.018514327 +0900
++++ geoclue/interfaces/gc-iface-velocity-full.xml	2012-02-27 17:25:54.030514000 +0900
+@@ -10,6 +10,14 @@
+ 			<arg type="d" name="climb" direction="out" />
+ 		</method>
+ 
++		<method name="GetLastVelocity">
++			<arg type="i" name="fields" direction="out" />
++			<arg type="i" name="timestamp" direction="out" />
++			<arg type="d" name="speed" direction="out" />
++			<arg type="d" name="direction" direction="out" />
++			<arg type="d" name="climb" direction="out" />
++		</method>
++
+ 		<signal name="VelocityChanged">
+ 			<arg type="i" name="fields" />
+ 			<arg type="i" name="timestamp" />

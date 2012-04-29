@@ -79,7 +79,6 @@
  */
 
 #include <stdarg.h>
-#include <string.h>
 #include <glib-object.h>
 
 #include <libxml/nanohttp.h>
@@ -183,25 +182,12 @@ gc_web_service_fetch (GcWebService *self, gchar *url, GError **error)
 	gint len;
 	xmlChar buf[1024];
 	xmlBuffer *output;
-	char *system_http_proxy = NULL;
-	char http_proxy[128] = {0,};
 
 	g_assert (url);
 
 	gc_web_service_reset (self);
 
 	xmlNanoHTTPInit();
-
-	system_http_proxy = getenv("http_proxy");
-	if (system_http_proxy != NULL) {
-		if (strncmp(system_http_proxy, "http://", 7)) {
-			snprintf(http_proxy, sizeof(http_proxy), "http://%s", system_http_proxy);
-		} else {
-			snprintf(http_proxy, sizeof(http_proxy), "%s", system_http_proxy);
-		}
-		xmlNanoHTTPScanProxy(http_proxy);
-	}
-
 	ctxt = xmlNanoHTTPMethod (url, "GET", NULL, NULL, NULL, 0);
 	if (!ctxt) {
 		*error = g_error_new (GEOCLUE_ERROR,

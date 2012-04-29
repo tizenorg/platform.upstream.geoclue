@@ -46,16 +46,6 @@ gc_iface_position_get_position (GcIfacePosition       *position,
 				GeoclueAccuracy      **accuracy,
 				GError               **error);
 
-static gboolean
-gc_iface_position_get_last_position (GcIfacePosition	*position,
-				     int		*fields,
-				     int		*timestamp,
-				     double		*latitude,
-				     double		*longitude,
-				     double		*altitude,
-				     GeoclueAccuracy	**accuracy,
-				     GError		**error);
-
 #include "gc-iface-position-glue.h"
 
 static void
@@ -115,21 +105,6 @@ gc_iface_position_get_position (GcIfacePosition  *gc,
 				GError          **error)
 {
 	return GC_IFACE_POSITION_GET_CLASS (gc)->get_position
-		(gc, (GeocluePositionFields *) fields, timestamp,
-		 latitude, longitude, altitude, accuracy, error);
-}
-
-static gboolean
-gc_iface_position_get_last_position (GcIfacePosition	*gc,
-				     int		*fields,
-				     int		*timestamp,
-				     double		*latitude,
-				     double		*longitude,
-				     double		*altitude,
-				     GeoclueAccuracy	**accuracy,
-				     GError		**error)
-{
-	return GC_IFACE_POSITION_GET_CLASS (gc)->get_last_position
 		(gc, (GeocluePositionFields *) fields, timestamp,
 		 latitude, longitude, altitude, accuracy, error);
 }

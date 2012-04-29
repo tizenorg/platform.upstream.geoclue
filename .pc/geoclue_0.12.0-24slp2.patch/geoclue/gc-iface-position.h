@@ -61,16 +61,6 @@ struct _GcIfacePositionClass {
 				   double                *altitude,
 				   GeoclueAccuracy      **accuracy,
 				   GError               **error);
-
-	/* vtable */
-	gboolean (* get_last_position) (GcIfacePosition 	*gc,
-					GeocluePositionFields 	*fields,
-					int			*timestamp,
-					double			*latitude,
-					double			*longitude,
-					double			*altitude,
-					GeoclueAccuracy 	**accuracy,
-					GError			**error);
 };
 
 GType gc_iface_position_get_type (void);

@@ -60,15 +60,6 @@ struct _GcIfaceSatelliteClass {
 				    GArray          **used_prn,
 				    GPtrArray       **sat_info,
 				    GError          **error);
-
-	/* vtable */
-	gboolean (* get_last_satellite) (GcIfaceSatellite *gc,
-					 int              *timestamp,
-					 int              *satellite_used,
-					 int              *satellite_visible,
-					 GArray          **used_prn,
-					 GPtrArray       **sat_info,
-					 GError          **error);
 };
 
 GType gc_iface_satellite_get_type (void);

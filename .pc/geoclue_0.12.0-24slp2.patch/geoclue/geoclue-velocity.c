@@ -221,62 +221,6 @@ geoclue_velocity_get_velocity (GeoclueVelocity *velocity,
 	return fields;
 }
 
-/**
- * geoclue_velocity_get_last_velocity:
- * @velocity: A #GeoclueVelocity object
- * @timestamp: Pointer to returned time of velocity measurement (unix timestamp) or %NULL
- * @speed: Pointer to returned horizontal speed or %NULL
- * @direction: Pointer to returned horizontal direction (bearing) or %NULL
- * @climb: Pointer to returned vertical speed or %NULL
- * @error: Pointer to returned #GError or %NULL
- *
- * Obtains the last velocity. @timestamp will contain the time of
- * the actual velocity measurement.
- *
- * If the caller is not interested in some values, the pointers can be
- * left %NULL.
- *
- * Return value: A #GeoclueVelocityFields bitfield representing the
- * validity of the velocity values.
- */
-GeoclueVelocityFields
-geoclue_velocity_get_last_velocity (GeoclueVelocity *velocity,
-				    int             *timestamp,
-				    double          *speed,
-				    double          *direction,
-				    double          *climb,
-				    GError         **error)
-{
-	GeoclueProvider *provider = GEOCLUE_PROVIDER (velocity);
-	double sp, di, cl;
-	int ts, fields;
-
-	if (!org_freedesktop_Geoclue_Velocity_get_last_velocity (provider->proxy,
-								 &fields, &ts,
-								 &sp, &di, &cl,
-								 error)) {
-		return GEOCLUE_VELOCITY_FIELDS_NONE;
-	}
-
-	if (timestamp != NULL) {
-		*timestamp = ts;
-	}
-
-	if (speed != NULL && (fields & GEOCLUE_VELOCITY_FIELDS_SPEED)) {
-		*speed = sp;
-	}
-
-	if (direction != NULL && (fields & GEOCLUE_VELOCITY_FIELDS_DIRECTION)) {
-		*direction = di;
-	}
-
-	if (climb != NULL && (fields & GEOCLUE_VELOCITY_FIELDS_CLIMB)) {
-		*climb = cl;
-	}
-
-	return fields;
-}
-
 typedef struct _GeoclueVelocityAsyncData {
 	GeoclueVelocity *velocity;
 	GCallback callback;

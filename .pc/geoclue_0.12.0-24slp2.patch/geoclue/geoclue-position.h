@@ -66,14 +66,6 @@ GeocluePositionFields geoclue_position_get_position (GeocluePosition  *position,
 						     GeoclueAccuracy **accuracy,
 						     GError          **error);
 
-GeocluePositionFields geoclue_position_get_last_position (GeocluePosition  *position,
-							  int              *timestamp,
-							  double           *latitude,
-							  double           *longitude,
-							  double           *altitude,
-							  GeoclueAccuracy **accuracy,
-							  GError          **error);
-
 typedef void (*GeocluePositionCallback) (GeocluePosition      *position,
 					 GeocluePositionFields fields,
 					 int                   timestamp,

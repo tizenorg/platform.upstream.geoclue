@@ -1,7 +1,7 @@
 Source: geoclue
 Section: utils
 Priority: extra
-Maintainer: Youngae Kang <youngae.kang@samsung.com>, Yunhan Kim <yhan.kim@samsung.com>, Genie kim <daejins.kim@samsung.com>
+Maintainer: Youngae Kang <youngae.kang@samsung.com>, Yunhan Kim <yhan.kim@samsung.com>, Minjune Kim <sena06.kim@samsung.com>, Genie kim <daejins.kim@samsung.com>
 Uploaders: Genie Kim <daejins.kim@samsung.com>
 Build-Depends: debhelper (>= 5), autotools-dev, libglib2.0-dev, libdbus-glib-1-dev, libxml2-dev, libgconf-dbus-dev, libslp-setting-dev
 Standards-Version: 3.7.2

@@ -151,25 +151,6 @@ geoclue_satellite_get_satellite (GeoclueSatellite *satellite,
 	return TRUE;
 }
 
-gboolean
-geoclue_satellite_get_last_satellite (GeoclueSatellite *satellite,
-				      int              *timestamp,
-				      int              *satellite_used,
-				      int              *satellite_visible,
-				      GArray          **used_prn,
-				      GPtrArray       **sat_info,
-				      GError          **error)
-{
-	GeoclueProvider *provider = GEOCLUE_PROVIDER (satellite);
-	if (!org_freedesktop_Geoclue_Satellite_get_last_satellite (provider->proxy,
-								   timestamp, satellite_used, satellite_visible,
-								   used_prn, sat_info, error)) {
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
 
 typedef struct _GeoclueSatelliteAsyncData {
 	GeoclueSatellite *satellite;

@@ -20,8 +20,6 @@ Geographic information framework GeoClue provides applications access to various
  .
  This package contains the master server for GeoClue.
 
-
-
 %package -n libgeoclue
 Summary:    C API for GeoClue
 Group:      TO_BE/FILLED
@@ -33,7 +31,6 @@ Requires(postun): /sbin/ldconfig
 libgeoclue is a convenience wrapper for the GeoClue service, and
 the recommended way to use GeoClue in the C language.
 
-
 %package -n libgeoclue-devel
 Summary:    C API for GeoClue (development files)
 Group:      TO_BE/FILLED
@@ -42,7 +39,6 @@ Requires:   libgeoclue = %{version}-%{release}
 %description -n libgeoclue-devel
 libgeoclue is a convenience wrapper for the GeoClue service, and
 the recommended way to use GeoClue in the C language.
-
 
 %package -n geoclue-nominatim
 Summary:    Geocode server for GeoClue (OpenStreetMap)
@@ -84,16 +80,13 @@ rm -rf %{buildroot}/usr/bin/geoclue-test-gui
 /usr/share/dbus-1/services/org.freedesktop.Geoclue.Master.service
 
 %files -n libgeoclue
-/usr/lib/libgeoclue.so.*
+/usr/lib/libgeoclue.so*
 
 %files -n libgeoclue-devel
 /usr/include/*
 /usr/lib/pkgconfig/*
-#/usr/lib/libgeoclue.*a
-/usr/lib/libgeoclue.so
 
 %files -n geoclue-nominatim
 /usr/share/dbus-1/services/org.freedesktop.Geoclue.Providers.Nominatim.service
 /usr/share/geoclue-providers/geoclue-nominatim.provider
 /usr/libexec/geoclue-nominatim
-

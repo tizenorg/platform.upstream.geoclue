@@ -45,15 +45,6 @@ gc_iface_satellite_get_satellite (GcIfaceSatellite *satellite,
 				  GPtrArray       **sat_info,
 				  GError          **error);
 
-static gboolean
-gc_iface_satellite_get_last_satellite (GcIfaceSatellite *satellite,
-				       int		*timestamp,
-				       int		*satellite_used,
-				       int		*satellite_visible,
-				       GArray		**used_prn,
-				       GPtrArray	**sat_info,
-				       GError		**error);
-
 #include "gc-iface-satellite-glue.h"
 
 static void
@@ -116,24 +107,6 @@ gc_iface_satellite_get_satellite (GcIfaceSatellite *gc,
 								 used_prn,
 								 sat_info,
 								 error);
-}
-
-static gboolean
-gc_iface_satellite_get_last_satellite (GcIfaceSatellite *gc,
-				       int              *timestamp,
-				       int              *satellite_used,
-				       int              *satellite_visible,
-				       GArray          **used_prn,
-				       GPtrArray       **sat_info,
-				       GError          **error)
-{
-	return GC_IFACE_SATELLITE_GET_CLASS (gc)->get_last_satellite (gc,
-								      timestamp,
-								      satellite_used,
-								      satellite_visible,
-								      used_prn,
-								      sat_info,
-								      error);
 }
 
 void

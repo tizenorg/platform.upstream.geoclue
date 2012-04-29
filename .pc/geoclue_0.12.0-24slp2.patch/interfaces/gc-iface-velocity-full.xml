@@ -10,14 +10,6 @@
 			<arg type="d" name="climb" direction="out" />
 		</method>
 
-		<method name="GetLastVelocity">
-			<arg type="i" name="fields" direction="out" />
-			<arg type="i" name="timestamp" direction="out" />
-			<arg type="d" name="speed" direction="out" />
-			<arg type="d" name="direction" direction="out" />
-			<arg type="d" name="climb" direction="out" />
-		</method>
-
 		<signal name="VelocityChanged">
 			<arg type="i" name="fields" />
 			<arg type="i" name="timestamp" />

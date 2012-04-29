@@ -1,8 +1,32 @@
-geoclue (0.12.0-22slp3) unstable; urgency=low
+geoclue (0.12.0-25slp2) unstable; urgency=low
+
+  * fix for system proxy setting
+  * Git : pkgs/g/geoclue
+  * Tag : geoclue_0.12.0-25slp2
+
+ -- Genie Kim <daejins.kim@samsung.com>  Mon, 02 Apr 2012 20:24:00 +0900
+
+geoclue (0.12.0-24slp2) unstable; urgency=low
+
+  * add feature for last position & velocity & satellite
+  * Git : pkgs/g/geoclue
+  * Tag : geoclue_0.12.0-24slp2
+
+ -- Genie Kim <daejins.kim@samsung.com>  Mon, 27 Feb 2012 17:30:01 +0900
+
+geoclue (0.12.0-23slp2) unstable; urgency=low
 
   * remove geoclue-gpsd
   * Git : pkgs/g/geoclue
-  * Tag : geoclue_0.12.0-22slp3
+  * Tag : geoclue_0.12.0-23slp2
+
+ -- Minjune kim <sena06.kim.kim@samsung.com>  Wed, 22 Feb 2012 16:55:45 +0900
+
+geoclue (0.12.0-22slp2) unstable; urgency=low
+
+  * remove geoclue-gpsd
+  * Git : pkgs/g/geoclue
+  * Tag : geoclue_0.12.0-22slp2
 
  -- Genie Kim <daejins.kim@samsung.com>  Fri, 10 Feb 2012 17:58:42 +0900
 
@@ -27,7 +51,7 @@ geoclue (0.12.0-19slp2+5) unstable; urgency=low
 
   * add geoclue-gpsd install file
   * Git : pkgs/g/geoclue
-  * Tag : geoclue_0.12.0-19slp2+5 
+  * Tag : geoclue_0.12.0-19slp2+5
 
  -- Genie Kim <daejins.kim@samsung.com>  Mon, 19 Dec 2011 13:56:07 +0900
 
