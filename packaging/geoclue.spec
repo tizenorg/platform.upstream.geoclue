@@ -5,6 +5,7 @@ Release:    1.8
 Group:      TO_BE/FILLED_IN
 License:    TO BE FILLED IN
 Source0:    geoclue-%{version}.tar.gz
+Source1001: packaging/geoclue.manifest 
 BuildRequires:  which
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(dbus-glib-1)
@@ -56,6 +57,7 @@ This package provides a tool to search osm data by name and address and to gener
 %setup -q -n %{name}-%{version}
 
 %build
+cp %{SOURCE1001} .
 export CFLAGS+=" -Wall -g -fPIC"
 export LDFLAGS+=" -Wl,-z,defs -Wl,--rpath=/usr/lib -Wl,--as-needed -Wl,--hash-style=both"
 
@@ -76,17 +78,21 @@ rm -rf %{buildroot}/usr/bin/geoclue-test-gui
 %postun -n libgeoclue -p /sbin/ldconfig
 
 %files
+%manifest geoclue.manifest
 /usr/libexec/geoclue-master
 /usr/share/dbus-1/services/org.freedesktop.Geoclue.Master.service
 
 %files -n libgeoclue
+%manifest geoclue.manifest
 /usr/lib/libgeoclue.so*
 
 %files -n libgeoclue-devel
+%manifest geoclue.manifest
 /usr/include/*
 /usr/lib/pkgconfig/*
 
 %files -n geoclue-nominatim
+%manifest geoclue.manifest
 /usr/share/dbus-1/services/org.freedesktop.Geoclue.Providers.Nominatim.service
 /usr/share/geoclue-providers/geoclue-nominatim.provider
 /usr/libexec/geoclue-nominatim
