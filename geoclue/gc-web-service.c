@@ -79,8 +79,8 @@
  */
 
 #include <stdarg.h>
-#include <string.h>
 #include <glib-object.h>
+#include <string.h>
 
 #include <libxml/nanohttp.h>
 #include <libxml/xpathInternals.h>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/">
+	<interface name="org.freedesktop.Geoclue.Poi">
+
+		<method name="SearchByPosition">
+			<arg name="keyword" type="s" direction="in" />
+			<arg name="lang" type="s" direction="in" />
+			<arg name="country_code" type="s" direction="in" />
+			<arg name="limit" type="i" direction="in" />
+			<arg name="left" type="d" direction="in" />
+			<arg name="top" type="d" direction="in" />
+			<arg name="right" type="d" direction="in" />
+			<arg name="bottom" type="d" direction="in" />
+			<arg name="count" type="i" direction="out" />
+			<arg name="landmark" type="a(iiddddddsssssssssss)" direction="out" />
+		</method>
+
+	</interface>
+</node>

@@ -27,11 +27,33 @@ typedef struct _GeoclueNominatim {
 
 	GcWebService *geocoder;
 	GcWebService *rev_geocoder;
+	GcWebService *poi;
 } GeoclueNominatim;
 
 typedef struct _GeoclueNominatimClass {
 	GcProviderClass parent_class;
 } GeoclueNominatimClass;
+
+typedef struct _GeocluePOIData {
+	gint id;
+	gint rank;
+	gdouble lat;
+	gdouble lon;
+	gdouble boundary_left;
+	gdouble boundary_top;
+	gdouble boudnary_right;
+	gdouble boundary_bottom;
+	gchar *name;
+	gchar *icon;
+	gchar *house;
+	gchar *road;
+	gchar *village;
+	gchar *suburb;
+	gchar *city;
+	gchar *county;
+	gchar *country;
+	gchar *country_code;
+} GeocluePOIData;
 
 GType geoclue_nominatim_get_type (void);
 

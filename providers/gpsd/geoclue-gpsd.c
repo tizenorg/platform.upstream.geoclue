@@ -43,8 +43,6 @@
 #include <geoclue/gc-iface-position.h>
 #include <geoclue/gc-iface-velocity.h>
 
-#include "setting.h"
-
 typedef struct gps_data_t gps_data;
 typedef struct gps_fix_t gps_fix;
 
@@ -56,15 +54,6 @@ typedef enum {
 	NMEA_GSV,
 	NMEA_RMC
 } NmeaTag;
-
-typedef struct {
-	int timestamp;
-	double latitude;
-	double longitude;
-	double altitude;
-	double hor_accuracy;
-	double ver_accuracy;
-} GeoclueGpsdsLastPosition;
 
 typedef struct {
 	GcProvider parent;
@@ -80,7 +69,6 @@ typedef struct {
 	GeocluePositionFields last_pos_fields;
 	GeoclueAccuracy *last_accuracy;
 	GeoclueVelocityFields last_velo_fields;
-	GeoclueGpsdsLastPosition last_position;
 
 	GMainLoop *loop;
 } GeoclueGpsd;
@@ -217,81 +205,6 @@ static gboolean equal_or_nan(double a, double b)
 	return a == b;
 }
 
-double deg2rad(double deg)
-{
-	return (deg * M_PI / 180);
-}
-
-static int geoclue_gpsd_distance_to_last_position(GeoclueGpsd * gpsd, const gps_fix * last_fix)
-{
-	double delta_lat, delta_long;
-	double dist;
-
-	delta_lat = last_fix->latitude - gpsd->last_position.latitude;
-	delta_long = last_fix->longitude - gpsd->last_position.longitude;
-
-	g_debug("GPS pos Latitude = %f Longitude = %f", last_fix->latitude, last_fix->longitude);
-
-	dist = sin(deg2rad(delta_lat) / 2) * sin(deg2rad(delta_lat) / 2)
-	    + cos(deg2rad(last_fix->latitude)) * cos(deg2rad(gpsd->last_position.latitude))
-	    * sin(deg2rad(delta_long) / 2) * sin(deg2rad(delta_long) / 2);
-	dist = 2 * atan2(sqrt(dist), sqrt(1 - dist));
-	dist = 6371 * dist;	// unit: 'km'
-
-	if (dist > 0.3) {
-		return 0;
-	} else {
-		return -1;
-	}
-}
-
-static void geoclue_gpsd_get_last_position(GeoclueGpsd * gpsd)
-{
-	setting_get_int(LAST_GPS_TIMESTAMP, &gpsd->last_position.timestamp);
-	setting_get_double(LAST_GPS_LATITUDE, &gpsd->last_position.latitude);
-	setting_get_double(LAST_GPS_LATITUDE, &gpsd->last_position.longitude);
-	setting_get_double(LAST_GPS_LONGITUDE, &gpsd->last_position.altitude);
-	setting_get_double(LAST_GPS_HOR_ACCURACY, &gpsd->last_position.hor_accuracy);
-	setting_get_double(LAST_GPS_VER_ACCURACY, &gpsd->last_position.ver_accuracy);
-	g_debug
-	    ("get Last Latitude = %f Longitude = %f Altitude = %f H_Accuracy = %f V_Accuracy = %f",
-	     gpsd->last_position.latitude, gpsd->last_position.longitude,
-	     gpsd->last_position.altitude, gpsd->last_position.hor_accuracy, gpsd->last_position.ver_accuracy);
-}
-
-static void geoclue_gpsd_set_last_position(GeoclueGpsd * gpsd)
-{
-	g_debug
-	    ("set GPSD Last Latitude = %d Longitude = %d Altitude = %d H_Accuracy = %d V_Accuracy = %f",
-	     gpsd->last_position.latitude, gpsd->last_position.longitude,
-	     gpsd->last_position.altitude, gpsd->last_position.hor_accuracy, gpsd->last_position.ver_accuracy);
-	setting_set_int(LAST_GPS_TIMESTAMP, gpsd->last_position.timestamp);
-	setting_set_double(LAST_GPS_LATITUDE, gpsd->last_position.latitude);
-	setting_set_double(LAST_GPS_LONGITUDE, gpsd->last_position.longitude);
-	setting_set_double(LAST_GPS_ALTITUDE, gpsd->last_position.altitude);
-	setting_set_double(LAST_GPS_HOR_ACCURACY, gpsd->last_position.hor_accuracy);
-	setting_set_double(LAST_GPS_VER_ACCURACY, gpsd->last_position.ver_accuracy);
-
-	setting_set_int(LAST_WPS_TIMESTAMP, gpsd->last_position.timestamp);
-	setting_set_double(LAST_WPS_LATITUDE, gpsd->last_position.latitude);
-	setting_set_double(LAST_WPS_LONGITUDE, gpsd->last_position.longitude);
-	setting_set_double(LAST_WPS_ALTITUDE, gpsd->last_position.altitude);
-	setting_set_double(LAST_WPS_HOR_ACCURACY, gpsd->last_position.hor_accuracy);
-}
-
-static void geoclue_gpsd_update_last_position(GeoclueGpsd * gpsd, const const gps_fix * last_fix)
-{
-	g_debug("geoclue_gpsd_update_last_position");
-	gpsd->last_position.timestamp = last_fix->time + 0.5;
-	gpsd->last_position.latitude = last_fix->latitude;
-	gpsd->last_position.longitude = last_fix->longitude;
-	gpsd->last_position.altitude = last_fix->altitude;
-	gpsd->last_position.hor_accuracy = sqrt(pow(last_fix->epx, 2) + pow(last_fix->epy, 2));
-	gpsd->last_position.ver_accuracy = last_fix->epv;
-
-	geoclue_gpsd_set_last_position(gpsd);
-}
-
 static void geoclue_gpsd_update_position(GeoclueGpsd * gpsd)
 {
 	if (gpsd->last_status != GEOCLUE_STATUS_AVAILABLE)
@@ -334,12 +247,6 @@ static void geoclue_gpsd_update_position(GeoclueGpsd * gpsd)
 	gpsd->last_pos_fields |= (isnan(fix->latitude)) ? 0 : GEOCLUE_POSITION_FIELDS_LATITUDE;
 	gpsd->last_pos_fields |= (isnan(fix->longitude)) ? 0 : GEOCLUE_POSITION_FIELDS_LONGITUDE;
 	gpsd->last_pos_fields |= (isnan(fix->altitude)) ? 0 : GEOCLUE_POSITION_FIELDS_ALTITUDE;
-
-	if (geoclue_gpsd_distance_to_last_position(gpsd, last_fix) == 0) {
-		geoclue_gpsd_update_last_position(gpsd, last_fix);
-	} else {
-		g_debug("Last position is not updated");
-	}
 
 	g_debug
 	    ("Update position: %lf, %lf, %lf, fields:0x%x, Accuracy level: %d, hori:%lf vert:%lf",
@@ -476,8 +383,6 @@ static void geoclue_gpsd_init(GeoclueGpsd * self)
 	if (!geoclue_gpsd_start_gpsd(self)) {
 		geoclue_gpsd_set_status(self, GEOCLUE_STATUS_ERROR);
 	}
-
-	geoclue_gpsd_get_last_position(self);
 }
 
 static gboolean

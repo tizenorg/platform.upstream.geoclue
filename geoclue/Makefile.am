@@ -9,6 +9,8 @@ nodist_libgeoclue_la_SOURCES = \
 	gc-iface-geoclue-glue.h \
 	gc-iface-geocode-bindings.h	\
 	gc-iface-geocode-glue.h	\
+	gc-iface-poi-bindings.h	\
+	gc-iface-poi-glue.h	\
 	gc-iface-master-bindings.h	\
 	gc-iface-master-client-bindings.h	\
 	gc-iface-position-bindings.h	\
@@ -34,6 +36,7 @@ libgeoclue_la_SOURCES = 	\
 	geoclue-provider.c	\
 	geoclue-error.c		\
 	geoclue-geocode.c	\
+	geoclue-poi.c	\
 	geoclue-master.c	\
 	geoclue-master-client.c	\
 	geoclue-position.c	\
@@ -47,6 +50,7 @@ libgeoclue_la_SOURCES = 	\
 	gc-iface-address.c	\
 	gc-iface-geoclue.c      \
 	gc-iface-geocode.c	\
+	gc-iface-poi.c	\
 	gc-iface-position.c	\
 	gc-iface-nmea.c	\
 	gc-iface-reverse-geocode.c	\
@@ -66,6 +70,7 @@ geoclue_headers =		\
 	gc-iface-address.h	\
 	gc-iface-geoclue.h	\
 	gc-iface-geocode.h	\
+	gc-iface-poi.h	\
 	gc-iface-position.h	\
 	gc-iface-nmea.h	\
 	gc-iface-reverse-geocode.h	\
@@ -81,6 +86,8 @@ geoclue_headers =		\
 	geoclue-geocode.h	\
 	geoclue-master.h	\
 	geoclue-master-client.h	\
+	geoclue-poi.h		\
+	geoclue-landmark.h	\
 	geoclue-position.h	\
 	geoclue-nmea.h	\
 	geoclue-reverse-geocode.h	\
@@ -101,6 +108,7 @@ CLEANFILES = $(BUILT_SOURCES) 	\
 	stamp-gc-iface-address-glue.h	\
 	stamp-gc-iface-geoclue-glue.h	\
 	stamp-gc-iface-geocode-glue.h	\
+	stamp-gc-iface-poi-glue.h	\
 	stamp-gc-iface-position-glue.h	\
 	stamp-gc-iface-nmea-glue.h	\
 	stamp-gc-iface-reverse-geocode-glue.h	\
@@ -135,6 +143,12 @@ stamp-gc-iface-geoclue-glue.h: ../interfaces/gc-iface-geoclue.xml
 
 stamp-gc-iface-geocode-glue.h: ../interfaces/gc-iface-geocode.xml
 	$(DBUS_BINDING_TOOL) --prefix=gc_iface_geocode --mode=glib-server $< > xgen-$(@F) \
+	&& (cmp -s xgen-$(@F) $(@F:stamp-%=%) || cp xgen-$(@F) $(@F:stamp-%=%)) \
+	&& rm -f xgen-$(@F) \
+	&& echo timestamp > $(@F)
+
+stamp-gc-iface-poi-glue.h: ../interfaces/gc-iface-poi.xml
+	$(DBUS_BINDING_TOOL) --prefix=gc_iface_poi --mode=glib-server $< > xgen-$(@F) \
 	&& (cmp -s xgen-$(@F) $(@F:stamp-%=%) || cp xgen-$(@F) $(@F:stamp-%=%)) \
 	&& rm -f xgen-$(@F) \
 	&& echo timestamp > $(@F)

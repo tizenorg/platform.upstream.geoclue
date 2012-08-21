@@ -22,8 +22,10 @@
 
 #include <geoclue/gc-provider.h>
 #include <geoclue/geoclue-address-details.h>
+#include <geoclue/geoclue-landmark.h>
 #include <geoclue/geoclue-error.h>
 #include <geoclue/gc-iface-geocode.h>
+#include <geoclue/gc-iface-poi.h>
 #include <geoclue/gc-iface-reverse-geocode.h>
 #include "geoclue-nominatim.h"
 
@@ -33,6 +35,7 @@
 
 #define GEOCODE_URL "http://nominatim.openstreetmap.org/search"
 #define REV_GEOCODE_URL "http://nominatim.openstreetmap.org/reverse"
+#define POI_URL "http://nominatim.openstreetmap.org/search"
 
 #define NOMINATIM_HOUSE "//reversegeocode/addressparts/house"
 #define NOMINATIM_ROAD "//reversegeocode/addressparts/road"
@@ -56,16 +59,39 @@
 #define NOMINATIM_LATLON_COUNTRY "//searchresults/place[1]/country"
 #define NOMINATIM_LATLON_COUNTRYCODE "//searchresults/place[1]/countrycode"
 
+#define NOMINATIM_SEARCH			"//searchresults/place[%d]"
+#define NOMINATIM_SEARCH_ID			NOMINATIM_SEARCH"/@place_id"
+#define NOMINATIM_SEARCH_RANK			NOMINATIM_SEARCH"/@place_rank"
+#define NOMINATIM_SEARCH_BOUNDINGBOX		NOMINATIM_SEARCH"/@boudingbox"
+#define NOMINATIM_SEARCH_DISPLAY_NAME		NOMINATIM_SEARCH"/@display_name"
+#define NOMINATIM_SEARCH_ICON			NOMINATIM_SEARCH"/@icon"
+#define NOMINATIM_SEARCH_LAT 			NOMINATIM_SEARCH"/@lat"
+#define NOMINATIM_SEARCH_LON 			NOMINATIM_SEARCH"/@lon"
+#define NOMINATIM_SEARCH_HOUSE 			NOMINATIM_SEARCH"/house"
+#define NOMINATIM_SEARCH_ROAD 			NOMINATIM_SEARCH"/road"
+#define NOMINATIM_SEARCH_VILLAGE 		NOMINATIM_SEARCH"/village"
+#define NOMINATIM_SEARCH_SUBURB 		NOMINATIM_SEARCH"/suburb"
+#define NOMINATIM_SEARCH_POSTCODE 		NOMINATIM_SEARCH"/postcode"
+#define NOMINATIM_SEARCH_CITY 			NOMINATIM_SEARCH"/city"
+#define NOMINATIM_SEARCH_COUNTY 		NOMINATIM_SEARCH"/county"
+#define NOMINATIM_SEARCH_COUNTRY 		NOMINATIM_SEARCH"/country"
+#define NOMINATIM_SEARCH_COUNTRYCODE 		NOMINATIM_SEARCH"/countrycode"
+
+
+
+
 static void geoclue_nominatim_init (GeoclueNominatim *obj);
 static void geoclue_nominatim_geocode_init (GcIfaceGeocodeClass *iface);
 static void geoclue_nominatim_reverse_geocode_init (GcIfaceReverseGeocodeClass *iface);
+static void geoclue_nominatim_poi_init (GcIfacePoiClass *iface);
 
 G_DEFINE_TYPE_WITH_CODE (GeoclueNominatim, geoclue_nominatim, GC_TYPE_PROVIDER,
                          G_IMPLEMENT_INTERFACE (GC_TYPE_IFACE_GEOCODE,
                                                 geoclue_nominatim_geocode_init)
                          G_IMPLEMENT_INTERFACE (GC_TYPE_IFACE_REVERSE_GEOCODE,
-                                                geoclue_nominatim_reverse_geocode_init))
-
+                                                geoclue_nominatim_reverse_geocode_init)
+			 G_IMPLEMENT_INTERFACE (GC_TYPE_IFACE_POI,
+				 		geoclue_nominatim_poi_init))
 
 /* Geoclue interface implementation */
 
@@ -357,6 +383,287 @@ geoclue_nominatim_position_to_address (GcIfaceReverseGeocode  *iface,
 	return TRUE;
 }
 
+gboolean _parsing_boundary (char *boundary_src, gdouble *top, gdouble *left, gdouble *bottom, gdouble *right)
+{
+	g_return_val_if_fail (boundary_src, FALSE);
+
+	char *ptr = NULL;
+
+	ptr = strtok (boundary_src, ",");
+	if (!ptr) return FALSE;
+	*top = atof (ptr);
+
+	ptr = strtok (NULL, ",");
+	if (!ptr) return FALSE;
+	*left = atof (ptr);
+
+	ptr = strtok (NULL, ",");
+	if (!ptr) return FALSE;
+	*bottom = atof (ptr);
+
+	ptr = strtok (NULL, ",");
+	if (!ptr) return FALSE;
+	*right = atof (ptr);
+
+	return TRUE;
+}
+
+gboolean _get_landmark_data (GeoclueNominatim *obj, int index, GeoclueLandmark *landmark_info)
+{
+	g_return_val_if_fail (index > -1, FALSE);
+	g_return_val_if_fail (landmark_info, FALSE);
+
+	gdouble left = 0.0, top = 0.0, right = 0.0, bottom = 0.0;
+	gboolean ret = FALSE;
+
+	gchar buf[128] = {0,};
+	gchar *str = NULL;
+
+
+	snprintf(buf, 128, NOMINATIM_SEARCH_ID, index);
+	if (!gc_web_service_get_string(obj->poi, &str, buf)) {
+		return FALSE;
+	}
+
+	if (str) {
+		landmark_info->id = atoi (str);
+		g_free(str);
+	}
+
+	snprintf(buf, 128, NOMINATIM_SEARCH_RANK, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->rank = atoi (str);
+		g_free(str);
+	}
+
+	snprintf(buf, 128, NOMINATIM_SEARCH_ICON, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->icon = g_strdup(str);
+		g_free (str);
+	}
+	snprintf(buf, 128, NOMINATIM_SEARCH_DISPLAY_NAME, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->name = g_strdup(str);
+		g_free (str);
+	}
+
+	snprintf(buf, 128, NOMINATIM_SEARCH_BOUNDINGBOX, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		ret = _parsing_boundary (str, &top, &left, &bottom, &right);
+		if (ret) {
+			landmark_info->boundary_left = left;
+			landmark_info->boundary_top = top;
+			landmark_info->boundary_right = right;
+			landmark_info->boundary_bottom = bottom;
+		}
+	}
+
+	snprintf(buf, 128, NOMINATIM_SEARCH_LAT, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->lat = atof (str);
+	}
+
+	snprintf(buf, 128, NOMINATIM_SEARCH_LON, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->lon = atof (str);
+	}
+
+	snprintf(buf, 128, NOMINATIM_SEARCH_HOUSE, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->house = g_strdup(str);
+		g_free(str);
+	}
+	snprintf(buf, 128, NOMINATIM_SEARCH_ROAD, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->road = g_strdup(str);
+		g_free(str);
+	}
+
+	snprintf(buf, 128, NOMINATIM_SEARCH_VILLAGE, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->village = g_strdup(str);
+		g_free(str);
+	}
+
+	snprintf(buf, 128, NOMINATIM_SEARCH_SUBURB, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->suburb = g_strdup(str);
+		g_free(str);
+	}
+
+	snprintf(buf, 128, NOMINATIM_SEARCH_POSTCODE, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->postcode = g_strdup(str);
+		g_free(str);
+	}
+	snprintf(buf, 128, NOMINATIM_SEARCH_CITY, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->city = g_strdup(str);
+		g_free(str);
+	}
+
+	snprintf(buf, 128, NOMINATIM_SEARCH_COUNTY, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->county = g_strdup(str);
+		g_free(str);
+	}
+
+	snprintf(buf, 128, NOMINATIM_SEARCH_COUNTRY, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->country = g_strdup(str);
+		g_free(str);
+	}
+
+	snprintf(buf, 128, NOMINATIM_SEARCH_COUNTRYCODE, index);
+	if (gc_web_service_get_string(obj->poi, &str, buf)) {
+		landmark_info->country_code = g_strdup(str);
+		g_free(str);
+	}
+
+	return TRUE;
+}
+
+
+/* Poi interface implementation */
+static gboolean
+geoclue_nominatim_poi_search_by_position (GcIfacePoi	*iface,
+					const char 	*keyword,
+					const char 	*lang,
+					const char	*country_code,
+					int 		limit,
+					double 		left,
+					double    	top,
+					double		right,
+					double		bottom,
+					int 		*count,
+					GPtrArray 	**landmark,
+					GError		**error)
+{
+	g_return_val_if_fail (landmark, FALSE);
+
+	GeoclueNominatim *obj = GEOCLUE_NOMINATIM (iface);
+	*landmark = NULL;
+
+	int index = 1;
+	gboolean ret = FALSE;
+	gchar str_limit [6] = {0, };
+	GeoclueLandmark landmark_data = {0, };
+
+
+	snprintf(str_limit, 6, "%d", limit);
+
+	if (left || top || right || bottom) {
+		/* Viewbox is available */
+		gchar viewbox[64] = {0, };
+
+		/* VIEWBOX FORMAT (LEFT_TOP_LONGITUDE,LEFT_TOP_LATITUDE, RIGHT_BOTTOM_LONGITUDE, RIGHT_BOTTOM_LATITUDE */
+		snprintf(viewbox, 64, "%d,%d,%d,%d", top, left, bottom, right);
+
+		if (country_code) {
+			if (!gc_web_service_query (obj->poi, error,
+						"q", keyword,
+						"accept-language", lang,
+						"countrycodes", country_code,
+						"limit", str_limit,
+						"viewbox", viewbox,
+						"format", "xml",
+						"bounded", "1",
+						"polygon", "0",
+						"addressdetails", "1",
+						(char *)0)) {
+				return FALSE;
+			}
+		}
+		else {
+			if (!gc_web_service_query (obj->poi, error,
+						"q", keyword,
+						"accept-language", lang,
+						"limit", str_limit,
+						"viewbox", viewbox,
+						"format", "xml",
+						"bounded", "1",
+						"polygon", "0",
+						"addressdetails", "1",
+						(char *)0)) {
+				return FALSE;
+			}
+		}
+	}
+	else {
+		/* There is no viewbox. */
+		if (country_code) {
+			if (!gc_web_service_query (obj->poi, error,
+						"q", keyword,
+						"accept-language", lang,
+						"countrycodes", country_code,
+						"limit", str_limit,
+						"format", "xml",
+						"bounded", "0",
+						"polygon", "0",
+						"addressdetails", "1",
+						(char *)0)) {
+				return FALSE;
+			}
+		}
+		else {
+			if (!gc_web_service_query (obj->poi, error,
+						"q", keyword,
+						"accept-language", lang,
+						"limit", str_limit,
+						"format", "xml",
+						"bounded", "0",
+						"polygon", "0",
+						"addressdetails", "1",
+						(char *)0)) {
+				return FALSE;
+			}
+		}
+	}
+
+	*landmark = g_ptr_array_new();
+
+	while (1) {
+		ret = _get_landmark_data (obj, index, &landmark_data);
+		if (ret == FALSE) {
+			index--;
+			break;
+		}
+
+		GValue v_poi = {0, };
+		g_value_init (&v_poi, GEOCLUE_LANDMARK);
+		g_value_take_boxed (&v_poi, dbus_g_type_specialized_construct (GEOCLUE_LANDMARK));
+
+		dbus_g_type_struct_set(&v_poi,
+				0, landmark_data.id,
+				1, landmark_data.rank,
+				2, landmark_data.lat,
+				3, landmark_data.lon,
+				4, landmark_data.boundary_left,
+				5, landmark_data.boundary_top,
+				6, landmark_data.boundary_right,
+				7, landmark_data.boundary_bottom,
+				8, landmark_data.name,
+				9, landmark_data.icon,
+				10, landmark_data.house,
+				11, landmark_data.road,
+				12, landmark_data.village,
+				13, landmark_data.suburb,
+				14, landmark_data.city,
+				15, landmark_data.county,
+				16, landmark_data.country,
+				17, landmark_data.country_code,
+				G_MAXUINT);
+
+		g_ptr_array_add (*landmark, g_value_get_boxed(&v_poi));
+
+		index++;
+	}
+
+	*count = index;
+
+	return TRUE;
+}
+
 static void
 geoclue_nominatim_finalize (GObject *obj)
 {
@@ -376,6 +683,11 @@ geoclue_nominatim_dispose (GObject *obj)
 	if (self->rev_geocoder) {
 		g_object_unref (self->rev_geocoder);
 		self->rev_geocoder = NULL;
+	}
+
+	if (self->poi) {
+		g_object_unref (self->poi);
+		self->poi = NULL;
 	}
 
 	((GObjectClass *) geoclue_nominatim_parent_class)->dispose (obj);
@@ -409,6 +721,9 @@ geoclue_nominatim_init (GeoclueNominatim *obj)
 
 	obj->rev_geocoder = g_object_new (GC_TYPE_WEB_SERVICE, NULL);
 	gc_web_service_set_base_url (obj->rev_geocoder, REV_GEOCODE_URL);
+
+	obj->poi = g_object_new (GC_TYPE_WEB_SERVICE, NULL);
+	gc_web_service_set_base_url (obj->poi, GEOCODE_URL);
 }
 
 static void
@@ -416,6 +731,12 @@ geoclue_nominatim_geocode_init (GcIfaceGeocodeClass *iface)
 {
 	iface->address_to_position = geoclue_nominatim_address_to_position;
 	iface->freeform_address_to_position = geoclue_nominatim_freeform_address_to_position;
+}
+
+static void
+geoclue_nominatim_poi_init (GcIfacePoiClass *iface)
+{
+	iface->search_by_position = geoclue_nominatim_poi_search_by_position;
 }
 
 static void

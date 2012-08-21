@@ -1,7 +1,8 @@
+#sbs-git:slp/pkgs/g/geoclue geoclue 0.12.0 607dc26233fecdf2370e5a0b5eab4031f979fc0a
 Name:       geoclue
 Summary:    Geoinformation service
-Version:    0.12.0
-Release:    1.8
+Version:    0.12.0_26
+Release:    24slp2
 Group:      TO_BE/FILLED_IN
 License:    TO BE FILLED IN
 Source0:    geoclue-%{version}.tar.gz
@@ -54,6 +55,7 @@ This package provides a tool to search osm data by name and address and to gener
 
 %prep
 %setup -q -n %{name}-%{version}
+
 
 %build
 export CFLAGS+=" -Wall -g -fPIC"

@@ -156,6 +156,146 @@ typedef enum {
 #define GEOCLUE_ADDRESS_KEY_STREET "street"
 
 /**
+ * GEOCLUE_LANDMARK_KEY_COUNTRYCODE:
+ *
+ * A key for landmark hashtables. The hash value should be a ISO 3166 two
+ * letter country code.
+ *
+ * The used hash keys match the elements of XEP-0080 (XMPP protocol
+ * extension for user location), see
+ * <ulink url="http://www.xmpp.org/extensions/xep-0080.html">
+ * http://www.xmpp.org/extensions/xep-0080.html</ulink>
+ */
+#define GEOCLUE_LANDMARK_KEY_COUNTRYCODE GEOCLUE_ADDRESS_KEY_COUNTRYCODE
+/**
+ * GEOCLUE_LANDMARK_KEY_ID:
+ *
+ * A key for landmark hashtables. The hash value should be an id of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_ID "id"
+/**
+ * GEOCLUE_LANDMARK_KEY_RANK:
+ *
+ * A key for landmark hashtables. The hash value should be a rank of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_RANK "rank"
+/**
+ * GEOCLUE_LANDMARK_KEY_LAT:
+ *
+ * A key for landmark hashtables. The hash value should be a latitude of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_LAT "lat"
+/**
+ * GEOCLUE_LANDMARK_KEY_LON:
+ *
+ * A key for landmark hashtables. The hash value should be a longitude of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_LON "lon"
+/**
+ * GEOCLUE_LANDMARK_KEY_BOUNDINGBOX:
+ *
+ * A key for landmark hashtables. The hash value should be a bounding box of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_BOUNDINGBOX "boundingbox"
+/**
+ * GEOCLUE_LANDMARK_KEY_NAME:
+ *
+ * A key for landmark hashtables. The hash value should be a display name of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_NAME "display_name"
+/**
+ * GEOCLUE_LANDMARK_KEY_HOUSE:
+ *
+ * A key for landmark hashtables. The hash value should be a house of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_HOUSE "house"
+/**
+ * GEOCLUE_LANDMARK_KEY_ROAD:
+ *
+ * A key for landmark hashtables. The hash value should be a road of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_ROAD "road"
+/**
+ * GEOCLUE_LANDMARK_KEY_VILLAGE:
+ *
+ * A key for landmark hashtables. The hash value should be a village of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_VILLAGE "village"
+/**
+ * GEOCLUE_LANDMARK_KEY_SUBURB:
+ *
+ * A key for landmark hashtables. The hash value should be a suburb of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_SUBURB "suburb"
+/**
+ * GEOCLUE_LANDMARK_KEY_POSTCODE:
+ *
+ * A key for landmark hashtables. The hash value should be a postcode of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_POSTCODE "postcode"
+/**
+ * GEOCLUE_LANDMARK_KEY_CITY:
+ *
+ * A key for landmark hashtables. The hash value should be a city of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_CITY "city"
+/**
+ * GEOCLUE_LANDMARK_KEY_COUNTY:
+ *
+ * A key for landmark hashtables. The hash value should be a county of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_COUNTY "county"
+/**
+ * GEOCLUE_LANDMARK_KEY_ICON:
+ *
+ * A key for landmark hashtables. The hash value should be an icon path of a landmark.
+ */
+#define GEOCLUE_LANDMARK_KEY_ICON "icon"
+/**
+ * GEOCLUE_LANDMARK_KEY_COUNTRY:
+ *
+ * A key for landmark hashtables. The hash value should be a name of a country.
+ */
+#define GEOCLUE_LANDMARK_KEY_COUNTRY GEOCLUE_ADDRESS_KEY_COUNTRY
+/**
+ * GEOCLUE_LANDMARK_KEY_REGION:
+ *
+ * A key for landmark hashtables. The hash value should be a name of an
+ * administrative region of a nation, e.g. province or
+ * US state.
+ */
+#define GEOCLUE_LANDMARK_KEY_REGION GEOCLUE_ADDRESS_KEY_REGION
+/**
+ * GEOCLUE_LANDMARK_KEY_LOCALITY:
+ *
+ * A key for landmark hashtables. The hash value should be a name of a town
+ * or city.
+ */
+#define GEOCLUE_LANDMARK_KEY_LOCALITY GEOCLUE_ADDRESS_KEY_LOCALITY
+/**
+ * GEOCLUE_LANDMARK_KEY_AREA:
+ *
+ * A key for landmark hashtables. The hash value should be a name of an
+ * area, such as neighborhood or campus.
+ */
+#define GEOCLUE_LANDMARK_KEY_AREA GEOCLUE_ADDRESS_KEY_AREA
+/**
+ * GEOCLUE_LANDMARK_KEY_POSTALCODE:
+ *
+ * A key for landmark hashtables. The hash value should be a code used for
+ * postal delivery.
+ */
+#define GEOCLUE_LANDMARK_KEY_POSTALCODE GEOCLUE_ADDRESS_KEY_POSTALCODE
+/**
+ * GEOCLUE_LANDMARK_KEY_STREET:
+ *
+ * A key for landmark hashtables. The hash value should be a partial or full street
+ * address.
+ */
+#define GEOCLUE_LANDMARK_KEY_STREET GEOCLUE_ADDRESS_KEY_STREET
+
+
+/**
  * GeoclueResourceFlags:
  *
  * bitfield that represents a set of physical resources.

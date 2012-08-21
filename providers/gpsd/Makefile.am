@@ -16,9 +16,7 @@ geoclue_gpsd_LDADD =		\
 	$(top_builddir)/geoclue/libgeoclue.la
 
 geoclue_gpsd_SOURCES =		\
-	geoclue-gpsd.c		\
-	setting.c		\
-	setting.h
+	geoclue-gpsd.c
 
 providersdir = $(datadir)/geoclue-providers
 providers_DATA = geoclue-gpsd.provider
