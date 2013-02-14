@@ -1,0 +1,383 @@
+[Version] geoclue_0.12.0-28
+[date] 15 Jan 2013
+[Title] In order to build geoclue with GCC-4.7, apply patches(lp_718911.patch,
+	lp_738584.patch, and lp_829436.patch) on https://launchpad.net/ubuntu/+source/geoclue/0.12.0-1ubuntu10
+[Issue#] NA
+[Problem] build break with GCC-4.7
+[Cause] NA
+[Solution] update new patches
+[Developer] Youngae Kang <youngae.kang@samsung.com>
+
+================================================================================
+
+geoclue (0.12.0-27slp2) unstable; urgency=low
+
+  * Add PositionVelocity interface.
+  * Tag : geoclue_0.12.0-27slp2
+
+ -- Minjune Kim <sena06.kim@samsung.com>  Wed, 02 Jan 2013 14:11:04 +0900
+
+geoclue (0.12.0-26slp2) unstable; urgency=low
+
+  * Support POI
+  * Tag : geoclue_0.12.0-26slp2
+
+ -- Minjune Kim <sena06.kim@samsung.com>  Mon, 02 Jul 2012 23:27:13 +0900
+
+geoclue (0.12.0-25slp2) unstable; urgency=low
+
+  * fix for system proxy setting
+  * Tag : geoclue_0.12.0-25slp2
+
+ -- Genie Kim <daejins.kim@samsung.com>  Mon, 02 Apr 2012 20:24:00 +0900
+
+geoclue (0.12.0-24slp2) unstable; urgency=low
+
+  * add feature for last position & velocity & satellite
+  * Tag : geoclue_0.12.0-24slp2
+
+ -- Genie Kim <daejins.kim@samsung.com>  Mon, 27 Feb 2012 17:30:01 +0900
+
+geoclue (0.12.0-23slp2) unstable; urgency=low
+
+  * remove geoclue-gpsd
+  * Tag : geoclue_0.12.0-23slp2
+
+ -- Minjune kim <sena06.kim.kim@samsung.com>  Wed, 22 Feb 2012 16:55:45 +0900
+
+geoclue (0.12.0-22slp2) unstable; urgency=low
+
+  * remove geoclue-gpsd
+  * Tag : geoclue_0.12.0-22slp2
+
+ -- Genie Kim <daejins.kim@samsung.com>  Fri, 10 Feb 2012 17:58:42 +0900
+
+geoclue (0.12.0-21slp2) unstable; urgency=low
+
+  * add altitude / h_accuracy / v_accurcy in last position(geoclue_0.12.0-21slp2.patch)
+  * Tag : geoclue_0.12.0-21slp2 
+
+ -- Genie Kim <daejins.kim@samsung.com>  Tue, 10 Jan 2012 19:48:21 +0900
+
+geoclue (0.12.0-20slp2) unstable; urgency=low
+
+  * use quilt for patch(tizen.patch) 
+  * add last knonw position(geoclue_0.12.0-20slp2.patch)
+  * Tag : geoclue_0.12.0-20slp2
+
+ -- Genie Kim <daejins.kim@samsung.com>  Mon, 02 Jan 2012 19:27:14 +0900
+
+geoclue (0.12.0-19slp2+5) unstable; urgency=low
+
+  * add geoclue-gpsd install file
+  * Tag : geoclue_0.12.0-19slp2+5
+
+ -- Genie Kim <daejins.kim@samsung.com>  Mon, 19 Dec 2011 13:56:07 +0900
+
+geoclue (0.12.0-19slp2+4) unstable; urgency=low
+
+  * activate geoclue-gpsd
+  * Tag : geoclue_0.12.0-19slp2+4
+
+ -- Genie Kim <daejins.kim@samsung.com>  Wed, 07 Dec 2011 16:47:11 +0900
+
+geoclue (0.12.0-19slp2+3) unstable; urgency=low
+
+  * remove not using packages
+  * Tag : geoclue_0.12.0-19slp2+3
+
+ -- Genie Kim <daejins.kim@samsung.com>  Tue, 06 Dec 2011 22:36:09 +0900
+
+geoclue (0.12.0-19slp2+2) unstable; urgency=low
+
+  * Remove geoclue-gpsd package for add new feature and geoclue-gpsd is moved under geoclue-providers
+  * Tag : geoclue_0.12.0-19slp2+2
+
+ -- Genie Kim <daejins.kim@samsung.com>  Sat, 26 Nov 2011 12:15:52 +0900
+
+geoclue (0.12.0-19slp2+1) unstable; urgency=low
+
+  * Fix bug in dbus signal for satellite information
+  * Tag : geoclue_0.12.0-19slp2+1 
+
+ -- Yunhan Kim <yhan.kim@samsung.com>  Fri, 21 Oct 2011 09:03:40 +0900
+
+geoclue (0.12.0-18slp2+5) unstable; urgency=low
+
+  * remove GTK dependency
+  * Tag : geoclue_0.12.0-18slp2+5 
+
+ -- Genie Kim <daejins.kim@samsung.com>  Thu, 15 Sep 2011 13:55:47 +0900
+
+geoclue (0.12.0-18slp2+4) unstable; urgency=low
+
+  * upgrade of dbus-glib : remove Depends
+  * Tag : geoclue_0.12.0-18slp2+4 
+
+ -- Genie Kim <daejins.kim@samsung.com>  Tue, 02 Aug 2011 11:30:11 +0900
+
+geoclue (0.12.0-18slp2+3) unstable; urgency=low
+
+  * Add and change boilerplate
+  * Tag : geoclue_0.12.0-18slp2+3
+
+ -- Genie Kim <daejins.kim@samsung.com>  Tue, 19 Jul 2011 17:22:02 +0900
+
+geoclue (0.12.0-18slp2+2) unstable; urgency=low
+
+  * Install geoclue-nominatim package
+  * Tag : geoclue_0.12.0-18slp2+2
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Mon, 13 Jun 2011 11:20:07 +0900
+
+geoclue (0.12.0-18slp2+1) unstable; urgency=low
+
+  * Release again for glib upgrade
+  * Tag : geoclue_0.12.0-18slp2+1
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Wed, 30 Mar 2011 15:13:47 +0900
+
+geoclue (0.12.0-17slp2+17) unstable; urgency=low
+
+  * Fix geoclue-gpsd & Add debug package
+  * Tag : geoclue_0.12.0-17slp2+17
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Wed, 24 Nov 2010 22:38:02 +0900
+
+geoclue (0.12.0-17slp2+16) unstable; urgency=low
+
+  * Remove test-gui & remove auto genarated files
+  * Tag : geoclue_0.12.0-17slp2+16
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Fri, 12 Nov 2010 13:31:03 +0900
+
+geoclue (0.12.0-17slp2+15) unstable; urgency=low
+
+  * Release geoclue_0.12.0-17slp2+15
+  * Tag : geoclue_0.12.0-17slp2+15
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Wed, 10 Nov 2010 17:00:18 +0900
+
+geoclue (0.12.0-16slp2+13) unstable; urgency=low
+
+  * Add xps provider
+  * Tag : geoclue_0.12.0-16slp2+13
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Mon, 08 Nov 2010 13:18:51 +0900
+
+geoclue (0.12.0-15slp2+12) unstable; urgency=low
+
+  * Remove skyhooks & gpsd packages
+  * Tag : geoclue_0.12.0-15slp2+12
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Fri, 29 Oct 2010 16:21:45 +0900
+
+geoclue (0.12.0-14slp2+11) unstable; urgency=low
+
+  * Fix for Limo contrib.
+  * Tag : geoclue_0.12.0-14slp2+11
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Fri, 29 Oct 2010 16:21:41 +0900
+
+geoclue (0.12.0-13slp2+10) unstable; urgency=low
+
+  * Fix BS for multi process 
+  * Tag : geoclue_0.12.0-13slp2+10
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Tue, 12 Oct 2010 21:09:36 +0900
+
+geoclue (0.12.0-12slp2+9) unstable; urgency=low
+
+  * Apply tweak guide
+  * Tag : geoclue_0.12.0-12slp2+9
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Fri, 17 Sep 2010 19:17:45 +0900
+
+geoclue (0.12.0-11slp2+8) unstable; urgency=low
+
+  * Bug fix for impolite clients
+  * Tag : geoclue_0.12.0-11slp2+8
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Thu, 09 Sep 2010 11:52:42 +0900
+
+geoclue (0.12.0-10slp2+7) unstable; urgency=low
+
+  * We can use sync API if lbs-engine is already initialized
+  * Tag : geoclue_0.12.0-10slp2+7
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Mon, 06 Sep 2010 10:53:59 +0900
+
+geoclue (0.12.0-9slp2+6) unstable; urgency=low
+
+  * Modify lbs-sync API & Fix signaling & Add lbs-example & Remove lbs-stub
+  * Tag : geoclue_0.12.0-9slp2+6
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Sat, 04 Sep 2010 17:55:05 +0900
+
+geoclue (0.12.0-8slp2+5) unstable; urgency=low
+
+  * change lbs-stub --> lbs-client (lbs-engine)
+  * Tag : geoclue_0.12.0-8slp2+5
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Wed, 01 Sep 2010 11:41:56 +0900
+
+geoclue (0.12.0-7slp2+4) unstable; urgency=low
+
+  * Add G_END_DECLS ( Bug fix )
+  * Tag : geoclue_0.12.0-7slp2+4
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Mon, 30 Aug 2010 18:14:30 +0900
+
+geoclue (0.12.0-6slp2+3) unstable; urgency=low
+
+  * Modifying version
+  * Tag : geoclue_0.12.0-6slp2+3
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Sat, 28 Aug 2010 21:59:03 +0900
+
+geoclue (0.12.0-1slp2+3) unstable; urgency=low
+
+  * Add nmea&sattelite interface
+  * Tag : geoclue_0.12.0-1slp2+3
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Sat, 28 Aug 2010 21:38:51 +0900
+
+geoclue (0.12.0-5slp2+2) unstable; urgency=low
+
+  * Temporary patch for browser (lbs-engine --> lbs stub)
+  * Tag : geoclue_0.12.0-5slp2+2
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Fri, 27 Aug 2010 14:00:04 +0900
+
+geoclue (0.12.0-5slp2+1) unstable; urgency=low
+
+  * Change libgeoclue0.install.in --> libgeoclue.install.in
+  * Tag : geoclue_0.12.0-5slp2+1
+
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Sat, 21 Aug 2010 01:00:44 +0900
+
+geoclue (0.12.0-4slp2+1) unstable; urgency=low
+
+  * Version up
+  * Tag : geoclue_0.12.0-4slp2+1
+  
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Sat, 21 Aug 2010 00:41:18 +0900
+
+geoclue (0.12.0-3slp2+1) unstable; urgency=low
+
+  * Change git tag again
+  * Tag : geoclue_0.12.0-3slp2+1
+ 
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Fri, 20 Aug 2010 17:10:00 +0900
+
+geoclue (0.12.0-2slp2+1) unstable; urgency=low
+
+  * Change git tag
+  * Tag : geoclue_0.12.0-2slp2+1
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Fri, 20 Aug 2010 16:55:13 +0900
+
+geoclue (0.12.0-1slp2+1) unstable; urgency=low
+
+  * Fix geoclue-lbs for receiving callback from lbs-client
+  * Change debian/control for using lbs-client
+  * Tag : geoclue_0.12.0-1slp2+1
+
+ -- Tae-Hwan Kim <the81.kim@samsung.com>  Fri, 20 Aug 2010 14:22:17 +0900
+
+geoclue (0.11.1-13slp2+3) unstable; urgency=low
+
+  * Disable to check gtkdocize
+  * Tag : geoclue_0.11.1-13slp2+3
+
+ -- Gyuyoung Kim <gyuyoung.kim@samsung.com>  Sat, 05 Jun 2010 16:43:43 +0900
+
+geoclue (0.11.1-13slp2+2) unstable; urgency=low
+
+  * Change DBUS_BUS_SESSION with DBUS_BUS_SYSTEM
+  * Tag : geoclue_0.11.1-13slp2+2
+
+ -- Gyuyoung Kim <gyuyoung.kim@samsung.com>  Mon, 24 May 2010 13:36:37 +0900
+
+geoclue (0.11.1-13slp2+1) unstable; urgency=low
+
+  * Followd SLP package naming rule 
+
+ -- Joone Hur <joone.hur@samsung.com>  Thu, 01 Apr 2010 09:36:53 +0900
+
+geoclue (0.11.1-12) unstable; urgency=low
+
+  * Added missing gtk dependency for library
+
+ -- Lukasz Slachciak <l.slachciak@samsung.com>  Wed, 31 Mar 2010 10:50:30 +0200
+
+geoclue (0.11.1-11) unstable; urgency=low
+
+  * Uploaders section added
+
+ -- Lukasz Slachciak <l.slachciak@samsung.com>  Thu, 25 Mar 2010 16:31:33 +0100
+
+geoclue (0.11.1-10) unstable; urgency=low
+
+  * Toolchain upgrade
+
+ -- Lukasz Slachciak <l.slachciak@samsung.com>  Thu, 25 Mar 2010 10:55:21 +0100
+
+geoclue (0.11.1-9) unstable; urgency=low
+
+  * add missing skyhook files to the package
+  * hostip provider allows for FORCE_IP env var
+  * let's have SUWON location by default
+  * use the data returned by LBS CLIENT in the signal - this could work with GPS now
+
+ -- Jaroslaw Staniek <j.staniek@samsung.com>  Tue, 16 Mar 2010 17:16:20 +0100
+
+geoclue (0.11.1-8) unstable; urgency=low
+
+  * Merged with changes from vanilla geoclue; this adds skyhook provider
+
+ -- Jaroslaw Staniek <j.staniek@samsung.com>  Fri, 12 Mar 2010 16:12:51 +0100
+
+geoclue (0.11.1-7) unstable; urgency=low
+
+  * Add LBS stub library (working) for testing LBS provider
+  * Make geoclue LBS provider emit position-changed signal
+
+ -- Jaroslaw Staniek <j.staniek@samsung.com>  Mon, 08 Mar 2010 17:07:01 +0100
+
+geoclue (0.11.1-6) unstable; urgency=low
+
+  * Update lbs service config
+
+ -- Jaroslaw Staniek <j.staniek@samsung.com>  Mon, 22 Feb 2010 16:25:06 +0100
+
+geoclue (0.11.1-5) unstable; urgency=low
+
+  * added LBS Position Provider
+
+ -- Jaroslaw Staniek <j.staniek@samsung.com>  Mon, 22 Feb 2010 15:02:20 +0100
+
+geoclue (0.11.1-4) unstable; urgency=low
+
+  * add gtk deps for devel package, required by geoclue-test-gui
+
+ -- Jaroslaw Staniek <j.staniek@samsung.com>  Thu, 21 Jan 2010 15:05:55 +0100
+
+geoclue (0.11.1-3) unstable; urgency=low
+
+  * more deps on gconf
+
+ -- Jaroslaw Staniek <j.staniek@samsung.com>  Tue, 19 Jan 2010 12:56:49 +0100
+
+geoclue (0.11.1-2) unstable; urgency=low
+
+  * added dependency on gconf
+
+ -- Jaroslaw Staniek <j.staniek@samsung.com>  Tue, 19 Jan 2010 11:48:25 +0100
+
+geoclue (0.11.1-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Jaroslaw Staniek <j.staniek@samsung.com>  Thu, 14 Jan 2010 15:45:33 +0100
