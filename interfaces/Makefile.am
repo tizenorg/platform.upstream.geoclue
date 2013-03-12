@@ -1,0 +1,33 @@
+%.xml: %-full.xml
+	$(XSLT) -o $@ $(top_srcdir)/docs/tools/spec-strip-docs.xsl $<
+
+noinst_DATA = \
+	gc-iface-geoclue.xml \
+	gc-iface-position.xml \
+	gc-iface-position-ext.xml \
+	gc-iface-nmea.xml \
+	gc-iface-address.xml \
+	gc-iface-geocode.xml \
+	gc-iface-master.xml \
+	gc-iface-master-client.xml \
+	gc-iface-reverse-geocode.xml \
+	gc-iface-velocity.xml \
+	gc-iface-satellite.xml \
+	gc-iface-poi.xml
+
+BUILT_SOURCES = $(noinst_DATA)
+CLEANFILES = $(BUILT_SOURCES)
+
+EXTRA_DIST = \
+	gc-iface-geoclue-full.xml \
+	gc-iface-position-full.xml \
+	gc-iface-position-ext-full.xml \
+	gc-iface-nmea-full.xml \
+	gc-iface-address-full.xml \
+	gc-iface-geocode-full.xml \
+	gc-iface-master-full.xml \
+	gc-iface-master-client-full.xml \
+	gc-iface-reverse-geocode-full.xml \
+	gc-iface-velocity-full.xml \
+	gc-iface-satellite-full.xml \
+	gc-iface-poi-full.xml
