@@ -62,7 +62,7 @@ export CFLAGS+=" -Wall -g -fPIC"
 export LDFLAGS+=" -Wl,-z,defs -Wl,--rpath=/usr/lib -Wl,--as-needed -Wl,--hash-style=both"
 
 ./autogen.sh
-./configure --disable-static --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --enable-system-bus=yes --disable-gypsy --disable-lbs --disable-xps
+./configure --disable-static --prefix=/usr --libdir=%{_libdir} --mandir=/usr/share/man --infodir=/usr/share/info --enable-system-bus=yes --disable-gypsy --disable-lbs --disable-xps
 
 #make %{?jobs:-j%jobs}
 make
@@ -83,11 +83,11 @@ rm -rf %{buildroot}/usr/bin/geoclue-test-gui
 
 %files -n libgeoclue
 %manifest libgeoclue.manifest
-/usr/lib/libgeoclue.so*
+%{_libdir}/libgeoclue.so*
 
 %files -n libgeoclue-devel
 /usr/include/*
-/usr/lib/pkgconfig/*
+%{_libdir}/pkgconfig/*
 
 %files -n geoclue-nominatim
 /usr/share/dbus-1/services/org.freedesktop.Geoclue.Providers.Nominatim.service
