@@ -1,11 +1,10 @@
-#sbs-git:slp/pkgs/g/geoclue geoclue 0.12.0 607dc26233fecdf2370e5a0b5eab4031f979fc0a
 Name:       geoclue
 Summary:    Geoinformation service
 Version:    0.12.0_28
 Release:    0
-Group:      TO_BE/FILLED_IN
-License:    TO BE FILLED IN
+Group:      Location/Service
 Source0:    geoclue-%{version}.tar.gz
+License:        GPL-2.0
 BuildRequires:  which
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(dbus-glib-1)
@@ -23,7 +22,6 @@ Geographic information framework GeoClue provides applications access to various
 
 %package -n libgeoclue
 Summary:    C API for GeoClue
-Group:      TO_BE/FILLED
 Requires:   %{name} = %{version}-%{release}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -34,7 +32,6 @@ the recommended way to use GeoClue in the C language.
 
 %package -n libgeoclue-devel
 Summary:    C API for GeoClue (development files)
-Group:      TO_BE/FILLED
 Requires:   libgeoclue = %{version}-%{release}
 
 %description -n libgeoclue-devel
@@ -43,7 +40,6 @@ the recommended way to use GeoClue in the C language.
 
 %package -n geoclue-nominatim
 Summary:    Geocode server for GeoClue (OpenStreetMap)
-Group:      TO_BE/FILLED
 Requires:   %{name} = %{version}-%{release}
 
 %description -n geoclue-nominatim
@@ -59,16 +55,13 @@ This package provides a tool to search osm data by name and address and to gener
 
 %build
 export CFLAGS+=" -Wall -g -fPIC"
-export LDFLAGS+=" -Wl,-z,defs -Wl,--rpath=/usr/lib -Wl,--as-needed -Wl,--hash-style=both"
 
-./autogen.sh
-./configure --disable-static --prefix=/usr --libdir=%{_libdir} --mandir=/usr/share/man --infodir=/usr/share/info --enable-system-bus=yes --disable-gypsy --disable-lbs --disable-xps
+%autogen
+%configure  --enable-system-bus=yes --disable-gypsy --disable-lbs --disable-xps
 
-#make %{?jobs:-j%jobs}
 make
 
 %install
-rm -rf %{buildroot}
 %make_install
 rm -rf %{buildroot}/usr/bin/geoclue-test-gui
 
