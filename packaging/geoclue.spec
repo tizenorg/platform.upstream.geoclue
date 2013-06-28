@@ -45,12 +45,14 @@ Requires:   %{name} = %{version}-%{release}
 %description -n geoclue-nominatim
 GeoClue provides applications access to various geographical information
 sources using a D-Bus API or a C library.
+Source1001: 	geoclue.manifest
 .
 This package provides a tool to search osm data by name and address and to generate synthetic addresses of osm points (reverse geocoding)
 
 
 %prep
 %setup -q -n %{name}-%{version}
+cp %{SOURCE1001} .
 
 
 %build
@@ -71,18 +73,21 @@ rm -rf %{buildroot}/usr/bin/geoclue-test-gui
 %postun -n libgeoclue -p /sbin/ldconfig
 
 %files
+%manifest %{name}.manifest
 /usr/libexec/geoclue-master
 /usr/share/dbus-1/services/org.freedesktop.Geoclue.Master.service
 
 %files -n libgeoclue
-%manifest libgeoclue.manifest
+%manifest %{name}.manifest
 %{_libdir}/libgeoclue.so*
 
 %files -n libgeoclue-devel
+%manifest %{name}.manifest
 /usr/include/*
 %{_libdir}/pkgconfig/*
 
 %files -n geoclue-nominatim
+%manifest %{name}.manifest
 /usr/share/dbus-1/services/org.freedesktop.Geoclue.Providers.Nominatim.service
 /usr/share/geoclue-providers/geoclue-nominatim.provider
 /usr/libexec/geoclue-nominatim
