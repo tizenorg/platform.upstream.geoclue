@@ -1,3 +1,6 @@
+* Fri Jul 12 2013 Patrick McCarty <patrick.mccarty@linux.intel.com> e935df4
+- Fix the manifest installation
+
 * Tue Jun 18 2013 Anas Nashif <anas.nashif@intel.com> accepted/tizen/20130520.101747@3003766
 - Fixed rpm group and license
 
