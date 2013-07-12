@@ -4,6 +4,7 @@ Version:    0.12.0_28
 Release:    0
 Group:      Location/Service
 Source0:    geoclue-%{version}.tar.gz
+Source1001: %{name}.manifest
 License:        GPL-2.0
 BuildRequires:  which
 BuildRequires:  pkgconfig(glib-2.0)
@@ -45,7 +46,6 @@ Requires:   %{name} = %{version}-%{release}
 %description -n geoclue-nominatim
 GeoClue provides applications access to various geographical information
 sources using a D-Bus API or a C library.
-Source1001: 	geoclue.manifest
 .
 This package provides a tool to search osm data by name and address and to generate synthetic addresses of osm points (reverse geocoding)
 
