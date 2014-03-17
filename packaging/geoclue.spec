@@ -16,8 +16,8 @@ BuildRequires:  pkgconfig(libxslt)
 
 
 %description
-Geographic information framework GeoClue provides applications access to various geographical information 
- sources using a D-Bus API or a C library. 
+Geographic information framework GeoClue provides applications access to various geographical information
+ sources using a D-Bus API or a C library.
  .
  This package contains the master server for GeoClue.
 
@@ -49,24 +49,18 @@ sources using a D-Bus API or a C library.
 .
 This package provides a tool to search osm data by name and address and to generate synthetic addresses of osm points (reverse geocoding)
 
-
 %prep
 %setup -q -n %{name}-%{version}
 cp %{SOURCE1001} .
 
-
 %build
-export CFLAGS+=" -Wall -g -fPIC"
-
-%autogen
-%configure  --enable-system-bus=yes --disable-gypsy --disable-lbs --disable-xps
-
+export CFLAGS+=" -Wall -g -fPIC -Wformat -w "
+%reconfigure  --enable-system-bus=yes --disable-gypsy --disable-lbs --disable-xps
 make
 
 %install
 %make_install
 rm -rf %{buildroot}/usr/bin/geoclue-test-gui
-
 
 %post -n libgeoclue -p /sbin/ldconfig
 
@@ -74,8 +68,8 @@ rm -rf %{buildroot}/usr/bin/geoclue-test-gui
 
 %files
 %manifest %{name}.manifest
-/usr/libexec/geoclue-master
-/usr/share/dbus-1/services/org.freedesktop.Geoclue.Master.service
+%{_libexecdir}/geoclue-master
+%{_datadir}/dbus-1/services/org.freedesktop.Geoclue.Master.service
 
 %files -n libgeoclue
 %manifest %{name}.manifest
@@ -83,11 +77,11 @@ rm -rf %{buildroot}/usr/bin/geoclue-test-gui
 
 %files -n libgeoclue-devel
 %manifest %{name}.manifest
-/usr/include/*
+%{_includedir}/*
 %{_libdir}/pkgconfig/*
 
 %files -n geoclue-nominatim
 %manifest %{name}.manifest
-/usr/share/dbus-1/services/org.freedesktop.Geoclue.Providers.Nominatim.service
-/usr/share/geoclue-providers/geoclue-nominatim.provider
-/usr/libexec/geoclue-nominatim
+%{_datadir}/dbus-1/services/org.freedesktop.Geoclue.Providers.Nominatim.service
+%{_datadir}/geoclue-providers/geoclue-nominatim.provider
+%{_libexecdir}/geoclue-nominatim
